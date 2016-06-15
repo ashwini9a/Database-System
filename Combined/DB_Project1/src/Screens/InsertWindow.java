@@ -1,0 +1,84 @@
+package Screens;
+
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Set;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+public class InsertWindow extends JFrame {
+
+	private JPanel contentPane;
+	private JTable table;
+
+	/**
+	 * Launch the application.
+	 */
+	
+	public InsertWindow(String S) {
+		super(S);
+		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(6, 64, 438, 197);
+		contentPane.add(scrollPane);
+
+		JSONParser parser = new JSONParser();
+		try {
+			Object obj = parser.parse(new FileReader("Test2.json"));
+			JSONObject json = (JSONObject) obj;
+			// System.out.println(json.toJSONString());
+			JSONArray headers = (JSONArray) json.get("headers");
+
+			String[] colName = new String[headers.size()];
+			for (int i = 0; i < headers.size(); i++) {
+				Object temp = parser.parse(headers.get(i).toString());
+				JSONObject temp1 = (JSONObject) temp;
+				// String attName = (String) temp1.get("Column Name");
+				// System.out.println(attName);
+				colName[i] = (String) temp1.get("Column Name");
+				// Set<String> keys = temp1.keySet();
+				// System.out.println(keys.toString());
+			}
+
+			Object[][] data = { { "A", "B" }, { "C", "D" } };
+
+			table = new JTable(data, colName);
+			table.setFillsViewportHeight(true);
+			scrollPane.setViewportView(table);
+			
+		} catch (FileNotFoundException e) {
+			System.out.println("FileNotFoundException");
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			System.out.println("ParseException");
+			e.printStackTrace();
+		}
+
+
+	}
+}

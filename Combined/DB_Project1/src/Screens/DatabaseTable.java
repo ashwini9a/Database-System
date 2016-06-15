@@ -43,7 +43,7 @@ public class DatabaseTable extends JFrame {
 	 */
 	public DatabaseTable() {
 		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(200, 200, 800, 300);
 		contentPane = new JPanel();
 		contentPane.setLayout(null);
