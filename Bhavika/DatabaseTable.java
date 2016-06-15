@@ -7,6 +7,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import org.json.simple.JSONObject;
+
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -15,16 +18,22 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
 import java.awt.Color;
-
 
 public class DatabaseTable extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField textField;
 
+	static List<String> tableNames = new ArrayList<String>();
 
 	/**
 	 * Launch the application.
@@ -80,6 +89,7 @@ public class DatabaseTable extends JFrame {
          {
              return columnClass[columnIndex];
          }});
+		
 		table.setBackground(Color.WHITE);
 		
 		// default values for dataType:
@@ -110,9 +120,68 @@ public class DatabaseTable extends JFrame {
 		contentPane.add(lblNewLabel);
 		
 		JButton btnNewButton = new JButton("OK");
-		btnNewButton.setFont(new Font("Times New Roman", Font.PLAIN, 12));
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			    //get data from the table and save it in json format:
+				DefaultTableModel dm = (DefaultTableModel)table.getModel();
+				int rowCount = dm.getRowCount();
+				int colCount = dm.getColumnCount();
+				
+				String tableName  = textField.getText();
+				System.out.println("Table Name:"+tableName);
+				
+				
+				File file = new File(tableName+".json");
+				FileWriter fw = null;
+				BufferedWriter bw = null;
+				
+				
+				try {
+					fw = new FileWriter(file.getAbsoluteFile());
+					 bw = new BufferedWriter(fw);
+					
+					
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+							
+	            for(int i = 0;  i < rowCount ; i++){	
+	            	
+	            	  JSONObject json = new JSONObject();
+	            	  
+	            	  for(int j=0; j < colCount ; j++){	            		  
+	            		    json.put(table.getColumnName(j), table.getModel().getValueAt(i, j));
+	            	  }
+	            	
+	                 // write json data to file
+	            	 try {
+	            		 
+	            	    System.out.println(json.toJSONString());	 
+						bw.write(json.toString());
+						
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+	            }
+	            
+	            try {
+					bw.flush();
+					bw.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+	           
+	           //save the tableName in globalList
+	            GlobalData.allTables.add(tableName);
+	            
+	            
+			}
+		});
 		
-		
+		btnNewButton.setFont(new Font("Times New Roman", Font.PLAIN, 12));		
 		btnNewButton.setBounds(557, 227, 89, 23);
 		contentPane.add(btnNewButton);
 		
@@ -120,6 +189,7 @@ public class DatabaseTable extends JFrame {
 		btnNewButton_1.setFont(new Font("Times New Roman", Font.PLAIN, 12));
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				dispose();
 			}
 		});
 		
@@ -131,6 +201,7 @@ public class DatabaseTable extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 					 DefaultTableModel dm = (DefaultTableModel)table.getModel();
+					
 					 Object [] rowData = {Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,"","Choose.."};
 					 dm.addRow(rowData);
 				
@@ -154,7 +225,7 @@ public class DatabaseTable extends JFrame {
 		
 		btnDeleteColumn.setBounds(651, 94, 123, 23);
 		contentPane.add(btnDeleteColumn);
-			
+		
 	}
 	
 }
