@@ -51,9 +51,7 @@ public class ListTable extends JFrame {
 		table.setModel(new DefaultTableModel(
 			new Object[][] {
 			},
-			new String[] {
-					"Select","No", "Table Name", 
-			}
+			new String[] {"No", "Table Name"}
 		   ){
 				
 			@Override
@@ -69,7 +67,7 @@ public class ListTable extends JFrame {
 		});
         
 		table.setBackground(Color.WHITE);
-		String[] columnNames  = {"No","Table Name"};
+		//String[] columnNames  = {"No","Table Name"};
 		
 		int rowCount = GlobalData.allTables.size();
 		
