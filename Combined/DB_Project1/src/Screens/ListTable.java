@@ -1,4 +1,6 @@
-package cse.buffalo.edu.swing;
+package Screens;
+
+
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -18,29 +20,14 @@ public class ListTable extends JFrame {
 	private JPanel contentPane;
 	private final JButton btnDisplayRecords = new JButton("Display Records");
 	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ListTable frame = new ListTable();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
+	
 	/**
 	 * Create the frame.
 	 */
 	public ListTable() {
 		
 		setTitle("List of Tables");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 558, 275);
 		contentPane = new JPanel();
 		contentPane.setLayout(null);
@@ -71,14 +58,14 @@ public class ListTable extends JFrame {
 		
 		int rowCount = GlobalData.allTables.size();
 		
-        GlobalData.allTables.add("Moviefsssfdsgdss");
-        GlobalData.allTables.add("Cast");
-        GlobalData.allTables.add("Cast1");
-        GlobalData.allTables.add("Cast2");
-        GlobalData.allTables.add("Cast3");
-        GlobalData.allTables.add("Cast1");
-        GlobalData.allTables.add("Cast2");
-        GlobalData.allTables.add("Cast3");
+//        GlobalData.allTables.add("Moviefsssfdsgdss");
+//        GlobalData.allTables.add("Cast");
+//        GlobalData.allTables.add("Cast1");
+//        GlobalData.allTables.add("Cast2");
+//        GlobalData.allTables.add("Cast3");
+//        GlobalData.allTables.add("Cast1");
+//        GlobalData.allTables.add("Cast2");
+//        GlobalData.allTables.add("Cast3");
         
 		DefaultTableModel tableModel = (DefaultTableModel)table.getModel();
 
@@ -115,8 +102,8 @@ public class ListTable extends JFrame {
 				int rowIndex = table.getSelectedRow();
 				String tableName = GlobalData.allTables.get(rowIndex);
 				System.out.println(tableName);
-				DisplayRecords display = new DisplayRecords();
-				display.displayRecords(tableName);
+				//DisplayRecords display = new DisplayRecords();
+				//display.displayRecords(tableName);
 				
 			}
 		});

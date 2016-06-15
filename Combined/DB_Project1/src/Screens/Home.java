@@ -14,7 +14,8 @@ import java.awt.event.ActionEvent;
 public class Home extends JFrame {
 
 	private JPanel contentPane;
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
+		GlobalData.initTableArray();
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -79,6 +80,12 @@ public class Home extends JFrame {
 		btnListselect.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				try {
+					ListTable frame = new ListTable();
+					frame.setVisible(true);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 		GridBagConstraints gbc_btnListselect = new GridBagConstraints();

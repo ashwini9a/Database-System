@@ -1,0 +1,38 @@
+package Screens;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class GlobalData{
+	
+	static List<String> allTables = new ArrayList<String>();
+	public static void initTableArray()
+	{
+		
+	}
+	public static void updateTableFile() throws Exception
+	{
+		File file = new File("Data/TableIndex.json");
+		FileWriter fw = null;
+		BufferedWriter bw = null;
+		fw = new FileWriter(file.getAbsoluteFile());
+		bw = new BufferedWriter(fw);
+		String tables="";
+		Iterator itr = allTables.iterator();
+	      while(itr.hasNext()) {
+	         tables+= (itr.next()).toString()+"\n";
+	      }
+	      bw.write(tables);
+	      bw.flush();
+	      bw.close();
+			
+			
+	}
+
+
+}

@@ -159,7 +159,13 @@ public class DatabaseTable extends JFrame {
 	           
 	           //save the tableName in globalList
 	            GlobalData.allTables.add(tableName);
-	            
+	            try {
+					GlobalData.updateTableFile();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+	            dispose();
 	            
 			}
 		});

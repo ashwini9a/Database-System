@@ -1,0 +1,62 @@
+package Screens;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class GlobalData{
+	
+	static List<String> allTables;
+	public static void initTableArray() throws Exception
+	{
+		allTables = new ArrayList<String>();
+		 String fileName = "Data/TableIndex.txt";
+
+	        // This will reference one line at a time
+	        String line = null;
+
+	        try {
+	            // FileReader reads text files in the default encoding.
+	            FileReader fileReader = 
+	                new FileReader(fileName);
+
+	            // Always wrap FileReader in BufferedReader.
+	            BufferedReader bufferedReader = 
+	                new BufferedReader(fileReader);
+
+	            while((line = bufferedReader.readLine()) != null) {
+	            	allTables.add(line);
+	            }   
+
+	            // Always close files.
+	            bufferedReader.close();         
+	        }
+	        catch(FileNotFoundException ex) {
+	            System.out.println(
+	                "Unable to open file '" + 
+	                fileName + "'");                
+	        }
+		
+	}
+	public static void updateTableFile() throws Exception
+	{
+		File file = new File("Data/TableIndex.txt");
+		FileWriter fw = null;
+		BufferedWriter bw = null;
+		fw = new FileWriter(file.getAbsoluteFile());
+		bw = new BufferedWriter(fw);
+		String tables="";
+		Iterator<String> itr = allTables.iterator();
+	      while(itr.hasNext()) {
+	         tables+= (itr.next()).toString()+"\n";
+	      }
+	      bw.write(tables);
+	      bw.flush();
+	      bw.close();
+			
+			
+	}
+
+
+}
