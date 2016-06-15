@@ -1,9 +1,11 @@
 package cse.buffalo.edu.swing;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Set;
 import javax.swing.JFrame;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -11,6 +13,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 public class DisplayRecords {
 
@@ -24,12 +27,12 @@ public class DisplayRecords {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					DisplayRecords window = new DisplayRecords();
 					
+					DisplayRecords window = new DisplayRecords();					
 					System.out.println(tableName);
 					
 					// populate records in the table
-					
+					window.frame.setTitle(tableName);
 					window.populateRecords("test.json");
 					
 					window.frame.setVisible(true);
@@ -46,28 +49,63 @@ public class DisplayRecords {
 	
 	
 	public void populateRecords(String name){
-		
-		JSONParser parser = new JSONParser();
-		
+		JSONParser parser = new JSONParser();		
 		try{
 			
 			Object obj = parser.parse(new FileReader("test.json"));
 			JSONObject json = (JSONObject) obj;
-			// System.out.println(json.toJSONString());
 			JSONArray headers = (JSONArray)json.get("records");
 			System.out.println(headers.toString());
 			
-			for(int i = 0 ; i< headers.size() ; i++){
+		
+			Object temp = parser.parse(headers.get(0).toString());
+			JSONObject currJson = (JSONObject)temp;
+			 
+			Set<String> keys = currJson.keySet();
+			String [] columnNames = keys.toArray(new String[keys.size()]);
+			
+			table = new JTable();
+			//table.setBounds(427, 0, -424, 83);
+			
+			
+			table.setModel(new DefaultTableModel(new Object[][] {},columnNames){
+				
+				@Override
+				public boolean isCellEditable(int row, int col){
+					
+					return false;
+				}
 				
 				
+			});
+		    			
+			DefaultTableModel tableModel = (DefaultTableModel)table.getModel();
+			
+			for(int i = 0 ; i < headers.size() ; i++){
 				
+				temp = parser.parse(headers.get(i).toString());
+				currJson = (JSONObject)temp;
 				
+				Object [] data = new Object [columnNames.length];
+				int index = 0;
+				for(String key : keys){					
+					  data[index] =  currJson.get(key);			
+					  index++;
+				}
+				
+				tableModel.addRow(data);
 			}
 			
+			table.setFillsViewportHeight(true);
+			JScrollPane scrollPane = new JScrollPane(table);
+			scrollPane.setBounds(37, 5, 468, 100);
+			scrollPane.setViewportView(table);
+			scrollPane.setPreferredSize(new Dimension(468,100));
+			frame.getContentPane().add(scrollPane);
 			
+			//frame.pack();
 			
-			
-			
+		
 		}catch (FileNotFoundException e) {
 			//System.out.println("FileNotFoundException");
 			e.printStackTrace();
@@ -75,10 +113,7 @@ public class DisplayRecords {
 			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();
-		} 
-		
-		
-		
+		} 	
 	}
 
 	/**
@@ -93,13 +128,11 @@ public class DisplayRecords {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(100, 100, 800, 300);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
-		table = new JTable();
-		table.setBounds(427, 0, -424, 83);
-		frame.getContentPane().add(table);
+		
 		
 	}
 }
