@@ -1,0 +1,53 @@
+package homescreenWindow;
+
+import java.awt.*;
+
+import javax.swing.*;
+
+public class HomeScreen{
+	JButton Create;
+	JButton Delete;
+	JButton LS;
+	JButton Ops;
+	JFrame HS;
+	JPanel P1,P2;
+	JLabel welcome;
+	
+	HomeScreen()
+	{
+		P1 = new JPanel();
+		P2 = new JPanel();
+		//welcome = new JLabel("<html><div style='text-align: center;'>Welcome to Database Systems!</html>");
+		P1.setLayout(new GridLayout(1,1));
+		P1.setSize(500, 100);
+		P2.setSize(500,400);
+		P2.setLayout(new GridLayout(2,2));
+		Create = new JButton("Create");
+		Delete = new JButton("Delete");
+		LS = new JButton("List/Select");
+		Ops = new JButton("Operations");
+		HS = new JFrame("Welcome to Database Systems!");
+		HS.setLayout(new GridLayout(2,1));
+		HS.setSize(500, 500);
+		//P1.add(welcome);
+		P2.add(Create);
+		P2.add(Delete);
+		P2.add(LS);
+		P2.add(Ops);
+	//	HS.add(P1);
+		HS.add(P2);
+		
+	}
+	public void displayHomeScreen()
+	{
+		HS.setVisible(true);
+	}
+	public static void main(String arg[])
+	{
+		HomeScreen h1= new HomeScreen();
+		h1.displayHomeScreen();
+		
+	}
+	
+
+}

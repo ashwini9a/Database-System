@@ -1,0 +1,39 @@
+package homescreenWindow;
+
+import java.awt.*;
+
+import javax.swing.*;
+
+public class HomeScreen{
+	JButton Create;
+	JButton Delete;
+	JButton LS;
+	JButton Ops;
+	JFrame HS;
+	
+	HomeScreen()
+	{
+		Create = new JButton("Create");
+		Delete = new JButton("Delete");
+		LS = new JButton("List/Select");
+		Ops = new JButton("Operations");
+		HS = new JFrame();
+		HS.setLayout(new FlowLayout());;
+		HS.add(Create);
+		HS.add(Delete);
+		HS.add(LS);
+		HS.add(Ops);
+	}
+	public void displayHomeScreen()
+	{
+		HS.setVisible(true);
+	}
+	public static void main(String arg[])
+	{
+		HomeScreen h1= new HomeScreen();
+		h1.displayHomeScreen();
+		
+	}
+	
+
+}
