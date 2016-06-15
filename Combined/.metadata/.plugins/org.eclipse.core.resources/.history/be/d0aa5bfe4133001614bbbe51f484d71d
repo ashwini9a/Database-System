@@ -46,7 +46,7 @@ public class InsertWindow extends JFrame {
 
 		JSONParser parser = new JSONParser();
 		try {
-			Object obj = parser.parse(new FileReader("Data/Metadata/A.json"));
+			Object obj = parser.parse(new FileReader("Test2.json"));
 			JSONObject json = (JSONObject) obj;
 			// System.out.println(json.toJSONString());
 			JSONArray headers = (JSONArray) json.get("headers");

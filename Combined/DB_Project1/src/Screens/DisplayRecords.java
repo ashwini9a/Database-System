@@ -1,4 +1,4 @@
-package cse.buffalo.edu.swing;
+package Screens;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;

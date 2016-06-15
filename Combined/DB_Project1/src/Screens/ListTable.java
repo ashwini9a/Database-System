@@ -102,8 +102,8 @@ public class ListTable extends JFrame {
 				int rowIndex = table.getSelectedRow();
 				String tableName = GlobalData.allTables.get(rowIndex);
 				System.out.println(tableName);
-				//DisplayRecords display = new DisplayRecords();
-				//display.displayRecords(tableName);
+				DisplayRecords display = new DisplayRecords();
+				display.displayRecords(tableName);
 				
 			}
 		});

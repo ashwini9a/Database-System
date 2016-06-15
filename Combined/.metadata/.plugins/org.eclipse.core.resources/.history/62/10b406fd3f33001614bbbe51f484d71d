@@ -129,7 +129,7 @@ public class DatabaseTable extends JFrame {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				String records="{\"headers\":[";			
+							
 	            for(int i = 0;  i < rowCount ; i++){	
 	            	
 	            	  JSONObject json = new JSONObject();
@@ -137,33 +137,23 @@ public class DatabaseTable extends JFrame {
 	            	  for(int j=0; j < colCount ; j++){	            		  
 	            		    json.put(table.getColumnName(j), table.getModel().getValueAt(i, j));
 	            	  }
-	            	  if(i==(rowCount-1))
-	            	  {
-	            		  records+=json.toString();
-	            	  }
-	            	  else
-	            	  {
-	            		  records+=json.toString()+",";
-	            	  }
+	            	 Iterator itr=json.values().iterator();
+	            	 while(itr.hasNext())
+	            	 {
+	            		 System.out.println(itr.next().toString());
+	            	 }
 	                 // write json data to file
-//	            	 try {
-//	            		 
-//	            	  //  System.out.println(json.toJSONString());	 
-//						bw.write(json.toString());
-//						
-//					} catch (IOException e1) {
-//						// TODO Auto-generated catch block
-//						e1.printStackTrace();
-//					}
+	            	 try {
+	            		 
+	            	  //  System.out.println(json.toJSONString());	 
+						bw.write(json.toString());
+						
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 	            }
-	            records+="]}";
-	            System.out.println(records);
-	            try {
-					bw.write(records);
-				} catch (IOException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				}
+	            
 	            try {
 					bw.flush();
 					bw.close();
