@@ -1,28 +1,17 @@
 package Screens;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridLayout;
-import javax.swing.JTextField;
-import java.awt.Insets;
-import javax.swing.JButton;
-import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+
 
 public class TableName extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
 	public String tnm;
 	protected boolean done =false;
 
@@ -42,11 +31,11 @@ public class TableName extends JFrame {
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		gbl_contentPane.columnWidths = new int[]{63, 118, 0, 121, 163, 0};
 		gbl_contentPane.rowHeights = new int[]{65, 0, 121, 0};
-		gbl_contentPane.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_contentPane.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, 1.0, Double.MIN_VALUE};
 		gbl_contentPane.rowWeights = new double[]{1.0, 1.0, 0.0, Double.MIN_VALUE};
 		contentPane.setLayout(gbl_contentPane);
 		
-		JLabel lblTableName = new JLabel("Table Name :");
+		JLabel lblTableName = new JLabel("Select table :");
 		lblTableName.setFont(new Font("Calibri", Font.BOLD, 20));
 		GridBagConstraints gbc_lblTableName = new GridBagConstraints();
 		gbc_lblTableName.fill = GridBagConstraints.BOTH;
@@ -55,31 +44,49 @@ public class TableName extends JFrame {
 		gbc_lblTableName.gridy = 1;
 		contentPane.add(lblTableName, gbc_lblTableName);
 		
-		textField = new JTextField();
-		textField.setFont(new Font("Calibri", Font.PLAIN, 20));
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.insets = new Insets(0, 0, 5, 5);
-		gbc_textField.fill = GridBagConstraints.BOTH;
-		gbc_textField.gridx = 3;
-		gbc_textField.gridy = 1;
-		contentPane.add(textField, gbc_textField);
-		textField.setColumns(10);
+		JComboBox<String> comboBox = new JComboBox<String>();
+		GridBagConstraints gbc_comboBox = new GridBagConstraints();
+		gbc_comboBox.gridwidth = 2;
+		gbc_comboBox.insets = new Insets(0, 0, 5, 5);
+		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboBox.gridx = 3;
+		gbc_comboBox.gridy = 1;
+		contentPane.add(comboBox, gbc_comboBox);
+		
+		try {
+			File file = new File("Data/TableIndex.txt");
+			FileReader fileReader = new FileReader(file);
+			BufferedReader bufferedReader = new BufferedReader(fileReader);
+			StringBuffer stringBuffer = new StringBuffer();
+			String line;
+			while ((line = bufferedReader.readLine()) != null) {
+				stringBuffer.append(line);
+				stringBuffer.append("\n");
+				comboBox.addItem(line);
+			}
+			fileReader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		
 		JButton btnOk = new JButton("Ok");
 		btnOk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				if(textField.getText().isEmpty())
+				//if(textField.getText().isEmpty())
+				tnm = comboBox.getSelectedItem().toString();
+				if(comboBox.getSelectedItem().toString().isEmpty())
 				{
 					Object frame;
-					JOptionPane.showMessageDialog(textField,"Please enter Table Name");
+					JOptionPane.showInputDialog(tnm,"Please select a Table");
 				}
 				else
 				{
 					
-					if(GlobalData.allTables.contains(textField.getText()))
+					if(GlobalData.allTables.contains(tnm))
 					{
-						tnm =textField.getText() ;
+						//tnm =textField.getText() ;						
 						switch(OP)
 						{
 						case "Insert":
@@ -96,19 +103,23 @@ public class TableName extends JFrame {
 					}
 					else
 					{
-						JOptionPane.showMessageDialog(textField, "No such Table");
+						JOptionPane.showInputDialog(tnm, "No such Table");
 					}
 					
 				}
 				
 			}
 		});
+		
+
 		btnOk.setFont(new Font("Calibri", Font.BOLD, 20));
 		GridBagConstraints gbc_btnOk = new GridBagConstraints();
 		gbc_btnOk.insets = new Insets(0, 0, 0, 5);
 		gbc_btnOk.gridx = 2;
 		gbc_btnOk.gridy = 2;
 		contentPane.add(btnOk, gbc_btnOk);
+		
+
 	}
 
 }
