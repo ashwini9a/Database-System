@@ -116,6 +116,19 @@ public class DatabaseTable extends JFrame {
 				
 				
 				File file = new File("Data/Metadata/"+tableName+".json");
+				File file2 = new File("Data/Records/"+tableName+".json");
+				FileWriter fw1;
+				try {
+					fw1 = new FileWriter(file2.getAbsoluteFile());
+					BufferedWriter bw1 = new BufferedWriter(fw1);
+					bw1.write("{Records:[]}");
+					bw1.flush();
+					bw1.close();
+				} catch (IOException e3) {
+					// TODO Auto-generated catch block
+					e3.printStackTrace();
+				}
+				
 				FileWriter fw = null;
 				BufferedWriter bw = null;
 				

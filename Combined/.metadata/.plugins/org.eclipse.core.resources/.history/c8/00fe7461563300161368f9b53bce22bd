@@ -1,0 +1,99 @@
+package Screens;
+
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Set;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+
+public class InsertWindow extends JFrame {
+
+	
+	
+	String tableName;
+
+	/**
+	 * Launch the application.
+	 */
+	
+	public InsertWindow(String S, String TN) {
+		super(S);
+		tableName=TN;
+		int size = 0;
+		setLayout(new GridLayout(2, 1));
+		JPanel P1 =new JPanel();
+		JPanel P2 =new JPanel();
+		setBounds(100, 100, 450, 250);
+		JSONParser parser = new JSONParser();
+		try {
+			Object obj = parser.parse(new FileReader("Data/Metadata/"+tableName+".json"));
+			JSONObject json = (JSONObject) obj;
+			
+			JSONArray headers = (JSONArray) json.get("headers");
+			size=headers.size();
+			P1.setLayout(new GridLayout(headers.size(), 2));
+			JTextArea[] text=new JTextArea[headers.size()];
+			String[] colnm = new String[headers.size()];
+			for (int i = 0; i < headers.size(); i++) {
+				Object temp = parser.parse(headers.get(i).toString());
+				JSONObject temp1 = (JSONObject) temp;
+				System.out.println((String) temp1.get("Column Name"));
+				JLabel Col = new JLabel("  "+(String) temp1.get("Column Name")+" : ");
+				text[i] =new JTextArea();
+				P1.add(Col);
+				P1.add(text[i]);
+			}
+
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		
+	
+		JButton ok =new JButton("Ok");
+		ok.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				for(int j=0;j<size;j++)
+				{
+					
+				}
+				dispose();
+			}
+		});
+		
+		P2.add(ok);
+		add(P1);
+		add(P2);
+			
+		setVisible(true);
+
+	}
+	
+}

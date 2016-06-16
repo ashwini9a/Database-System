@@ -36,8 +36,9 @@ public class Ops extends JFrame {
 		JButton btnNewButton_1 = new JButton("Insert");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				InsertWindow IW = new InsertWindow("Insert Tuple");
-				IW.setVisible(true);
+				TableName frame = new TableName("Table Name","Insert");
+				frame.setVisible(true);
+				
 			}
 		});
 		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
