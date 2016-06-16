@@ -96,7 +96,7 @@ public class TableName extends JFrame {
 							break;
 						case "Update":
 							break;
-						case "Search":
+						case "":
 							break;
 						}
 						dispose();
@@ -120,102 +120,6 @@ public class TableName extends JFrame {
 		contentPane.add(btnOk, gbc_btnOk);
 		
 
-	}
-	public TableName(String S){
-
-		super(S);
-		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 250);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		GridBagLayout gbl_contentPane = new GridBagLayout();
-		gbl_contentPane.columnWidths = new int[]{63, 118, 0, 121, 163, 0};
-		gbl_contentPane.rowHeights = new int[]{65, 0, 121, 0};
-		gbl_contentPane.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, 1.0, Double.MIN_VALUE};
-		gbl_contentPane.rowWeights = new double[]{1.0, 1.0, 0.0, Double.MIN_VALUE};
-		contentPane.setLayout(gbl_contentPane);
-		
-		JLabel lblTableName = new JLabel("Select table :");
-		lblTableName.setFont(new Font("Calibri", Font.BOLD, 20));
-		GridBagConstraints gbc_lblTableName = new GridBagConstraints();
-		gbc_lblTableName.fill = GridBagConstraints.BOTH;
-		gbc_lblTableName.insets = new Insets(0, 0, 5, 5);
-		gbc_lblTableName.gridx = 1;
-		gbc_lblTableName.gridy = 1;
-		contentPane.add(lblTableName, gbc_lblTableName);
-		
-		JComboBox<String> comboBox = new JComboBox<String>();
-		GridBagConstraints gbc_comboBox = new GridBagConstraints();
-		gbc_comboBox.gridwidth = 2;
-		gbc_comboBox.insets = new Insets(0, 0, 5, 5);
-		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
-		gbc_comboBox.gridx = 3;
-		gbc_comboBox.gridy = 1;
-		contentPane.add(comboBox, gbc_comboBox);
-		
-		try {
-			File file = new File("Data/TableIndex.txt");
-			FileReader fileReader = new FileReader(file);
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-			StringBuffer stringBuffer = new StringBuffer();
-			String line;
-			while ((line = bufferedReader.readLine()) != null) {
-				stringBuffer.append(line);
-				stringBuffer.append("\n");
-				comboBox.addItem(line);
-			}
-			fileReader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		
-		JButton btnOk = new JButton("Ok");
-		btnOk.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				//if(textField.getText().isEmpty())
-				tnm = comboBox.getSelectedItem().toString();
-				if(comboBox.getSelectedItem().toString().isEmpty())
-				{
-					Object frame;
-					JOptionPane.showInputDialog(tnm,"Please select a Table");
-				}
-				else
-				{
-					
-					if(GlobalData.allTables.contains(tnm))
-					{
-						//tnm =textField.getText() ;						
-						try {
-							GlobalData.deleteTableFile(tnm);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						dispose();
-					}
-					else
-					{
-						JOptionPane.showInputDialog(tnm, "No such Table");
-					}
-					
-				}
-				
-			}
-		});
-		
-
-		btnOk.setFont(new Font("Calibri", Font.BOLD, 20));
-		GridBagConstraints gbc_btnOk = new GridBagConstraints();
-		gbc_btnOk.insets = new Insets(0, 0, 0, 5);
-		gbc_btnOk.gridx = 2;
-		gbc_btnOk.gridy = 2;
-		contentPane.add(btnOk, gbc_btnOk);
-		
-
-	
 	}
 
 }

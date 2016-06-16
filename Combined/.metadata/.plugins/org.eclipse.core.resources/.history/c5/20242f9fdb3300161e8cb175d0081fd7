@@ -49,8 +49,6 @@ public class Home extends JFrame {
 		btnDelete.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				TableName Tfm = new TableName("Delete Table");
-				Tfm.setVisible(true);
 			}
 		});
 		

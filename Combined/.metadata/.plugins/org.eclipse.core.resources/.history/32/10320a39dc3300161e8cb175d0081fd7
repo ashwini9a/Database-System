@@ -96,7 +96,7 @@ public class TableName extends JFrame {
 							break;
 						case "Update":
 							break;
-						case "Search":
+						case "":
 							break;
 						}
 						dispose();

@@ -33,7 +33,7 @@ public class DisplayRecords {
 					
 					// populate records in the table
 					window.frame.setTitle(tableName);
-					window.populateRecords("test.json");
+					window.populateRecords("Data/Records/"+tableName+".json");
 					
 					window.frame.setVisible(true);
 					//display all the records of this table
@@ -52,9 +52,9 @@ public class DisplayRecords {
 		JSONParser parser = new JSONParser();		
 		try{
 			
-			Object obj = parser.parse(new FileReader("test.json"));
+			Object obj = parser.parse(new FileReader(name));
 			JSONObject json = (JSONObject) obj;
-			JSONArray headers = (JSONArray)json.get("records");
+			JSONArray headers = (JSONArray)json.get("Records");
 			System.out.println(headers.toString());
 			
 		

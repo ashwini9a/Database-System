@@ -96,7 +96,7 @@ public class TableName extends JFrame {
 							break;
 						case "Update":
 							break;
-						case "Search":
+						case "":
 							break;
 						}
 						dispose();
@@ -188,12 +188,7 @@ public class TableName extends JFrame {
 					if(GlobalData.allTables.contains(tnm))
 					{
 						//tnm =textField.getText() ;						
-						try {
-							GlobalData.deleteTableFile(tnm);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						GlobalData.deleteTableFile(tnm);
 						dispose();
 					}
 					else
