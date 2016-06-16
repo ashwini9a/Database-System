@@ -122,7 +122,7 @@ public class DatabaseTable extends JFrame {
 				try {
 					fw1 = new FileWriter(file2.getAbsoluteFile());
 					BufferedWriter bw1 = new BufferedWriter(fw1);
-					bw1.write("{\"Records\":[]}");
+					bw1.write("{Records:[]}");
 					bw1.flush();
 					bw1.close();
 				} catch (IOException e3) {

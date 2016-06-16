@@ -1,0 +1,53 @@
+package Screens;
+
+import java.awt.GridLayout;
+import java.io.FileReader;
+
+import javax.swing.JLabel;
+import javax.swing.JTextArea;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+public class OperationFunctions {
+	
+	public static void insertInTable(String tnm,JSONObject json)
+	{
+		try {
+			Object obj = parser.parse(new FileReader("Data/Metadata/"+tnm+".json"));
+			JSONObject json = (JSONObject) obj;
+			
+			JSONArray headers = (JSONArray) json.get("headers");
+			
+			P1.setLayout(new GridLayout(headers.size(), 2));
+			text=new JTextArea[headers.size()];
+			colnm = new String[headers.size()];
+			for (int i = 0; i < headers.size(); i++) {
+				Object temp = parser.parse(headers.get(i).toString());
+				JSONObject temp1 = (JSONObject) temp;
+				colnm[i] = (String) temp1.get("Column Name");
+				System.out.println((String) temp1.get("Column Name"));
+				JLabel Col = new JLabel("  "+(String) temp1.get("Column Name")+" : ");
+				text[i] =new JTextArea();
+				P1.add(Col);
+				P1.add(text[i]);
+			}
+
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+	}
+	public static void updateInTable(String tnm,JSONObject json)
+	{
+		
+	}
+	public static void deleteInTable(String tnm,JSONObject json)
+	{
+		
+	}
+
+}

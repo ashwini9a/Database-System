@@ -1,1 +1,1 @@
-{"headers":[{"Null":false,"Data Type":"INT","Unique":false,"Column Name":"dxdc","Key":true},{"Null":false,"Data Type":"VARCHAR","Unique":false,"Column Name":"jhdfdjk","Key":false}]}
+{"headers":[{"Null":false,"Data Type":"INT","Unique":false,"Column Name":"ID","Key":true},{"Null":false,"Data Type":"VARCHAR","Unique":false,"Column Name":"Name","Key":false}]}

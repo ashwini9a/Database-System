@@ -22,13 +22,25 @@ public class OperationFunctions {
 		
 		JSONParser parser = new JSONParser();
 		try {
-			
+			//System.out.println("here2");
+			//System.out.println(json.toJSONString());
 			Object obj = parser.parse(new FileReader("Data/Records/"+tnm+".json"));
 			JSONObject json1 = (JSONObject) obj;
 			//System.out.println("here3");
 			
 			JSONArray headers = (JSONArray) json1.get("Records");
-		
+		//	System.out.println(headers.size());
+		//	System.out.println(headers.toString());
+			headers.add(json);
+		//	System.out.println(headers.size());
+		//	System.out.println(headers.toString());
+//			colnmI = new String[headers.size()];
+//			for (int i = 0; i < headers.size(); i++) {
+//				Object temp = parser.parse(headers.get(i).toString());
+//				JSONObject temp1 = (JSONObject) temp;
+//			//	System.out.println((String)temp1.get("ID"));
+//			//	colnmI[i] = (String) temp1.get("Column Name");
+//			}
 			System.out.println(json1.toJSONString());
 			File file = new File("Data/Records/"+tnm+".json");
 			FileWriter fw = null;

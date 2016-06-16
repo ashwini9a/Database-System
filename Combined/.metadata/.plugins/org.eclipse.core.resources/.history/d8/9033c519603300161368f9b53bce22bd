@@ -61,14 +61,13 @@ public class InsertWindow extends JFrame {
 			JSONArray headers = (JSONArray) json.get("headers");
 			
 			P1.setLayout(new GridLayout(headers.size(), 2));
-			size= headers.size();
 			text=new JTextArea[headers.size()];
 			colnm = new String[headers.size()];
 			for (int i = 0; i < headers.size(); i++) {
 				Object temp = parser.parse(headers.get(i).toString());
 				JSONObject temp1 = (JSONObject) temp;
 				colnm[i] = (String) temp1.get("Column Name");
-				//System.out.println((String) temp1.get("Column Name"));
+				System.out.println((String) temp1.get("Column Name"));
 				JLabel Col = new JLabel("  "+(String) temp1.get("Column Name")+" : ");
 				text[i] =new JTextArea();
 				P1.add(Col);
@@ -89,8 +88,7 @@ public class InsertWindow extends JFrame {
 				JSONObject json1 = new JSONObject();
 				for(int j=0;j<size;j++)
 				{
-					System.out.println("Data"+colnm[j]+" "+text[j].getText());
-					json1.put(colnm[j], text[j].getText());
+					json1.put(colnm[j], text[j]);
 					
 				}
 				System.out.println(json1.toString());

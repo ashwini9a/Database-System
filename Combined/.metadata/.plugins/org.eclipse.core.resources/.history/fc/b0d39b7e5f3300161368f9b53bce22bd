@@ -1,11 +1,7 @@
 package Screens;
 
 import java.awt.GridLayout;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.util.Iterator;
 
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
@@ -22,24 +18,25 @@ public class OperationFunctions {
 		
 		JSONParser parser = new JSONParser();
 		try {
-			
+			System.out.println("here2");
 			Object obj = parser.parse(new FileReader("Data/Records/"+tnm+".json"));
 			JSONObject json1 = (JSONObject) obj;
-			//System.out.println("here3");
+			System.out.println("here3");
 			
 			JSONArray headers = (JSONArray) json1.get("Records");
-		
-			System.out.println(json1.toJSONString());
-			File file = new File("Data/Records/"+tnm+".json");
-			FileWriter fw = null;
-			BufferedWriter bw = null;
-			fw = new FileWriter(file.getAbsoluteFile());
-			bw = new BufferedWriter(fw);
-			
-		      
-		      bw.write(json1.toJSONString());
-		      bw.flush();
-		      bw.close();
+			System.out.println(headers.size());
+			System.out.println(headers.toString());
+			headers.add(json);
+			System.out.println(headers.size());
+			System.out.println(headers.toString());
+//			colnmI = new String[headers.size()];
+			for (int i = 0; i < headers.size(); i++) {
+				Object temp = parser.parse(headers.get(i).toString());
+				JSONObject temp1 = (JSONObject) temp;
+				System.out.println(temp1.toJSONString());
+			//	colnmI[i] = (String) temp1.get("Column Name");
+			}
+
 			
 		} catch (Exception e) {
 			
