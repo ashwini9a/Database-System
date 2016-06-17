@@ -55,13 +55,17 @@ public class Home extends JFrame {
 		});
 		
 		JButton btnCreate = new JButton("Create");
+		btnCreate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 			
 		btnCreate.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
 					
-					DatabaseTable frame = new DatabaseTable();
+					CreateTable frame = new CreateTable();
 					frame.setTitle("Create Table");
 					frame.setVisible(true);
 					
@@ -71,6 +75,7 @@ public class Home extends JFrame {
 				
 			}
 		});
+		
 		GridBagConstraints gbc_btnCreate = new GridBagConstraints();
 		gbc_btnCreate.fill = GridBagConstraints.BOTH;
 		gbc_btnCreate.insets = new Insets(0, 0, 5, 5);

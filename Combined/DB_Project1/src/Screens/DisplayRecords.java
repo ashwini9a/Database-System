@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Set;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -35,7 +37,7 @@ public class DisplayRecords {
 					window.frame.setTitle(tableName);
 					window.populateRecords("Data/Records/"+tableName+".json");
 					
-					window.frame.setVisible(true);
+					
 					//display all the records of this table
 					
 					
@@ -57,7 +59,12 @@ public class DisplayRecords {
 			JSONArray headers = (JSONArray)json.get("Records");
 			System.out.println(headers.toString());
 			
-		
+		    if(headers.size() == 0){
+		    	
+		    	JOptionPane.showMessageDialog(null, "No Records to Display", "Warning", JOptionPane.INFORMATION_MESSAGE);
+		    	
+		    }else{
+		    
 			Object temp = parser.parse(headers.get(0).toString());
 			JSONObject currJson = (JSONObject)temp;
 			 
@@ -91,8 +98,7 @@ public class DisplayRecords {
 				for(String key : keys){					
 					  data[index] =  currJson.get(key);			
 					  index++;
-				}
-				
+				}				
 				tableModel.addRow(data);
 			}
 			
@@ -103,8 +109,10 @@ public class DisplayRecords {
 			scrollPane.setPreferredSize(new Dimension(468,100));
 			frame.getContentPane().add(scrollPane);
 			
-			//frame.pack();
+			this.frame.setVisible(true);
 			
+			//frame.pack();
+		  }	
 		
 		}catch (FileNotFoundException e) {
 			//System.out.println("FileNotFoundException");
