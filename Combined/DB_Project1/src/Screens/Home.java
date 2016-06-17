@@ -39,7 +39,7 @@ public class Home extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		
-		JButton btnCreate = new JButton("Create");
+		JButton btnCreate = new JButton("Create Table");
 		btnCreate.setBounds(160, 74, 126, 23);
 		btnCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -63,15 +63,15 @@ public class Home extends JFrame {
 		});
 		contentPane.setLayout(null);
 		
-		JLabel lblMenu = new JLabel("   Menu ");
-		lblMenu.setFont(new Font("Times New Roman", Font.PLAIN, 12));
+		JLabel lblMenu = new JLabel("   MENU ");
+		lblMenu.setFont(new Font("Times New Roman", Font.BOLD, 19));
 		lblMenu.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMenu.setBackground(Color.LIGHT_GRAY);
-		lblMenu.setBounds(167, 27, 106, 14);
+		lblMenu.setBounds(169, 28, 106, 14);
 		contentPane.add(lblMenu);
 		contentPane.add(btnCreate);
 		
-		JButton btnListselect = new JButton("List/Select");
+		JButton btnListselect = new JButton("Browse Tables");
 		btnListselect.setBounds(160, 132, 126, 23);
 		btnListselect.addMouseListener(new MouseAdapter() {
 			@Override
@@ -86,8 +86,8 @@ public class Home extends JFrame {
 		});
 		contentPane.add(btnListselect);
 		
-		JButton btnOperations = new JButton("Operations");
-		btnOperations.setBounds(160, 190, 126, 23);
+		JButton btnOperations = new JButton(" Tuple Operations");
+		btnOperations.setBounds(153, 190, 142, 23);
 		btnOperations.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -101,6 +101,7 @@ public class Home extends JFrame {
 				}
 			}
 		});
+		
 		contentPane.add(btnOperations);
 		
 		/*JButton btnDelete = new JButton("Delete");
