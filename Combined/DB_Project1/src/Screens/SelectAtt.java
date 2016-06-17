@@ -6,6 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Set;
+
+import javax.swing.DefaultCellEditor;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -14,10 +17,13 @@ import org.json.simple.parser.ParseException;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 public class SelectAtt extends JFrame {
 
-	private JTable table = new JTable();;
+	private JTable table;
 
 	/**
 	 * Create the application.
@@ -41,20 +47,32 @@ public class SelectAtt extends JFrame {
 			JSONObject currJson = (JSONObject) temp;
 
 			Set<String> keys = currJson.keySet();
-			String[] columnNames = keys.toArray(new String[keys.size()]);
-			//columnNames[keys.size()]="include?";
-			
+			String[] tempArr = keys.toArray(new String[keys.size()]);
+
+			String[] columnNames = new String[tempArr.length + 1];
+			for (int i = 0; i < tempArr.length; i++) {
+				columnNames[i] = tempArr[i];
+			}
+			columnNames[tempArr.length] = "include?";
+
 			// table.setBounds(427, 0, -424, 83);
 
-			table.setModel(new DefaultTableModel(new Object[][] {}, columnNames) {
+			table = new JTable();
 
+			table.setModel(new DefaultTableModel(new Object[][] {}, columnNames) {
 				@Override
 				public boolean isCellEditable(int row, int col) {
-
-					return false;
+					if (col == columnNames.length - 1)
+						return true;
+					else
+						return false;
 				}
-
 			});
+
+			table.getColumn("include?").setCellEditor(new DefaultCellEditor(new JCheckBox()));
+			table.setEditingColumn(columnNames.length);
+			TableColumnModel tcm = table.getColumnModel();
+
 
 			DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
 
@@ -69,7 +87,7 @@ public class SelectAtt extends JFrame {
 					data[index] = currJson.get(key);
 					index++;
 				}
-				//data[columnNames.length]="include?";
+				// data[index]=false;
 				tableModel.addRow(data);
 			}
 
@@ -79,7 +97,6 @@ public class SelectAtt extends JFrame {
 			scrollPane.setViewportView(table);
 			scrollPane.setPreferredSize(new Dimension(468, 100));
 			this.getContentPane().add(scrollPane);
-
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
