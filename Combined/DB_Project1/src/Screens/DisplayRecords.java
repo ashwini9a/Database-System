@@ -2,10 +2,15 @@ package Screens;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Set;
+
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -140,7 +145,35 @@ public class DisplayRecords {
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
+		frame = new JFrame();
+		frame.setBounds(100, 100, 800, 300);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
 		
+		JButton btnNewButton = new JButton("Delete");
+		btnNewButton.setFont(new Font("Times New Roman", Font.PLAIN, 13));
+		btnNewButton.addActionListener(new ActionListener() {
+			  public void actionPerformed(ActionEvent e){					  
+				  //delete record from the table				  
+				  if(table.getRowCount() > 0){
+					   //check if a row is selected:
+					   int selectedRow = table.getSelectedRow();
+					   if(selectedRow == -1){
+						    JOptionPane.showMessageDialog(null, "Please select a record to delete", "Error", JOptionPane.ERROR_MESSAGE);
+						   //JOptionPane.showMessageDialog(null,"Please select a record to delete");						   
+					   }else{						   
+						   DefaultTableModel dm = (DefaultTableModel)table.getModel();
+						   dm.removeRow(table.getSelectedRow());
+					   }					  
+				       //
+				  }else{					  
+					  //show dialog box
+					  JOptionPane.showMessageDialog(null,"No records to delete","Warning",JOptionPane.WARNING_MESSAGE);					 					  
+				  }
+			}
+		});
 		
+		btnNewButton.setBounds(685, 201, 89, 23);
+		frame.getContentPane().add(btnNewButton);		
 	}
 }
