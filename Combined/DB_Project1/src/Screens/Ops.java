@@ -14,6 +14,8 @@ import java.awt.event.ActionEvent;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import javax.swing.JLabel;
+import java.awt.Font;
 
 public class Ops extends JFrame {
 
@@ -26,54 +28,39 @@ public class Ops extends JFrame {
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		setContentPane(contentPane);
-		GridBagLayout gbl_contentPane = new GridBagLayout();
-		gbl_contentPane.columnWidths = new int[]{38, 110, 147, 100, 0};
-		gbl_contentPane.rowHeights = new int[]{20, 80, 35, 75, 0};
-		gbl_contentPane.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		contentPane.setLayout(gbl_contentPane);
 		
 		JButton btnNewButton_1 = new JButton("Insert");
+		btnNewButton_1.setFont(new Font("Times New Roman", Font.PLAIN, 12));
+		btnNewButton_1.setBounds(165, 76, 105, 23);
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				TableName frame = new TableName("Table Name","Insert");
+				TableName frame = new TableName("Select Table","Insert");
 				frame.setVisible(true);
 				
 			}
 		});
-		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
-		gbc_btnNewButton_1.fill = GridBagConstraints.BOTH;
-		gbc_btnNewButton_1.insets = new Insets(0, 0, 5, 5);
-		gbc_btnNewButton_1.gridx = 1;
-		gbc_btnNewButton_1.gridy = 1;
-		contentPane.add(btnNewButton_1, gbc_btnNewButton_1);
+		contentPane.setLayout(null);
+		contentPane.add(btnNewButton_1);
 		
 		JButton btnNewButton_2 = new JButton("Update");
+		btnNewButton_2.setFont(new Font("Times New Roman", Font.PLAIN, 12));
+		btnNewButton_2.setBounds(165, 122, 105, 23);
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				TableName frame = new TableName("Select Table","Update");
+				frame.setVisible(true);			
 			}
 		});
-		GridBagConstraints gbc_btnNewButton_2 = new GridBagConstraints();
-		gbc_btnNewButton_2.fill = GridBagConstraints.BOTH;
-		gbc_btnNewButton_2.insets = new Insets(0, 0, 5, 0);
-		gbc_btnNewButton_2.gridx = 3;
-		gbc_btnNewButton_2.gridy = 1;
-		contentPane.add(btnNewButton_2, gbc_btnNewButton_2);
-		
-		JButton btnNewButton_3 = new JButton("Delete");
-		GridBagConstraints gbc_btnNewButton_3 = new GridBagConstraints();
-		gbc_btnNewButton_3.fill = GridBagConstraints.BOTH;
-		gbc_btnNewButton_3.insets = new Insets(0, 0, 0, 5);
-		gbc_btnNewButton_3.gridx = 1;
-		gbc_btnNewButton_3.gridy = 3;
-		contentPane.add(btnNewButton_3, gbc_btnNewButton_3);
+		contentPane.add(btnNewButton_2);
 		
 		JButton btnNewButton_4 = new JButton("Search");
-		GridBagConstraints gbc_btnNewButton_4 = new GridBagConstraints();
-		gbc_btnNewButton_4.fill = GridBagConstraints.BOTH;
-		gbc_btnNewButton_4.gridx = 3;
-		gbc_btnNewButton_4.gridy = 3;
-		contentPane.add(btnNewButton_4, gbc_btnNewButton_4);
+		btnNewButton_4.setFont(new Font("Times New Roman", Font.PLAIN, 12));
+		btnNewButton_4.setBounds(165, 168, 105, 23);
+		contentPane.add(btnNewButton_4);
+		
+		JLabel lblMenu = new JLabel("    MENU");
+		lblMenu.setFont(new Font("Times New Roman", Font.BOLD, 19));
+		lblMenu.setBounds(165, 31, 105, 23);
+		contentPane.add(lblMenu);
 	}
-
 }
