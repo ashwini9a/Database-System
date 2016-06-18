@@ -39,20 +39,19 @@ public class InsertWindow extends JFrame {
 		try {
 			
 			Object obj = parser.parse(new FileReader("Data/Metadata/"+tableName+".json"));
-			JSONObject json = (JSONObject) obj;
-			
-			JSONArray headers = (JSONArray) json.get("headers");
-			
+			JSONObject json = (JSONObject) obj;			
+			JSONArray headers = (JSONArray) json.get("headers");			
 			P1.setLayout(new GridLayout(headers.size(), 2));
 			//P1.setMaximumSize(new Dimension(100, 50));
 			
-			size= headers.size();
+			size = headers.size();
 			
 			text = new JTextField[headers.size()];
 			
 			colnm = new String[headers.size()];
 			
-			for (int i = 0; i < headers.size(); i++) {
+			for (int i = 0; i < headers.size(); i++){
+				
 				Object temp = parser.parse(headers.get(i).toString());
 				JSONObject temp1 = (JSONObject) temp;
 				colnm[i] = (String) temp1.get("Column Name");
@@ -60,8 +59,6 @@ public class InsertWindow extends JFrame {
 				JLabel Col = new JLabel("  "+(String) temp1.get("Column Name")+" : ");
 				
 				JTextField textField = new JTextField();
-				
-				///textField.setMaximumSize(new Dimension(100, 5));
 				
 				text[i] = textField;
 				P1.add(Col);
@@ -72,6 +69,7 @@ public class InsertWindow extends JFrame {
 		}
 	
 		JButton ok =new JButton("Ok");
+		
 		ok.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {

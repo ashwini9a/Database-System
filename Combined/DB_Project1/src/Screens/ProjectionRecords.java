@@ -2,19 +2,13 @@ package Screens;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
-
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -123,8 +117,7 @@ public class ProjectionRecords {
 				frame.getContentPane().add(scrollPane);
 
 				this.frame.setVisible(true);
-
-				// frame.pack();
+				
 			}
 
 		} catch (FileNotFoundException e) {
@@ -192,14 +185,11 @@ public class ProjectionRecords {
 				scrollPane.setViewportView(table);
 				scrollPane.setPreferredSize(new Dimension(468, 100));
 				frame.getContentPane().add(scrollPane);
+                this.frame.setVisible(true);
 
-				this.frame.setVisible(true);
-
-				// frame.pack();
 			}
 
-		} catch (FileNotFoundException e) {
-			// System.out.println("FileNotFoundException");
+		} catch (FileNotFoundException e){
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -223,10 +213,5 @@ public class ProjectionRecords {
 		frame.setBounds(100, 100, 738, 300);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-
-		//frame = new JFrame();
-		//frame.setBounds(100, 100, 800, 300);
-		//frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		//frame.getContentPane().setLayout(null);
 	}
 }

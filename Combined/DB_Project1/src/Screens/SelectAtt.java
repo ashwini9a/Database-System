@@ -83,7 +83,6 @@ public class SelectAtt extends JFrame {
 			});
 
 			DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
-
 			for (int i = 0; i < headers.size(); i++) {
 				temp = parser.parse(headers.get(i).toString());
 				currJson = (JSONObject) temp;
@@ -96,7 +95,6 @@ public class SelectAtt extends JFrame {
 				}
 
 				data[tempArr.length] = Boolean.FALSE;
-
 				tableModel.addRow(data);
 			}
 

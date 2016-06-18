@@ -161,13 +161,9 @@ public class DisplayRecords {
 							     }
 						   }
 						   
-						   String value = (String)dm.getValueAt(index, colIndex);
-						   
-						   dm.removeRow(index);						  
-						   //search for this key in json and delete						   
+						   String value = (String)dm.getValueAt(index, colIndex);						   
+						   dm.removeRow(index);						  					   
 						   System.out.println("ColIndex: "+colIndex);						   
-						   // get value at that row and column
-						   
 						   String tableName =  frame.getTitle();
 						   deleteRecordFromJson(key,value,tableName);
 						 
@@ -187,8 +183,7 @@ public class DisplayRecords {
 	
 	
 	protected void deleteRecordFromJson(String key, String value, String tableName) {
-		// TODO Auto-generated method stub
-		
+
 		JSONParser parser = new JSONParser();	
 		
 		try{
@@ -232,10 +227,5 @@ public class DisplayRecords {
 		} 	
 		
 	}
-
-
-
-	
-	
 	
 }

@@ -56,6 +56,7 @@ public class TableName extends JFrame {
 		contentPane.add(comboBox, gbc_comboBox);
 		
 		try {
+			
 			File file = new File("Data/TableIndex.txt");
 			FileReader fileReader = new FileReader(file);
 			BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -176,8 +177,7 @@ public class TableName extends JFrame {
 		//btnOk.setBounds(205, 128, 57, 26);
 		btnOk.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				//if(textField.getText().isEmpty())
+			public void mouseClicked(MouseEvent arg0){
 				tnm = comboBox.getSelectedItem().toString();
 				if(comboBox.getSelectedItem().toString().isEmpty())
 				{
@@ -185,9 +185,8 @@ public class TableName extends JFrame {
 					JOptionPane.showInputDialog(tnm,"Please select a Table");
 				}
 				else
-				{
-					
-					if(GlobalData.allTables.contains(tnm))
+				{					
+				 if(GlobalData.allTables.contains(tnm))
 					{
 						//tnm =textField.getText() ;						
 						try {
@@ -206,12 +205,9 @@ public class TableName extends JFrame {
 			}
 		});
 		
-
 		btnOk.setFont(new Font("Times New Roman", Font.PLAIN, 11));
 		contentPane.add(btnOk);
 		
-
-	
 	}
 
 }

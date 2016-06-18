@@ -134,9 +134,7 @@ public class SearchDisplay extends JFrame{
 			obj = parser.parse(new FileReader("Data/MetaData/" + tableName + ".json"));
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray) json.get("headers");
-			
-	    	//columnTypes = new String[headers.size()];
-	    	
+		
 	    	for(int i = 0 ; i < headers.size(); i++){
 	    		
 	    		Object temp = parser.parse(headers.get(i).toString());
@@ -145,14 +143,11 @@ public class SearchDisplay extends JFrame{
 				String columnName = (String) temp1.get("Column Name");
 				
 				columnDataType.put(columnName, dataType);
-				
 				System.out.println("Data Types: "+columnDataType);
-				
-	    	       	
+					    	       	
 	    	}
 	    	
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+		} catch (FileNotFoundException e){
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
