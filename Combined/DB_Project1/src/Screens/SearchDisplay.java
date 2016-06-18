@@ -2,7 +2,9 @@ package Screens;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +17,8 @@ import javax.swing.JPanel;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -25,10 +29,12 @@ public class SearchDisplay extends JFrame{
 	private JPanel contentPane;
     String [] columnNames = null;
     private JTable table;
+    HashMap<String,String> columnDataType;
 	
 	/**
 	 * Launch the application.
 	 */
+    
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -46,11 +52,9 @@ public class SearchDisplay extends JFrame{
 	 * Create the frame.
 	 */
 	
-	public SearchDisplay(HashMap<String,HashMap<String,String>> dataMap,boolean keySelected,String keyColumn,String tableName){
-		
-		//System.out.println("In search display");		
-		//System.out.println("KeySelected: "+keySelected);
-		
+	public SearchDisplay(HashMap<String,HashMap<String,String>> dataMap, boolean keySelected,
+			             String keyColumn,String tableName){
+	
 		setBounds(100, 100, 577, 374);
 		contentPane = new JPanel();
 		//contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -61,28 +65,45 @@ public class SearchDisplay extends JFrame{
 	   
 		//search for record in json
 		List<HashMap<String,String>> results = null;
+		
 		if(keySelected && dataMap.size() == 1)
-			results = getResultsBasedOnKey(dataMap,keySelected,keyColumn,tableName);
-		else{
-		   //get records for based on all columns selected			
-		   results = getResults(dataMap,tableName);
-			
+		   results = getResultsBasedOnKey(dataMap,keySelected,keyColumn,tableName);
+		else{	
+		   results = getResults(dataMap,tableName);			
 		}
-		
-		//set the columnClass for sorting behaviour
-		
-		//String [] columnClass = getDataTypes(tableName);
 						
 		// save the results in Jtable
 		table = new JTable();
-		table.setModel(new DefaultTableModel(new Object[][]{},columnNames){				
+		
+		table.setModel(new DefaultTableModel(new Object[][]{},columnNames){	
+			
     		@Override
     		public boolean isCellEditable(int row, int col){		
     			return false;
-    		}				
+    		}
+    		
+    		public Class<?> getColumnClass(int columnIndex){
+    			
+				String columnName = getColumnName(columnIndex);
+				
+				String dataType  = columnDataType.get(columnName);
+				
+				if("VARCHAR".equals(dataType))
+					 return String.class;
+				else if("INT".equals(dataType))
+					 return Integer.class;
+				else if("FLOAT".equals(dataType))
+					 return BigDecimal.class;
+
+				return String.class;
+
+			}    		
     	});
 		
+		
 		if(results.size() > 0){
+			// set data types for the columns
+			getDataTypes(tableName);
 			populateTable(results);
 			table.setFillsViewportHeight(true);
 			table.setAutoCreateRowSorter(true);
@@ -99,19 +120,49 @@ public class SearchDisplay extends JFrame{
 	
 	
 	
-	/*private String[] getDataTypes(String tableName){
+	private void getDataTypes(String tableName){
 				
-		JSONParser parser = new JSONParser();
+	 JSONParser parser = new JSONParser();	 
+	 //String [] columnTypes = null;
+	 
+	 columnDataType = new HashMap<String,String>();
+	 
+	 Object obj;
+	 
+		try {
+			
+			obj = parser.parse(new FileReader("Data/MetaData/" + tableName + ".json"));
+			JSONObject json = (JSONObject) obj;
+			JSONArray headers = (JSONArray) json.get("headers");
+			
+	    	//columnTypes = new String[headers.size()];
+	    	
+	    	for(int i = 0 ; i < headers.size(); i++){
+	    		
+	    		Object temp = parser.parse(headers.get(i).toString());
+				JSONObject temp1 = (JSONObject) temp;			
+				String dataType = (String) temp1.get("Data Type");
+				String columnName = (String) temp1.get("Column Name");
+				
+				columnDataType.put(columnName, dataType);
+				
+				System.out.println("Data Types: "+columnDataType);
+				
+	    	       	
+	    	}
+	    	
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e){
+			e.printStackTrace();
+		}
 		
-		Object obj = parser.parse(new FileReader("Data/MetaData/" + tableName + ".json"));
-		JSONObject json = (JSONObject) obj;
-		JSONArray headers = (JSONArray) json.get("headers");
+		//return columnTypes;
 		
-		
-		
-		
-		
-	}*/
+	}
 	
 	
 	private List<HashMap<String,String>> getResults(HashMap<String, HashMap<String, String>> dataMap,
