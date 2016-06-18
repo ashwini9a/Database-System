@@ -46,12 +46,10 @@ public class SearchDisplay extends JFrame{
 	 * Create the frame.
 	 */
 	
-	public SearchDisplay(HashMap<String,HashMap<String,String>> dataMap, 
-			boolean keySelected,String keyColumn,String tableName){
+	public SearchDisplay(HashMap<String,HashMap<String,String>> dataMap,boolean keySelected,String keyColumn,String tableName){
 		
-		System.out.println("In search display");
-		
-		System.out.println("KeySelected: "+keySelected);
+		//System.out.println("In search display");		
+		//System.out.println("KeySelected: "+keySelected);
 		
 		setBounds(100, 100, 577, 374);
 		contentPane = new JPanel();
@@ -71,7 +69,10 @@ public class SearchDisplay extends JFrame{
 			
 		}
 		
-				
+		//set the columnClass for sorting behaviour
+		
+		//String [] columnClass = getDataTypes(tableName);
+						
 		// save the results in Jtable
 		table = new JTable();
 		table.setModel(new DefaultTableModel(new Object[][]{},columnNames){				
@@ -95,6 +96,22 @@ public class SearchDisplay extends JFrame{
 			JOptionPane.showMessageDialog(null, "No Records Match Criteria", "Message", JOptionPane.INFORMATION_MESSAGE);			
 		}
 	}
+	
+	
+	
+	/*private String[] getDataTypes(String tableName){
+				
+		JSONParser parser = new JSONParser();
+		
+		Object obj = parser.parse(new FileReader("Data/MetaData/" + tableName + ".json"));
+		JSONObject json = (JSONObject) obj;
+		JSONArray headers = (JSONArray) json.get("headers");
+		
+		
+		
+		
+		
+	}*/
 	
 	
 	private List<HashMap<String,String>> getResults(HashMap<String, HashMap<String, String>> dataMap,
