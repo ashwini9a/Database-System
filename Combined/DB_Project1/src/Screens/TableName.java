@@ -11,7 +11,7 @@ public class TableName extends JFrame {
 
 	private JPanel contentPane;
 	public String tnm;
-	protected boolean done =false;
+	protected boolean done = false;
 
 	/**
 	 * Launch the application.
@@ -20,7 +20,11 @@ public class TableName extends JFrame {
 	 * Create the frame.
 	 */
 	public TableName(String S,String OP) {
+		
+		
 		super(S);
+		System.out.println("operation: "+OP);
+		
 		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 250);
 		contentPane = new JPanel();
@@ -84,7 +88,6 @@ public class TableName extends JFrame {
 				}
 				else
 				{
-					
 					if(GlobalData.allTables.contains(tnm))
 					{
 						//tnm =textField.getText() ;						
@@ -96,9 +99,13 @@ public class TableName extends JFrame {
 						case "Delete":
 							break;
 						case "Update":
-							UpdateRecord updateRecord = new UpdateRecord(tnm);
+							//UpdateRecord updateRecord = new UpdateRecord(tnm);
 							break;
 						case "Search":
+							System.out.println("case search");
+							SearchScreen searchScreen = new SearchScreen(tnm);
+							//System.out.println("i am here");
+							//searchScreen.search(tnm);
 							break;
 						}
 						dispose();
