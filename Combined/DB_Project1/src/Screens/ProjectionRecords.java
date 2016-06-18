@@ -32,7 +32,8 @@ public class ProjectionRecords {
 	 * Launch the application.
 	 */
 	public static void projectRecords(String tableName, ArrayList<String> SelectedAttributes) {
-		EventQueue.invokeLater(new Runnable() {
+		EventQueue.invokeLater(new Runnable(){
+			
 			public void run() {
 				try {
 
