@@ -1,19 +1,14 @@
 package Screens;
 
-import java.awt.GridLayout;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.Iterator;
-
-import javax.swing.JLabel;
-import javax.swing.JTextArea;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+
 
 public class OperationFunctions {
 	static String[] colnmI;
@@ -51,18 +46,20 @@ public class OperationFunctions {
 			bw.close();
 
 		} catch (Exception e) {
-
 			e.printStackTrace();
 		}
 	}
 
+	
 	public static void updateInTable(String tnm, JSONObject json) {
 
 	}
-
+	
+	
 	public static void deleteInTable(String tnm, JSONObject json) {
 
 	}
+
 
 	public static void searchInTable(String tnm, JSONObject json) {
 

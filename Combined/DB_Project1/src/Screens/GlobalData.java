@@ -2,24 +2,26 @@ package Screens;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 public class GlobalData{
 	
 	static List<String> allTables;
+	static HashMap<String,String> tablePrimaryKeyMap;
+	
 	public static void initTableArray() throws Exception
 	{
-		allTables = new ArrayList<String>();
+		 allTables = new ArrayList<String>();
 		 String fileName = "Data/TableIndex.txt";
 
 	        // This will reference one line at a time
-	        String line = null;
+	     String line = null;
 
-	        try {
+	     try {
 	            // FileReader reads text files in the default encoding.
-	            FileReader fileReader = 
-	                new FileReader(fileName);
+	         FileReader fileReader = new FileReader(fileName);
 
 	            // Always wrap FileReader in BufferedReader.
 	            BufferedReader bufferedReader = 
@@ -38,8 +40,12 @@ public class GlobalData{
 	                "Unable to open file '" + 
 	                fileName + "'");                
 	        }
-		
 	}
+	
+		
+	
+	
+	
 	public static void updateTableFile() throws Exception
 	{
 		File file = new File("Data/TableIndex.txt");
@@ -59,6 +65,7 @@ public class GlobalData{
 			
 			
 	}
+	
 	public static void deleteTableFile(String tnm) throws Exception 
 	{
 		allTables.remove(tnm);
