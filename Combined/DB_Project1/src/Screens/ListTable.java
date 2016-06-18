@@ -112,7 +112,7 @@ public class ListTable extends JFrame {
 		btnNewButton.setBounds(245, 116, 113, 25);
 		contentPane.add(btnNewButton);
 
-		JButton btnSelectAttributes = new JButton("Select Attributes");
+		JButton btnSelectAttributes = new JButton("Projection");
 		btnSelectAttributes.setBounds(103, 116, 131, 25);
 		btnSelectAttributes.setFont(new Font("Times New Roman", Font.PLAIN, 13));
 		btnSelectAttributes.addActionListener(new ActionListener() {
