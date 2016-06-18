@@ -6,6 +6,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 public class GlobalData{
 	
 	static List<String> allTables;
@@ -42,7 +49,33 @@ public class GlobalData{
 	        }
 	}
 	
-		
+	public static void initprimaryKey() throws Exception
+	{
+		tablePrimaryKeyMap = new HashMap<>();
+		Iterator<String> itr = allTables.iterator();
+		JSONParser parser = new JSONParser();
+	      while(itr.hasNext()) {
+	         String tnm = (itr.next()).toString();
+	         Object obj = parser.parse(new FileReader("Data/Metadata/"+tnm+".json"));
+				JSONObject json = (JSONObject) obj;
+				
+				JSONArray headers = (JSONArray) json.get("headers");
+				int size= headers.size();
+				
+				for (int i = 0; i < size; i++) {
+					Object temp = parser.parse(headers.get(i).toString());
+					JSONObject temp1 = (JSONObject) temp;
+					if((boolean)temp1.get("Key"))
+					{
+						String keynm = (String) temp1.get("Column Name");
+						tablePrimaryKeyMap.put(tnm, keynm);
+					}
+					
+					
+				}	
+	         
+	      }
+	}
 	
 	
 	
@@ -62,6 +95,7 @@ public class GlobalData{
 	      bw.write(tables);
 	      bw.flush();
 	      bw.close();
+	      initprimaryKey();
 			
 			
 	}
@@ -74,6 +108,7 @@ public class GlobalData{
 		File file2 = new File("Data/Metadata/"+tnm+".json");
 		file1.delete();
 		file2.delete();
+		initprimaryKey();
 	}
 
 }

@@ -14,6 +14,7 @@ public class Home extends JFrame {
 	private JPanel contentPane;
 	public static void main(String[] args) throws Exception {
 		GlobalData.initTableArray();
+		GlobalData.initprimaryKey();
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {

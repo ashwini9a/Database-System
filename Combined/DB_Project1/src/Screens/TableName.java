@@ -100,7 +100,8 @@ public class TableName extends JFrame {
 						case "Delete":
 							break;
 						case "Update":
-							//UpdateRecord updateRecord = new UpdateRecord(tnm);
+							DisplayRecords display = new DisplayRecords(tnm,true);
+							display.displayRecords(tnm);
 							break;
 						case "Search":
 							System.out.println("case search");

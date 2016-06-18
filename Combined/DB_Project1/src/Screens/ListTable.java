@@ -72,7 +72,7 @@ public class ListTable extends JFrame {
 				int rowIndex = table.getSelectedRow();
 				String tableName = GlobalData.allTables.get(rowIndex);
 				System.out.println("Table to display:"+tableName);
-				DisplayRecords display = new DisplayRecords();
+				DisplayRecords display = new DisplayRecords(tableName,false);
 				display.displayRecords(tableName);				
 			}
 		});	
