@@ -45,56 +45,40 @@ public class SelectAtt extends JFrame {
 
 		JSONParser parser = new JSONParser();
 		try {
-
 			Object obj = parser.parse(new FileReader("Data/MetaData/" + tableName + ".json"));
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray) json.get("headers");
-			// System.out.println(headers.toString());
 
-			Object temp = parser.parse(headers.get(0).toString());
-			JSONObject currJson = (JSONObject) temp;
-			Set<String> keys = currJson.keySet();
-			String[] tempArr = keys.toArray(new String[keys.size()]);
-
-			columnNames = new String[tempArr.length + 1];
-			for (int i = 0; i < tempArr.length; i++) {
-				columnNames[i] = tempArr[i];
-			}
-
-			columnNames[tempArr.length] = "include?";
+			columnNames = new String[] {"Column Name", "include?"};
 
 			table = new JTable();
 			table.setModel(new DefaultTableModel(new Object[][] {}, columnNames) {
 				@Override
 				public boolean isCellEditable(int row, int col) {
-					if (col == columnNames.length - 1)
+					if (col == 1)
 						return true;
 					else
 						return false;
 				}
 
+				@Override
 				public Class<?> getColumnClass(int columnIndex) {
-					if (columnIndex == columnNames.length - 1)
+					if (columnIndex == 1)
 						return Boolean.class;
-
 					return String.class;
-
 				}
 			});
 
 			DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+
 			for (int i = 0; i < headers.size(); i++) {
-				temp = parser.parse(headers.get(i).toString());
-				currJson = (JSONObject) temp;
+				Object[] data = new Object[2];
 
-				Object[] data = new Object[columnNames.length];
-				int index = 0;
-				for (String key : keys) {
-					data[index] = currJson.get(key);
-					index++;
-				}
-
-				data[tempArr.length] = Boolean.FALSE;
+				Object temp = parser.parse(headers.get(i).toString());
+				JSONObject currJson = (JSONObject) temp;
+				System.out.println("Test!!222!" + currJson.toString());
+				data[0] = currJson.get("Column Name");
+				data[1] = Boolean.FALSE;
 				tableModel.addRow(data);
 			}
 
@@ -131,12 +115,12 @@ public class SelectAtt extends JFrame {
 				selectedAtts = new ArrayList<String>();
 				// DefaultTableModel dm = (DefaultTableModel) table.getModel();
 				for (int i = 0; i < table.getRowCount(); i++) {
-					Boolean isChecked = Boolean.valueOf(table.getValueAt(i, columnNames.length - 1).toString());
+					Boolean isChecked = Boolean.valueOf(table.getValueAt(i, 1).toString());
 
 					if (isChecked) {
 						// this may be cause problem later because 3 is fixed
 						// number
-						selectedAtts.add((String) table.getValueAt(i, 1));
+						selectedAtts.add((String) table.getValueAt(i, 0));
 					} else {
 						//
 					}
