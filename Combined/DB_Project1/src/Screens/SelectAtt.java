@@ -98,7 +98,7 @@ public class SelectAtt extends JFrame {
 			e.printStackTrace();
 		}
 
-		JButton btnAll = new JButton("Project All Attributes");
+		JButton btnAll = new JButton("Show All Attributes");
 		btnAll.setFont(new Font("Times New Roman", Font.PLAIN, 13));
 		btnAll.setBounds(305, 248, 162, 30);
 		btnAll.addActionListener(new ActionListener() {
@@ -110,7 +110,7 @@ public class SelectAtt extends JFrame {
 
 		getContentPane().add(btnAll);
 
-		JButton btnSelected = new JButton("Project Select Attributes");
+		JButton btnSelected = new JButton("Show Selected Attributes");
 		btnSelected.setFont(new Font("Times New Roman", Font.PLAIN, 13));
 		btnSelected.setBounds(108, 249, 187, 29);
 		btnSelected.addActionListener(new ActionListener() {
