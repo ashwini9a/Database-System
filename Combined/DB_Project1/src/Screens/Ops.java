@@ -54,6 +54,12 @@ public class Ops extends JFrame {
 		contentPane.add(btnNewButton_2);
 		
 		JButton btnNewButton_4 = new JButton("Search");
+		btnNewButton_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {				
+				TableName frame = new TableName("Select Table","Search");
+				frame.setVisible(true);				
+			}
+		});
 		btnNewButton_4.setFont(new Font("Times New Roman", Font.PLAIN, 12));
 		btnNewButton_4.setBounds(165, 168, 105, 23);
 		contentPane.add(btnNewButton_4);
