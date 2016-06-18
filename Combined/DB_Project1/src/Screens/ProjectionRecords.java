@@ -31,48 +31,50 @@ public class ProjectionRecords {
 	/**
 	 * Launch the application.
 	 */
-	public static void projectRecords(String tableName, ArrayList<String> SelectedAttributes) {
-		EventQueue.invokeLater(new Runnable(){
+	public void projectRecords(String tableName, ArrayList<String> SelectedAttributes) {
+		
+		//EventQueue.invokeLater(new Runnable(){
 			
-			public void run() {
-				try {
+			//public void run(){
+		try {
 
-					ProjectionRecords window = new ProjectionRecords();
-					System.out.println(tableName);
+			//ProjectionRecords window = new ProjectionRecords();
+			System.out.println(tableName);
 
-					// populate records in the table
-					window.frame.setTitle(tableName);
-					window.populateRecords("Data/Records/" + tableName + ".json", SelectedAttributes);
+			// populate records in the table
+			frame.setTitle(tableName);
+			populateRecords("Data/Records/" + tableName + ".json", SelectedAttributes);
 
-					// display all the records of this table
+			// display all the records of this table
 
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
+		//});
+	//}
 
 	public static void projectRecords(String tableName) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
+		//EventQueue.invokeLater(new Runnable() {
+			//public void run() {
+		try {
 
-					ProjectionRecords window = new ProjectionRecords();
-					System.out.println(tableName);
+			ProjectionRecords window = new ProjectionRecords();
+			System.out.println(tableName);
 
-					// populate records in the table
-					window.frame.setTitle(tableName);
-					window.populateRecords("Data/Records/" + tableName + ".json");
+			// populate records in the table
+			window.frame.setTitle(tableName);
+			window.populateRecords("Data/Records/" + tableName + ".json");
 
-					// display all the records of this table
+			// display all the records of this table
 
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+   }
+		//});
+	//}
+	
 
 	public void populateRecords(String name, ArrayList<String> SelectedAttributes) {
 		JSONParser parser = new JSONParser();
