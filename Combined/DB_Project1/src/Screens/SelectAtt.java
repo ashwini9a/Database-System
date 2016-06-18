@@ -28,11 +28,11 @@ public class SelectAtt extends JFrame {
 	/**
 	 * Create the application.
 	 */
-	public SelectAtt(String tableName) {
+	public SelectAtt(String tableName){
+		
 		this.setBounds(100, 100, 500, 300);
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.getContentPane().setLayout(null);
-
 		setTitle(tableName);
 
 		JSONParser parser = new JSONParser();
@@ -41,24 +41,21 @@ public class SelectAtt extends JFrame {
 			Object obj = parser.parse(new FileReader("Data/MetaData/" + tableName + ".json"));
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray) json.get("headers");
-			System.out.println(headers.toString());
+			//System.out.println(headers.toString());
 
 			Object temp = parser.parse(headers.get(0).toString());
 			JSONObject currJson = (JSONObject) temp;
-
 			Set<String> keys = currJson.keySet();
 			String[] tempArr = keys.toArray(new String[keys.size()]);
 
 			String[] columnNames = new String[tempArr.length + 1];
-			for (int i = 0; i < tempArr.length; i++) {
-				columnNames[i] = tempArr[i];
+			for (int i = 0; i < tempArr.length; i++){
+				   columnNames[i] = tempArr[i];
 			}
+			
 			columnNames[tempArr.length] = "include?";
-
-			// table.setBounds(427, 0, -424, 83);
-
+			
 			table = new JTable();
-
 			table.setModel(new DefaultTableModel(new Object[][] {}, columnNames) {
 				@Override
 				public boolean isCellEditable(int row, int col) {
@@ -67,17 +64,24 @@ public class SelectAtt extends JFrame {
 					else
 						return false;
 				}
+				
+				public Class<?> getColumnClass(int columnIndex)
+		         {
+					if(columnIndex == 3)
+						 return Boolean.class;
+					
+					return String.class;
+		             
+		         }
 			});
 
-			table.getColumn("include?").setCellEditor(new DefaultCellEditor(new JCheckBox()));
-			table.setEditingColumn(columnNames.length);
-			TableColumnModel tcm = table.getColumnModel();
-
-
+			//table.getColumn("include?").setCellEditor(new DefaultCellEditor(new JCheckBox()));
+			
+			//table.setEditingColumn(columnNames.length);
+			//TableColumnModel tcm = table.getColumnModel();
 			DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
 
 			for (int i = 0; i < headers.size(); i++) {
-
 				temp = parser.parse(headers.get(i).toString());
 				currJson = (JSONObject) temp;
 
@@ -87,7 +91,9 @@ public class SelectAtt extends JFrame {
 					data[index] = currJson.get(key);
 					index++;
 				}
-				// data[index]=false;
+				
+				data[tempArr.length] =  Boolean.FALSE;
+				
 				tableModel.addRow(data);
 			}
 
