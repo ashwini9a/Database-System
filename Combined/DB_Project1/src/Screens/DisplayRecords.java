@@ -33,17 +33,14 @@ public class DisplayRecords {
 	/**
 	 * Launch the application.
 	 */
-	public static void displayRecords(String tableName) {
+	public  void displayRecords(String tableName) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					
-					DisplayRecords window = new DisplayRecords();					
-					//System.out.println(tableName);
-				    
-					// populate records in the table
-					window.frame.setTitle(tableName);
-					window.populateRecords("Data/Records/"+tableName+".json");
+					//DisplayRecords window = new DisplayRecords();					
+					frame.setTitle(tableName);
+					populateRecords("Data/Records/"+tableName+".json");
 					//display all the records of this table	
 				} catch (Exception e) {
 					e.printStackTrace();
