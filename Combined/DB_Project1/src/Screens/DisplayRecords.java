@@ -121,14 +121,14 @@ public class DisplayRecords {
 	/**
 	 * Create the application.
 	 */
-	public DisplayRecords() {
-		initialize();
+	public DisplayRecords(String tnm,boolean flag) {
+		initialize(tnm,flag);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize(String tnm,boolean flag) {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 600, 300);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -152,7 +152,7 @@ public class DisplayRecords {
 						   int index = table.getSelectedRow();
 						  
 						   int colIndex = -1;
-						   String key = "ID";
+						   String key = GlobalData.tablePrimaryKeyMap.get(tnm);
 						   
 						   for(int i = 0 ; i < dm.getColumnCount() ; i++){
 							   if(key.equals(columnNames[i])){
@@ -179,7 +179,56 @@ public class DisplayRecords {
 				  }
 			}
 		});
-		
+		if(flag)
+		{
+			JButton btnNewUpdate = new JButton("Update");
+			btnNewUpdate.setFont(new Font("Times New Roman", Font.PLAIN, 13));
+			btnNewUpdate.addActionListener(new ActionListener() {
+				  public void actionPerformed(ActionEvent e){					  
+					  //delete record from the table				  
+					  if(table.getRowCount() > 0){
+						   //check if a row is selected:
+						   int selectedRow = table.getSelectedRow();
+						   if(selectedRow == -1){
+							    JOptionPane.showMessageDialog(null, "Please select a record to Update", "Error", JOptionPane.ERROR_MESSAGE);
+							   //JOptionPane.showMessageDialog(null,"Please select a record to delete");						   
+						   }else{
+							   
+							   DefaultTableModel dm = (DefaultTableModel)table.getModel();
+							   System.out.println("Selected row: "+ table.getSelectedRow());
+							   int index = table.getSelectedRow();
+							  
+							   int colIndex = -1;
+							   String key = GlobalData.tablePrimaryKeyMap.get(tnm);
+							   
+							   for(int i = 0 ; i < dm.getColumnCount() ; i++){
+								   if(key.equals(columnNames[i])){
+								    	colIndex = i;
+								    	break;
+								     }
+							   }
+							   
+							   String value = (String)dm.getValueAt(index, colIndex);
+							   
+							   dm.removeRow(index);						  
+							   //search for this key in json and delete						   
+							   System.out.println("ColIndex: "+colIndex);						   
+							   // get value at that row and column
+							   
+							   String tableName =  frame.getTitle();
+							   deleteRecordFromJson(key,value,tableName);
+							 
+						   }					  
+					       //
+					  }else{					  
+						  //show dialog box
+						  JOptionPane.showMessageDialog(null,"No records to Update","Warning",JOptionPane.WARNING_MESSAGE);					 					  
+					  }
+				}
+			});
+			btnNewUpdate.setBounds(300, 214, 89, 23);
+			frame.getContentPane().add(btnNewUpdate);
+	}
 		btnNewButton.setBounds(468, 214, 89, 23);
 		frame.getContentPane().add(btnNewButton);
 	}
