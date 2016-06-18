@@ -41,10 +41,16 @@ public class ListTable extends JFrame {
 		};
 
 		table.setFont(new Font("Times New Roman", Font.PLAIN, 13));
-		table.setModel(new DefaultTableModel(new Object[][] {}, new String[] { "Table Name" }));
+		table.setModel(new DefaultTableModel(new Object[][] {}, new String[] {"Table Name"}){			
+			@Override
+    		public boolean isCellEditable(int row, int col){		
+    			return false;
+    		}			
+		});
+		
+		
 		table.setBackground(Color.WHITE);
-
-		int rowCount = GlobalData.allTables.size();
+		
 		DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
 
 		for (String tableName : GlobalData.allTables) {
@@ -55,7 +61,6 @@ public class ListTable extends JFrame {
 
 		}
 
-		// table.setPreferredScrollableViewportSize(new Dimension(400, 30));
 		table.setFillsViewportHeight(true);
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setBounds(37, 5, 468, 100);
@@ -120,8 +125,7 @@ public class ListTable extends JFrame {
 				DefaultTableModel dm = (DefaultTableModel) table.getModel();
 				int rowIndex = table.getSelectedRow();
 				if (rowIndex == -1) {
-					JOptionPane.showMessageDialog(null, "Please select a table to project", "Error",
-							JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Please select a table to project", "Error",JOptionPane.ERROR_MESSAGE);
 				} else {
 					String tableName = GlobalData.allTables.get(rowIndex);
 					System.out.println(tableName + rowIndex);
