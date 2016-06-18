@@ -26,6 +26,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.JButton;
+import java.awt.Font;
 
 public class SelectAtt extends JFrame {
 
@@ -49,7 +50,7 @@ public class SelectAtt extends JFrame {
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray) json.get("headers");
 
-			columnNames = new String[] {"Column Name", "include?"};
+			columnNames = new String[] {"Column Name", "Include?"};
 
 			table = new JTable();
 			table.setModel(new DefaultTableModel(new Object[][] {}, columnNames) {
@@ -98,7 +99,8 @@ public class SelectAtt extends JFrame {
 		}
 
 		JButton btnAll = new JButton("Project All Attributes");
-		btnAll.setBounds(312, 233, 162, 30);
+		btnAll.setFont(new Font("Times New Roman", Font.PLAIN, 13));
+		btnAll.setBounds(305, 248, 162, 30);
 		btnAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ProjectionRecords display = new ProjectionRecords();
@@ -109,7 +111,8 @@ public class SelectAtt extends JFrame {
 		getContentPane().add(btnAll);
 
 		JButton btnSelected = new JButton("Project Select Attributes");
-		btnSelected.setBounds(117, 234, 187, 29);
+		btnSelected.setFont(new Font("Times New Roman", Font.PLAIN, 13));
+		btnSelected.setBounds(108, 249, 187, 29);
 		btnSelected.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				selectedAtts = new ArrayList<String>();
