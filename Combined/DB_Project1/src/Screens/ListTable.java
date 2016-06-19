@@ -53,14 +53,13 @@ public class ListTable extends JFrame {
 		
 		DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
 
-		for (String tableName : GlobalData.allTables) {
-
-			System.out.println("TableName:" + tableName);
+		for(String tableName : GlobalData.allTables){
+			
 			Object[] data = { tableName };
 			tableModel.addRow(data);
 
 		}
-
+		
 		table.setFillsViewportHeight(true);
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setBounds(37, 5, 468, 100);
@@ -118,14 +117,15 @@ public class ListTable extends JFrame {
 		contentPane.add(btnNewButton);
 
 		JButton btnSelectAttributes = new JButton("Projection");
-		btnSelectAttributes.setBounds(103, 116, 131, 25);
+		btnSelectAttributes.setBounds(128, 116, 94, 25);
 		btnSelectAttributes.setFont(new Font("Times New Roman", Font.PLAIN, 13));
 		btnSelectAttributes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DefaultTableModel dm = (DefaultTableModel) table.getModel();
 				int rowIndex = table.getSelectedRow();
 				if (rowIndex == -1) {
-					JOptionPane.showMessageDialog(null, "Please select a table to project", "Error",JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Please select a table to project", "Error",
+							JOptionPane.ERROR_MESSAGE);
 				} else {
 					String tableName = GlobalData.allTables.get(rowIndex);
 					System.out.println(tableName + rowIndex);

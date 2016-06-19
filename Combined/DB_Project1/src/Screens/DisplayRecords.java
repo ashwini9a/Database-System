@@ -27,7 +27,6 @@ public class DisplayRecords {
 
 	private JFrame frame;
 	private JTable table;
-	//static String tableName;
 	String [] columnNames;
 	
 	/**
@@ -144,7 +143,7 @@ public class DisplayRecords {
 					   int selectedRow = table.getSelectedRow();
 					   if(selectedRow == -1){
 						    JOptionPane.showMessageDialog(null, "Please select a record to delete", "Error", JOptionPane.ERROR_MESSAGE);
-						   //JOptionPane.showMessageDialog(null,"Please select a record to delete");						   
+						   						   
 					   }else{
 						   
 						   DefaultTableModel dm = (DefaultTableModel)table.getModel();
@@ -186,8 +185,7 @@ public class DisplayRecords {
 						   //check if a row is selected:
 						   int selectedRow = table.getSelectedRow();
 						   if(selectedRow == -1){
-							    JOptionPane.showMessageDialog(null, "Please select a record to Update", "Error", JOptionPane.ERROR_MESSAGE);
-							   //JOptionPane.showMessageDialog(null,"Please select a record to delete");						   
+							    JOptionPane.showMessageDialog(null, "Please select a record to Update", "Error", JOptionPane.ERROR_MESSAGE);							  						   
 						   }else{
 							   
 							   DefaultTableModel dm = (DefaultTableModel)table.getModel();
@@ -264,14 +262,11 @@ public class DisplayRecords {
 			bw.flush();
 			bw.close();
 		
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+		} catch(FileNotFoundException e){
 			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch(IOException e){
 			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+		} catch(ParseException e){
 			e.printStackTrace();
 		} 	
 		

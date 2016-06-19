@@ -1,20 +1,15 @@
 package Screens;
 
 import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
-
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -27,7 +22,8 @@ public class ProjectionRecords {
 
 	private JFrame frame;
 	private JTable table;
-
+	HashMap<String,String> columnDataType;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -84,12 +80,13 @@ public class ProjectionRecords {
 			JSONArray headers = (JSONArray) json.get("Records");
 
 			if (headers.size() == 0) {
-				JOptionPane.showMessageDialog(null, "No Records to Display", "Warning",
-						JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(null, "No Records to Display", "Warning",JOptionPane.INFORMATION_MESSAGE);
 			} else {
 
 				String[] columnNames = new String[SelectedAttributes.size()];
 				SelectedAttributes.toArray(columnNames);
+				
+				getDataTypes(frame.getTitle());
 				
 				table = new JTable();
 				table.setModel(new DefaultTableModel(new Object[][] {}, columnNames) {
@@ -99,6 +96,23 @@ public class ProjectionRecords {
 
 						return false;
 					}
+					
+					public Class<?> getColumnClass(int columnIndex){
+		    			
+						String columnName = getColumnName(columnIndex);
+						
+						String dataType  = columnDataType.get(columnName);
+						
+						if("VARCHAR".equals(dataType))
+							 return String.class;
+						else if("INT".equals(dataType))
+							 return Integer.class;
+						else if("FLOAT".equals(dataType))
+							 return BigDecimal.class;
+
+						return String.class;
+
+					}   
 
 				});
 
@@ -110,15 +124,26 @@ public class ProjectionRecords {
 					JSONObject currJson = (JSONObject) temp;
 
 					Object[] data = new Object[columnNames.length];
+					
 					int index = 0;
-					for (String key : columnNames) {
-						data[index] = currJson.get(key);
+					for (String key : columnNames){	
+						
+						String dataType = columnDataType.get(key);
+						if("INT".equals(dataType))
+							data[index] = Integer.parseInt((String)currJson.get(key));
+						else if("FLOAT".equals(dataType))
+							data[index] = new BigDecimal((String)currJson.get(key));
+						else 
+							data[index] = (String)currJson.get(key);
+						
 						index++;
 					}
+					
 					tableModel.addRow(data);
 				}
 
 				table.setFillsViewportHeight(true);
+				table.setAutoCreateRowSorter(true);
 				JScrollPane scrollPane = new JScrollPane(table);
 				scrollPane.setBounds(37, 5, 468, 100);
 				scrollPane.setViewportView(table);
@@ -127,18 +152,19 @@ public class ProjectionRecords {
 
 				this.frame.setVisible(true);
 
-				// frame.pack();
 			}
 
-		} catch (FileNotFoundException e) {
-			// System.out.println("FileNotFoundException");
+		}catch(FileNotFoundException e){
 			e.printStackTrace();
-		} catch (IOException e) {
+		}catch(IOException e) {
 			e.printStackTrace();
-		} catch (ParseException e) {
+		}catch(ParseException e) {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	
 
 	public void populateRecords(String name) {
 		JSONParser parser = new JSONParser();
@@ -161,8 +187,11 @@ public class ProjectionRecords {
 				System.out.println("test!!!!" + headers.get(0).toString());
 				Set<String> keys = currJson.keySet();
 				String[] columnNames = keys.toArray(new String[keys.size()]);
-				for (int i = 0; i < columnNames.length; i++)
-					System.out.println(i+"th:" + columnNames[i]);
+				
+				getDataTypes(frame.getTitle());
+				
+				//for (int i = 0; i < columnNames.length; i++)
+					//   System.out.println(i+"th:" + columnNames[i]);
 
 				table = new JTable();
 
@@ -172,6 +201,24 @@ public class ProjectionRecords {
 					public boolean isCellEditable(int row, int col) {
 						return false;
 					}
+					
+					public Class<?> getColumnClass(int columnIndex){
+		    			
+						String columnName = getColumnName(columnIndex);
+						
+						String dataType  = columnDataType.get(columnName);
+						
+						if("VARCHAR".equals(dataType))
+							 return String.class;
+						else if("INT".equals(dataType))
+							 return Integer.class;
+						else if("FLOAT".equals(dataType))
+							 return BigDecimal.class;
+
+						return String.class;
+
+					}   
+					
 				});
 
 				DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
@@ -183,13 +230,24 @@ public class ProjectionRecords {
 					Object[] data = new Object[columnNames.length];
 					int index = 0;
 					for (String key : keys) {
-						data[index] = currJson.get(key);
+						
+						String dataType = columnDataType.get(key);
+						if("INT".equals(dataType))
+							data[index] = Integer.parseInt((String)currJson.get(key));
+						else if("FLOAT".equals(dataType))
+							data[index] = new BigDecimal((String)currJson.get(key));
+						else 
+							data[index] = (String)currJson.get(key);
+						
 						index++;
+						
 					}
+					
 					tableModel.addRow(data);
 				}
 
 				table.setFillsViewportHeight(true);
+				table.setAutoCreateRowSorter(true);
 				JScrollPane scrollPane = new JScrollPane(table);
 				scrollPane.setBounds(37, 5, 468, 100);
 				scrollPane.setViewportView(table);
@@ -198,15 +256,14 @@ public class ProjectionRecords {
 
 				this.frame.setVisible(true);
 
-				// frame.pack();
+				
 			}
 
-		} catch (FileNotFoundException e) {
-			// System.out.println("FileNotFoundException");
+		}catch(FileNotFoundException e){
 			e.printStackTrace();
-		} catch (IOException e) {
+		}catch (IOException e) {
 			e.printStackTrace();
-		} catch (ParseException e) {
+		}catch (ParseException e) {
 			e.printStackTrace();
 		}
 	}
@@ -227,4 +284,38 @@ public class ProjectionRecords {
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 	}
+	
+	private void getDataTypes(String tableName){
+		
+		 JSONParser parser = new JSONParser();
+		 columnDataType = new HashMap<String,String>();
+		 		 
+			try {
+				
+				Object obj = parser.parse(new FileReader("Data/MetaData/" + tableName + ".json"));
+				JSONObject json = (JSONObject) obj;
+				JSONArray headers = (JSONArray) json.get("headers");
+			
+		    	for(int i = 0 ; i < headers.size(); i++){
+		    		
+		    		Object temp = parser.parse(headers.get(i).toString());
+					JSONObject temp1 = (JSONObject) temp;			
+					String dataType = (String) temp1.get("Data Type");
+					String columnName = (String) temp1.get("Column Name");
+					
+					columnDataType.put(columnName, dataType);
+					System.out.println("Data Types: "+columnDataType);
+						    	       	
+		    	}
+		    	
+			} catch (FileNotFoundException e){
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ParseException e){
+				e.printStackTrace();
+			}	
+		}
+	
+	
 }

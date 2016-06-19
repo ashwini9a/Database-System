@@ -22,6 +22,8 @@ import org.json.simple.parser.ParseException;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 
 public class SearchDisplay extends JFrame{
@@ -52,8 +54,7 @@ public class SearchDisplay extends JFrame{
 	 * Create the frame.
 	 */
 	
-	public SearchDisplay(HashMap<String,HashMap<String,String>> dataMap, boolean keySelected,
-			             String keyColumn,String tableName){
+	public SearchDisplay(HashMap<String,HashMap<String,String>> dataMap,String tableName){
 	
 		setBounds(100, 100, 577, 374);
 		contentPane = new JPanel();
@@ -64,13 +65,15 @@ public class SearchDisplay extends JFrame{
 	    this.setTitle(tableName);
 	   
 		//search for record in json
-		List<HashMap<String,String>> results = null;
+	    
+	    getDataTypes(tableName);
+		// = null;
 		
-		if(keySelected && dataMap.size() == 1)
-		   results = getResultsBasedOnKey(dataMap,keySelected,keyColumn,tableName);
-		else{	
-		   results = getResults(dataMap,tableName);			
-		}
+		//if(keySelected && dataMap.size() == 1)
+		  // results = getResultsBasedOnKey(dataMap,keySelected,keyColumn,tableName);
+		//else{	
+		 List<HashMap<String,Object>> results = getResults(dataMap,tableName);			
+		//}
 						
 		// save the results in Jtable
 		table = new JTable();
@@ -86,7 +89,12 @@ public class SearchDisplay extends JFrame{
     			
 				String columnName = getColumnName(columnIndex);
 				
+				System.out.println("Get column class, Name: "+columnName);
+				
+				
 				String dataType  = columnDataType.get(columnName);
+				
+				System.out.println("Get column class, type: "+dataType);
 				
 				if("VARCHAR".equals(dataType))
 					 return String.class;
@@ -101,12 +109,14 @@ public class SearchDisplay extends JFrame{
     	});
 		
 		
-		if(results.size() > 0){
-			// set data types for the columns
-			getDataTypes(tableName);
+		if(results != null && results.size() > 0){
 			populateTable(results);
 			table.setFillsViewportHeight(true);
 			table.setAutoCreateRowSorter(true);
+			//TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
+			//table.setRowSorter(sorter);
+		
+			
 			JScrollPane scrollPane = new JScrollPane();
 			scrollPane.setBounds(10, 0, 541, 262);
 			scrollPane.setViewportView(table);
@@ -122,9 +132,7 @@ public class SearchDisplay extends JFrame{
 	
 	private void getDataTypes(String tableName){
 				
-	 JSONParser parser = new JSONParser();	 
-	 //String [] columnTypes = null;
-	 
+	 JSONParser parser = new JSONParser();
 	 columnDataType = new HashMap<String,String>();
 	 
 	 Object obj;
@@ -153,20 +161,17 @@ public class SearchDisplay extends JFrame{
 			e.printStackTrace();
 		} catch (ParseException e){
 			e.printStackTrace();
-		}
-		
-		//return columnTypes;
-		
+		}	
 	}
 	
 	
-	private List<HashMap<String,String>> getResults(HashMap<String, HashMap<String, String>> dataMap,
+	private List<HashMap<String,Object>> getResults(HashMap<String, HashMap<String, String>> dataMap,
 													 String tableName){
 		
 		System.out.println("In getResults without key");
 		
 		JSONParser parser = new JSONParser();		
-		List<HashMap<String,String>> result = new ArrayList<HashMap<String,String>>();
+		List<HashMap<String,Object>> result = new ArrayList<HashMap<String,Object>>();
 		
 		try{
 
@@ -194,13 +199,21 @@ public class SearchDisplay extends JFrame{
 					 HashMap<String,String> attributeMap = entryMap.getValue();
 					 String searchValue = attributeMap.get("Value");
 					 String operatorValue = attributeMap.get("Operator");
+					 String dataType = columnDataType.get(attributeName);
 					 
-					 if(!"Choose".equals(operatorValue)){
+					 System.out.println("Data type: "+dataType);
+					 
+					 if(!"Choose".equals(operatorValue) && !"VARCHAR".equals(dataType)){
 						 
 						 if(">".equals(operatorValue)){
+							 
+							 System.out.println("inside >");
 						    
 							 BigDecimal searchVal = new BigDecimal(searchValue);
 		                	 BigDecimal actualVal = new BigDecimal(value);
+		                	 
+		                	 System.out.println("Comparison: "+actualVal.compareTo(searchVal));
+		                	 
 		                	 if(actualVal.compareTo(searchVal) <= 0){
 		                		  match = false;
 		                		  break;
@@ -222,12 +235,9 @@ public class SearchDisplay extends JFrame{
 		                	 
 							 if(searchVal.compareTo(actualVal) != 0){
 								 match = false;
-								 break;
-								
-							 }
-								  
-						 }
-						 
+								 break;								
+							 }								  
+						 }						 
 					 }else{					
 						 if(searchValue.equalsIgnoreCase(value)){						 
 							 continue;
@@ -238,12 +248,17 @@ public class SearchDisplay extends JFrame{
 					 }
 				}
       				
-				if(match){
+				if(match){	
 					
-					HashMap<String,String> recordMap = new HashMap<String,String>();
-					
-					for(String colName : keys){						
-						recordMap.put(colName,(String)currJson.get(colName));						
+					HashMap<String,Object> recordMap = new HashMap<String,Object>();					
+					for(String colName : keys){								
+						String dataType = columnDataType.get(colName);
+						if("INT".equals(dataType))
+							recordMap.put(colName,Integer.parseInt((String)currJson.get(colName)));	
+						else if("FLOAT".equals(dataType))
+							recordMap.put(colName,new BigDecimal((String)currJson.get(colName)));	
+						else 
+							recordMap.put(colName,(String)currJson.get(colName));
 					}
 					
 					result.add(recordMap);
@@ -257,13 +272,13 @@ public class SearchDisplay extends JFrame{
 	
 	}
 
-	private void populateTable(List<HashMap<String,String>> data){
+	private void populateTable(List<HashMap<String,Object>> data){
 		
 		DefaultTableModel tableModel = (DefaultTableModel)table.getModel();
 		
 		for(int i = 0 ; i < data.size() ; i++){
 
-            HashMap<String,String> map = data.get(i);
+            HashMap<String,Object> map = data.get(i);
             int index = 0;
             Object [] arr = new Object [columnNames.length];	
             for(String colName: columnNames){    		    
@@ -278,7 +293,7 @@ public class SearchDisplay extends JFrame{
 		
 
 
-	private List<HashMap<String, String>> getResultsBasedOnKey(HashMap<String, HashMap<String,String>> dataMap, 
+	/*private List<HashMap<String, String>> getResultsBasedOnKey(HashMap<String, HashMap<String,String>> dataMap, 
 										  boolean keySelected,String keyColumn,String tableName){
 		
 		JSONParser parser = new JSONParser();		
@@ -361,6 +376,6 @@ public class SearchDisplay extends JFrame{
 		} 
 
 		return result;
-	}
+	}*/
 
 }

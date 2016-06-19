@@ -139,7 +139,7 @@ public class SearchScreen {
 			    //get all the rows data and save it in HashMap;
 				HashMap<String,HashMap<String,String>> columnDataMap = new HashMap<String,HashMap<String,String>>();
 				
-				boolean isKeySelected = false;
+				//boolean isKeySelected = false;
 				
 				for(int i = 0 ; i < table.getRowCount();i++){	
 					
@@ -153,14 +153,11 @@ public class SearchScreen {
 					  attriMap.put("Value", attributeValue);
 					  attriMap.put("Operator", operator);					  
 					  columnDataMap.put(attributeName, attriMap);
-					  
-					  if(attributeName.equals(tableKey)){
-						  isKeySelected = true;
-					  }
+					 
 					}	
 				
 				System.out.println(columnDataMap);
-				SearchDisplay display = new SearchDisplay(columnDataMap, isKeySelected, tableKey, tableName);
+				SearchDisplay display = new SearchDisplay(columnDataMap,tableName);
 				
 			}			
 		});
