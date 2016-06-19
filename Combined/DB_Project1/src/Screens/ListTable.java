@@ -41,25 +41,26 @@ public class ListTable extends JFrame {
 		};
 
 		table.setFont(new Font("Times New Roman", Font.PLAIN, 13));
-		table.setModel(new DefaultTableModel(new Object[][] {}, new String[] {"Table Name"}){			
+		table.setModel(new DefaultTableModel(new Object[][] {}, new String[] { "Table Name" }) {
 			@Override
-    		public boolean isCellEditable(int row, int col){		
-    			return false;
-    		}			
+			public boolean isCellEditable(int row, int col) {
+				return false;
+			}
 		});
-		
-		
+
+		// it seems make no change
+		// table.setRowSelectionAllowed(true);
 		table.setBackground(Color.WHITE);
-		
+
 		DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
 
-		for(String tableName : GlobalData.allTables){
-			
+		for (String tableName : GlobalData.allTables) {
+
 			Object[] data = { tableName };
 			tableModel.addRow(data);
 
 		}
-		
+
 		table.setFillsViewportHeight(true);
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setBounds(37, 5, 468, 100);
@@ -73,16 +74,19 @@ public class ListTable extends JFrame {
 
 			public void actionPerformed(ActionEvent e) {
 				DefaultTableModel dm = (DefaultTableModel) table.getModel();
-				int rowIndex = table.getSelectedRow();
-				if (rowIndex == -1) {
-					JOptionPane.showMessageDialog(null, "Please select a table to display", "Error",
-							JOptionPane.ERROR_MESSAGE);
-				} else {
-					String tableName = GlobalData.allTables.get(rowIndex);
-					System.out.println("Table to display:" + tableName);
+				int[] selection = table.getSelectedRows();
+				if (selection.length == 1) {
+					String tableName = GlobalData.allTables.get(selection[0]);
 					DisplayRecords display = new DisplayRecords(tableName, false);
 					display.displayRecords(tableName);
+				} else if (selection.length > 1) {
+					JOptionPane.showMessageDialog(null, "Please select one table at a time", "Error",
+							JOptionPane.ERROR_MESSAGE);
+				} else {
+					JOptionPane.showMessageDialog(null, "Please select a table to display", "Error",
+							JOptionPane.ERROR_MESSAGE);
 				}
+
 			}
 		});
 
@@ -94,21 +98,21 @@ public class ListTable extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// delete table
 				DefaultTableModel dm = (DefaultTableModel) table.getModel();
-				int rowIndex = table.getSelectedRow();
-				if (rowIndex == -1) {
+				int[] selection = table.getSelectedRows();
+				if (selection.length <= 0) {
 					JOptionPane.showMessageDialog(null, "Please select a table to delete", "Error",
 							JOptionPane.ERROR_MESSAGE);
 				} else {
-
-					String tableName = GlobalData.allTables.get(rowIndex);
-
-					try {
-						GlobalData.deleteTableFile(tableName);
-					} catch (Exception e1) {
-						e1.printStackTrace();
+					int len = selection.length;
+					for (int i = selection[len - 1]; i >= 0; i--) {
+						String tableName = GlobalData.allTables.get(i);
+						try {
+							GlobalData.deleteTableFile(tableName);
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+						dm.removeRow(i);
 					}
-					dm.removeRow(rowIndex);
-					// GlobalData.allTables.remove(rowIndex);
 				}
 			}
 		});
@@ -122,19 +126,20 @@ public class ListTable extends JFrame {
 		btnSelectAttributes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DefaultTableModel dm = (DefaultTableModel) table.getModel();
-				int rowIndex = table.getSelectedRow();
-				if (rowIndex == -1) {
-					JOptionPane.showMessageDialog(null, "Please select a table to project", "Error",
+				int[] selection = table.getSelectedRows();
+				if (selection.length == 1) {
+					String tableName = GlobalData.allTables.get(selection[0]);
+					SelectAtt display = new SelectAtt(tableName);
+				} else if (selection.length > 1) {
+					JOptionPane.showMessageDialog(null, "Please select one table at a time", "Error",
 							JOptionPane.ERROR_MESSAGE);
 				} else {
-					String tableName = GlobalData.allTables.get(rowIndex);
-					System.out.println(tableName + rowIndex);
-					SelectAtt display = new SelectAtt(tableName);
+					JOptionPane.showMessageDialog(null, "Please select a table to project", "Error",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
 
 		contentPane.add(btnSelectAttributes);
 	}
-
 }
