@@ -229,7 +229,7 @@ public class DisplayRecords {
 					  }
 				}
 			});
-			btnNewUpdate.setBounds(300, 214, 89, 23);
+			btnNewUpdate.setBounds(350, 214, 89, 23);
 			frame.getContentPane().add(btnNewUpdate);
 	}
 		btnNewButton.setBounds(468, 214, 89, 23);

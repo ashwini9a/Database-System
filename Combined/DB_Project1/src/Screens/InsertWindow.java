@@ -87,6 +87,8 @@ public class InsertWindow extends JFrame {
 				if(OperationFunctions.validateJSON(tableName, json1,true))
 				{
 					OperationFunctions.insertInTable(tableName, json1);
+					JOptionPane.showMessageDialog(null, "Insert Successful", "Success", JOptionPane.INFORMATION_MESSAGE);
+					InsertWindow IW = new InsertWindow("Insert Tuple",tableName);
 					dispose();
 				}
 				else
