@@ -193,7 +193,9 @@ public class InsertWindow extends JFrame {
 				if(OperationFunctions.validateJSON(tableName, json2, false))
 				{
 					OperationFunctions.updateInTable(tableName, json2,key,value);
-					DR.populateRecords("Data/Records/"+tableName+".json");
+					DisplayRecords display = new DisplayRecords(tableName,true);
+					display.displayRecords(tableName);
+					DR.frame.dispose();
 					dispose();
 				}
 				else

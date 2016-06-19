@@ -117,11 +117,6 @@ public class OperationFunctions {
 			String[] col = null;
 			int size=-1;
 			String value1 = (String) json.get(key);
-			if(value1.isEmpty())
-			{
-				validateMsg= "Primary Key value cannot be null";
-				return false;
-			}
 			JSONParser parser1 = new JSONParser();
 			try {
 				FileReader f1 = new FileReader("Data/Records/" + tnm+ ".json");

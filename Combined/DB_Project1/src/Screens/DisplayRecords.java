@@ -26,7 +26,7 @@ import javax.swing.table.TableCellEditor;
 
 public class DisplayRecords {
 
-	private JFrame frame;
+	public JFrame frame;
 	private JTable table;
 	String [] columnNames;
 	
