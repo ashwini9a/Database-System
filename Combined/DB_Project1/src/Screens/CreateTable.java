@@ -175,8 +175,22 @@ public class CreateTable extends JFrame {
 							else{
 								if(j == 0){	
 									json.put(table.getColumnName(j), Boolean.FALSE);
-								}else
+								}else{
+									
+									if(j == 2){		
+										
+										//System.out.println("j:"+j);
+										String dataType = (String)table.getModel().getValueAt(i, j);
+										//String valueSelected =  
+										if("Choose..".equals(dataType)){
+											//  System.out.println("I am here");
+											  table.getModel().setValueAt("VARCHAR", i, j);
+										}      
+										
+									}
+										
 									json.put(table.getColumnName(j), table.getModel().getValueAt(i, j));
+								}
 							}	
 						}
 

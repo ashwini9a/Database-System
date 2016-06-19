@@ -102,6 +102,7 @@ public class GlobalData{
 		updateTableFile();
 		File file1 = new File("Data/Records/"+tnm+".json");
 		File file2 = new File("Data/Metadata/"+tnm+".json");
+		
 		file1.delete();
 		file2.delete();
 		initprimaryKey();
