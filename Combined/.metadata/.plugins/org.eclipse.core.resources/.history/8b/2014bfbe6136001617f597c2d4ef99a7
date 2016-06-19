@@ -51,7 +51,7 @@ public class OperationFunctions {
 			bw.write(json1.toJSONString());
 			bw.flush();
 			bw.close();
-			f1.close();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -61,8 +61,8 @@ public class OperationFunctions {
 	public static void updateInTable(String tnm, JSONObject json,String key,String value) {
 		JSONParser parser = new JSONParser();
 		try {
-			FileReader f1 = new FileReader("Data/Records/" + tnm + ".json");
-			Object obj = parser.parse(f1);
+
+			Object obj = parser.parse(new FileReader("Data/Records/" + tnm + ".json"));
 			JSONObject json1 = (JSONObject) obj;
 			System.out.println(json1.toJSONString());
 			
@@ -100,7 +100,7 @@ public class OperationFunctions {
 			bw.write(json1.toJSONString());
 			bw.flush();
 			bw.close();
-			f1.close();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -119,8 +119,7 @@ public class OperationFunctions {
 			String value1 = (String) json.get(key);
 			JSONParser parser1 = new JSONParser();
 			try {
-				FileReader f1 = new FileReader("Data/Records/" + tnm+ ".json");
-				Object obj1 = parser1.parse(f1);
+				Object obj1 = parser1.parse(new FileReader("Data/Records/" + tnm+ ".json"));
 				JSONObject json12 = (JSONObject) obj1;
 				
 				
@@ -136,7 +135,7 @@ public class OperationFunctions {
 						}
 					}
 					
-				f1.close();	
+					
 			}
 			catch(Exception e)
 			{}

@@ -119,8 +119,7 @@ public class OperationFunctions {
 			String value1 = (String) json.get(key);
 			JSONParser parser1 = new JSONParser();
 			try {
-				FileReader f1 = new FileReader("Data/Records/" + tnm+ ".json");
-				Object obj1 = parser1.parse(f1);
+				Object obj1 = parser1.parse(new FileReader("Data/Records/" + tnm+ ".json"));
 				JSONObject json12 = (JSONObject) obj1;
 				
 				
@@ -136,7 +135,7 @@ public class OperationFunctions {
 						}
 					}
 					
-				f1.close();	
+					
 			}
 			catch(Exception e)
 			{}

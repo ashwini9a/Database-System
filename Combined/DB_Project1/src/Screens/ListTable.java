@@ -95,7 +95,8 @@ public class ListTable extends JFrame {
 					
 					JOptionPane.showMessageDialog(null,"Please select a table to delete", "Error",JOptionPane.ERROR_MESSAGE);
 					
-				} else {
+				} 
+				else {
 					//String tableName = (String) table.getValueAt(rowIndex, 0);
 
 					try {

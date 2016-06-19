@@ -163,8 +163,8 @@ public class SearchDisplay extends JFrame{
 		List<HashMap<String,Object>> result = new ArrayList<HashMap<String,Object>>();
 		
 		try{
-
-			Object obj = parser.parse(new FileReader("Data/Records/"+tableName+".json"));
+			FileReader f1 =new FileReader("Data/Records/"+tableName+".json");
+			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray)json.get("Records");
 			
@@ -252,7 +252,8 @@ public class SearchDisplay extends JFrame{
 					
 					result.add(recordMap);
 				}
-			}			
+			}	
+			f1.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
@@ -288,8 +289,8 @@ public class SearchDisplay extends JFrame{
 		JSONParser parser = new JSONParser();		
 		List<HashMap<String,String>> result = new ArrayList<HashMap<String,String>>();		
 		try{
-
-			Object obj = parser.parse(new FileReader("Data/Records/"+tableName+".json"));
+			FileReader f1 =new FileReader("Data/Records/"+tableName+".json");
+			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray)json.get("Records");
 			
@@ -359,7 +360,8 @@ public class SearchDisplay extends JFrame{
 	            		result.add(recordMap);           		
                 	}
                 }
-			}			
+			}	
+			f1.close();		
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 

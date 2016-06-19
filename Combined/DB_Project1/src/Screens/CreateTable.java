@@ -125,10 +125,33 @@ public class CreateTable extends JFrame {
 
 				int rowIndex = getSelectedRadioButton();
 				System.out.println("Row selected: "+rowIndex);
-
+				
+				boolean check = false;
+				DefaultTableModel dm1 = (DefaultTableModel)table.getModel();
+				int rowCount1 = dm1.getColumnCount();
+				ArrayList<String> cols= new ArrayList<>(); 
+				//cols.add((String) table.getModel().getValueAt(0, 1));
+				//System.out.println((String) table.getModel().getValueAt(0, 1));
+				System.out.println(rowCount1);
+				for(int j = 0; j < rowCount1 ; j++){
+					System.out.println((String) table.getModel().getValueAt(j, 1));
+					if(cols.contains(table.getModel().getValueAt(j, 1)))
+					{
+						check=true;
+						break;
+					}
+					
+					cols.add((String) table.getModel().getValueAt(j, 1));	
+				}
+				System.out.println(cols.toString());
 				if(rowIndex == -1){					
 					JOptionPane.showMessageDialog(null, "Please select atleaset one column as Key", "Error", JOptionPane.ERROR_MESSAGE);
-				}else{
+				}
+				else if(check){
+					check =false;
+					JOptionPane.showMessageDialog(null, "Cannot have duplicate column names", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				else{
 					//System.out.println(rowIndex);
 					DefaultTableModel dm = (DefaultTableModel)table.getModel();
 					int rowCount = dm.getRowCount();
