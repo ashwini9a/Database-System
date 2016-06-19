@@ -43,8 +43,7 @@ public class InsertWindow extends JFrame {
 			JSONObject json = (JSONObject) obj;			
 			JSONArray headers = (JSONArray) json.get("headers");			
 			P1.setLayout(new GridLayout(headers.size(), 2));
-			//P1.setMaximumSize(new Dimension(100, 50));
-			
+
 			size = headers.size();
 			
 			text = new JTextField[headers.size()];
