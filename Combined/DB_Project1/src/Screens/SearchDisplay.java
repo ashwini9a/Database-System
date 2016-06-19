@@ -192,7 +192,7 @@ public class SearchDisplay extends JFrame{
 					 
 					 System.out.println("Data type: "+dataType);
 					 
-					 if(!"Choose".equals(operatorValue) && !"VARCHAR".equals(dataType)){
+					 if(!"Choose".equals(operatorValue) && !"VARCHAR".equals(dataType) && isNumeric(searchValue)){
 						 
 						 if(">".equals(operatorValue)){
 							 
@@ -368,5 +368,18 @@ public class SearchDisplay extends JFrame{
 
 		return result;
 	}*/
+	
+	public static boolean isNumeric(String str)  
+	{  
+	  try  
+	  {  
+	    double d = Double.parseDouble(str);  
+	  }  
+	  catch(NumberFormatException nfe)  
+	  {  
+	    return false;  
+	  }  
+	  return true;  
+	}
 
 }
