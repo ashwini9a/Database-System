@@ -33,7 +33,8 @@ public class DisplayRecords {
 	/**
 	 * Launch the application.
 	 */
-	public  void displayRecords(String tableName) {
+	public  void displayRecords(String tableName){
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -193,12 +194,13 @@ public class DisplayRecords {
 							   DefaultTableModel dm = (DefaultTableModel)table.getModel();
 							   System.out.println("Selected row: "+ table.getSelectedRow());
 							   int index = table.getSelectedRow();
-							   
-							   
-							  
+													  
 							   int colIndex = -1;
+							   
 							   String key = GlobalData.tablePrimaryKeyMap.get(tnm);
+							   
 							   JSONObject json =new JSONObject();
+							   
 							   for(int i = 0 ; i < dm.getColumnCount() ; i++){
 								   json.put(columnNames[i], (String)dm.getValueAt(index, i));
 								   
@@ -238,6 +240,8 @@ public class DisplayRecords {
 	{ 
 		InsertWindow IW = new InsertWindow("Update Tuple : "+tableName, tableName,  this,key,value);
 	}
+	
+	
 	protected void deleteRecordFromJson(String key, String value, String tableName) {
 
 		JSONParser parser = new JSONParser();	
@@ -251,8 +255,10 @@ public class DisplayRecords {
 			for(int i = 0 ; i < headers.size() ; i++){
 				
 				JSONObject temp = (JSONObject)parser.parse(headers.get(i).toString());
-			     
-				if(temp.containsValue(value)){					
+			    
+				String keyValue = (String)temp.get(key);
+				
+				if(keyValue.equals(value)){					
 					headers.remove(i);
 				}
 			}
