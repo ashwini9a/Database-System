@@ -37,18 +37,7 @@ public class SearchDisplay extends JFrame{
 	 * Launch the application.
 	 */
     
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-			   try {
-					//SearchDisplay frame = new SearchDisplay();
-					//;
-				}catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	
 
 	/**
 	 * Create the frame.

@@ -22,6 +22,7 @@ import org.json.simple.parser.ParseException;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
 
 public class DisplayRecords {
 
@@ -78,7 +79,8 @@ public class DisplayRecords {
 
 		    	table.setModel(new DefaultTableModel(new Object[][] {},columnNames){				
 		    		@Override
-		    		public boolean isCellEditable(int row, int col){		
+		    		public boolean isCellEditable(int row, int col){
+		    			
 		    			return false;
 		    		}				
 		    	});
@@ -191,26 +193,30 @@ public class DisplayRecords {
 							   DefaultTableModel dm = (DefaultTableModel)table.getModel();
 							   System.out.println("Selected row: "+ table.getSelectedRow());
 							   int index = table.getSelectedRow();
+							   
+							   
 							  
 							   int colIndex = -1;
 							   String key = GlobalData.tablePrimaryKeyMap.get(tnm);
-							   
+							   JSONObject json =new JSONObject();
 							   for(int i = 0 ; i < dm.getColumnCount() ; i++){
+								   json.put(columnNames[i], (String)dm.getValueAt(index, i));
+								   
 								   if(key.equals(columnNames[i])){
 								    	colIndex = i;
 								    	break;
 								     }
 							   }
-							   
+							   System.out.println("Colums and data"+json.toJSONString());
 							   String value = (String)dm.getValueAt(index, colIndex);
-							   
-							   dm.removeRow(index);						  
-							   //search for this key in json and delete						   
-							   System.out.println("ColIndex: "+colIndex);						   
-							   // get value at that row and column
-							   
-							   String tableName =  frame.getTitle();
-							   deleteRecordFromJson(key,value,tableName);
+//							   
+//							   //dm.removeRow(index);						  
+//							   //search for this key in json and delete						   
+//							   System.out.println("ColIndex: "+colIndex);						   
+//							   // get value at that row and column
+//							   
+//							   String tableName =  frame.getTitle();
+							   updateRecordFromJson(key,value,tnm);
 							 
 						   }					  
 					       //
@@ -228,7 +234,10 @@ public class DisplayRecords {
 	}
 	
 	
-	
+	protected void updateRecordFromJson(String key,String value,String tableName)
+	{ 
+		InsertWindow IW = new InsertWindow("Update Tuple : "+tableName, tableName,  this,key,value);
+	}
 	protected void deleteRecordFromJson(String key, String value, String tableName) {
 
 		JSONParser parser = new JSONParser();	
