@@ -1,3 +1,4 @@
+
 package Screens;
 
 import java.awt.Dimension;
@@ -146,6 +147,7 @@ public class CreateTable extends JFrame {
 						bw1.write("{\"Records\":[]}");
 						bw1.flush();
 						bw1.close();
+						fw1.close();
 
 					} catch (IOException e3) {
 						// TODO Auto-generated catch block

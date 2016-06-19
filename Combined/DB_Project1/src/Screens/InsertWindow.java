@@ -38,8 +38,8 @@ public class InsertWindow extends JFrame {
 		
 		JSONParser parser = new JSONParser();
 		try {
-			
-			Object obj = parser.parse(new FileReader("Data/Metadata/"+tableName+".json"));
+			FileReader f1= new FileReader("Data/Metadata/"+tableName+".json");
+			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;			
 			JSONArray headers = (JSONArray) json.get("headers");			
 			P1.setLayout(new GridLayout(headers.size(), 2));
@@ -63,7 +63,8 @@ public class InsertWindow extends JFrame {
 				text[i] = textField;
 				P1.add(Col);
 				P1.add(text[i]);
-			}			
+			}	
+			f1.close();
 		}catch (Exception e) {	
 			e.printStackTrace();
 		}
@@ -114,15 +115,16 @@ public class InsertWindow extends JFrame {
 		JSONObject json1 = null; 
 		JSONParser parser = new JSONParser();
 		try {
-			
-			Object obj = parser.parse(new FileReader("Data/Metadata/"+tableName+".json"));
+			FileReader f1 = new FileReader("Data/Metadata/"+tableName+".json");
+			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;			
 			JSONArray headers = (JSONArray) json.get("headers");			
 			P1.setLayout(new GridLayout(headers.size(), 2));
 			//P1.setMaximumSize(new Dimension(100, 50));
 			JSONParser parser1 = new JSONParser();
 			try {
-				Object obj1 = parser1.parse(new FileReader("Data/Records/" + tableName+ ".json"));
+				FileReader f2 = new FileReader("Data/Records/" + tableName+ ".json");
+				Object obj1 = parser1.parse(f2);
 				JSONObject json12 = (JSONObject) obj1;
 				
 				
@@ -140,7 +142,7 @@ public class InsertWindow extends JFrame {
 						}
 					}
 					json1 = (JSONObject) headers2.get(rindex);
-					
+					f2.close();
 			}
 			catch(Exception e)
 			{}
@@ -167,7 +169,8 @@ public class InsertWindow extends JFrame {
 				}
 				P1.add(Col);
 				P1.add(text[i]);
-			}			
+			}	
+			f1.close();
 		}catch (Exception e) {	
 			e.printStackTrace();
 		}

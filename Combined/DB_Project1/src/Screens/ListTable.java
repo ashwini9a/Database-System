@@ -96,11 +96,12 @@ public class ListTable extends JFrame {
 					JOptionPane.showMessageDialog(null,"Please select a table to delete", "Error",JOptionPane.ERROR_MESSAGE);
 					
 				} else {
-					String tableName = GlobalData.allTables.get(rowIndex);
+					//String tableName = (String) table.getValueAt(rowIndex, 0);
 
 					try {
-						GlobalData.deleteTableFile(tableName);
+						GlobalData.deleteTableFile((String) table.getValueAt(rowIndex, 0));
 					} catch (Exception e1) {
+						System.out.println(e1);
 						e1.printStackTrace();
 					}
 					dm.removeRow(rowIndex);

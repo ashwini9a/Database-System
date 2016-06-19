@@ -177,8 +177,8 @@ public class SearchScreen {
 		String [] colnm = null;
 		
 		try {
-			
-			obj = parser.parse(new FileReader("Data/Metadata/"+tableName+".json"));			
+			FileReader f1 = new FileReader("Data/Metadata/"+tableName+".json");
+			obj = parser.parse(f1);			
 			JSONObject json = (JSONObject) obj;			
 			JSONArray headers = (JSONArray) json.get("headers");
 			colnm = new String[headers.size()];		

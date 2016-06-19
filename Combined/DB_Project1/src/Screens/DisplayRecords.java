@@ -57,8 +57,8 @@ public class DisplayRecords {
 		JSONParser parser = new JSONParser();		
 		
 		try{
-			
-			Object obj = parser.parse(new FileReader(name));
+			FileReader f1 =new FileReader(name);
+			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray)json.get("Records");
 			System.out.println(headers.toString());
@@ -109,6 +109,7 @@ public class DisplayRecords {
 		    	frame.getContentPane().add(scrollPane);
 
 		    	this.frame.setVisible(true);
+		    	f1.close();
 		  }	
 		
 		}catch(FileNotFoundException e){
@@ -247,8 +248,8 @@ public class DisplayRecords {
 		JSONParser parser = new JSONParser();	
 		
 		try{
-			
-			Object obj = parser.parse(new FileReader("Data/Records/"+tableName+".json"));
+			FileReader f1 = new FileReader("Data/Records/"+tableName+".json");
+			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray)json.get("Records");
 			
@@ -275,6 +276,7 @@ public class DisplayRecords {
 
 			bw.write(json.toJSONString());
 			bw.flush();
+			fw.close();
 			bw.close();
 		
 		} catch(FileNotFoundException e){

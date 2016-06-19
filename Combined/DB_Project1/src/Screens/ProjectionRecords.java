@@ -291,8 +291,8 @@ public class ProjectionRecords {
 		 columnDataType = new HashMap<String,String>();
 		 		 
 			try {
-				
-				Object obj = parser.parse(new FileReader("Data/MetaData/" + tableName + ".json"));
+				FileReader f1= new FileReader("Data/MetaData/" + tableName + ".json");
+				Object obj = parser.parse(f1);
 				JSONObject json = (JSONObject) obj;
 				JSONArray headers = (JSONArray) json.get("headers");
 			

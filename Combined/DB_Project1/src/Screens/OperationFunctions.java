@@ -141,8 +141,8 @@ public class OperationFunctions {
 			{}
 			JSONParser parser = new JSONParser();
 			try {
-				
-				Object obj = parser.parse(new FileReader("Data/Metadata/"+tnm+".json"));
+				FileReader f1=new FileReader("Data/Metadata/"+tnm+".json");
+				Object obj = parser.parse(f1);
 				JSONObject json1 = (JSONObject) obj;			
 				JSONArray headers = (JSONArray) json1.get("headers");			
 				col = new String[headers.size()];
@@ -156,7 +156,8 @@ public class OperationFunctions {
 					ColTypes.put(col[i], type);
 					//System.out.println((String) temp1.get("Column Name"));
 					
-				}			
+				}
+				f1.close();
 			}catch (Exception e) {	
 				e.printStackTrace();
 			}
@@ -212,8 +213,8 @@ public class OperationFunctions {
 			int size=-1;
 			JSONParser parser = new JSONParser();
 			try {
-				
-				Object obj = parser.parse(new FileReader("Data/Metadata/"+tnm+".json"));
+				FileReader f1 = new FileReader("Data/Metadata/"+tnm+".json");
+				Object obj = parser.parse(f1);
 				JSONObject json1 = (JSONObject) obj;			
 				JSONArray headers = (JSONArray) json1.get("headers");			
 				col = new String[headers.size()];
@@ -228,7 +229,8 @@ public class OperationFunctions {
 					ColTypes.put(col[i], type);
 					//System.out.println((String) temp1.get("Column Name"));
 					
-				}			
+				}	
+				f1.close();
 			}catch (Exception e) {	
 				e.printStackTrace();
 			}

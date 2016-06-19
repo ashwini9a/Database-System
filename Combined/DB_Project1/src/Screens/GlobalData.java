@@ -52,7 +52,8 @@ public class GlobalData{
 		JSONParser parser = new JSONParser();
 	      while(itr.hasNext()) {
 	         String tnm = (itr.next()).toString();
-	         Object obj = parser.parse(new FileReader("Data/Metadata/"+tnm+".json"));
+	         FileReader f1=new FileReader("Data/Metadata/"+tnm+".json");
+	         Object obj = parser.parse(f1);
 				JSONObject json = (JSONObject) obj;
 				
 				JSONArray headers = (JSONArray) json.get("headers");
@@ -69,7 +70,7 @@ public class GlobalData{
 					
 					
 				}	
-	         
+	         f1.close();
 	      }
 	}
 	
@@ -98,12 +99,15 @@ public class GlobalData{
 	
 	public static void deleteTableFile(String tnm) throws Exception 
 	{
+		System.out.println(tnm);
 		allTables.remove(tnm);
 		updateTableFile();
-		File file1 = new File("Data/Records/"+tnm+".json");
-		File file2 = new File("Data/Metadata/"+tnm+".json");
+		File file1 = new File("Data/Metadata/"+tnm+".json");
+		boolean f= file1.delete();
+		System.out.println(f);
+		File file2 = new File("Data/Records/"+tnm+".json");
 		
-		file1.delete();
+		
 		file2.delete();
 		initprimaryKey();
 	}
