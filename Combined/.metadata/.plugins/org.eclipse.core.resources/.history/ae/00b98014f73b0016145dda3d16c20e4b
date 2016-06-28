@@ -1,0 +1,9 @@
+package Screens;
+
+public class QValidation {
+	public static void validateQ1(String query)
+	{
+		
+	}
+
+}

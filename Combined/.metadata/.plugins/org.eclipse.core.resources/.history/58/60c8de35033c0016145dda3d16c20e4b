@@ -1,0 +1,42 @@
+package Screens;
+
+import javax.swing.JOptionPane;
+
+public class QValidation {
+	public static void validateQ1(String query)
+	{
+		String[] words = query.split(" ");
+		int i=0;
+		while(true)
+		{
+			System.out.println(words[i].toLowerCase().toString());
+			i++;
+			if(i == words.length)
+			{
+				break;
+			}
+		}
+		String type= words[0].toLowerCase();
+		switch(type)
+		{
+		case "select":
+			selectValidation(words);
+			break;
+		case "update":
+			break;
+		case "insert":
+			break;
+		case "create":
+			break;
+		case "delete":
+			break;
+		default:
+			JOptionPane.showMessageDialog(null, "Invalid database operation", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+			
+	}
+	public static void selectValidation(String[] words)
+	{
+		
+	}
+}

@@ -1,0 +1,20 @@
+package Screens;
+
+public class QValidation {
+	public static void validateQ1(String query)
+	{
+		String[] words = query.split(" ");
+		int i=0;
+		while(true)
+		{
+			System.out.println(words[i].toString());
+			i++;
+			if(i == words.length)
+			{
+				break;
+			}
+		}
+			
+	}
+
+}
