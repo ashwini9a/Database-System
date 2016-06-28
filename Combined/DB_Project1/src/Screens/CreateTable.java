@@ -128,7 +128,7 @@ public class CreateTable extends JFrame {
 
 				if ("".equals(tableName)){
 					JOptionPane.showMessageDialog(null, "Please enter Table Name", "Error", JOptionPane.ERROR_MESSAGE);
-				} else if (GlobalData.allTables.contains(tableName)) {
+				} else if (GlobalData.allTables.contains(tableName)){
 					JOptionPane.showMessageDialog(null, "Table Name already Exists", "Error",
 							JOptionPane.ERROR_MESSAGE);
 				} else {
