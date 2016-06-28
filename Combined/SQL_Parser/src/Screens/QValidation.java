@@ -10,7 +10,7 @@ public class QValidation {
 	public static void validateQ1(String query)
 	{
 		String[] words = query.split(" ");
-		int i=0;
+		int i = 0;
 		while(true)
 		{
 			System.out.println(words[i].toLowerCase().toString());
@@ -30,7 +30,7 @@ public class QValidation {
 			updateValidation(words);
 			break;
 		case "insert":
-			insertValidation(words);
+			insertValidation(words,query);
 			break;
 		case "create":
 			createValidation(words);
@@ -164,6 +164,7 @@ public class QValidation {
 		System.out.println(tables.toString());;
 		return true;
 	}
+	
 	public static void projectionValid(ArrayList<String> projection)
 	{
 		if(projection.size()==1 && projection.get(0).equals("*"))
@@ -236,10 +237,21 @@ public class QValidation {
 	{
 		
 	}
-	public static void insertValidation(String[] words)
+	
+	public static void insertValidation(String[] words, String statement)
 	{
+				
+	     Insert insert = new Insert();
+	     insert.parse(words, statement);
+	     
+		
+		
+		
+		
 		
 	}
+	
+	
 	public static void createValidation(String[] words)
 	{
 		
