@@ -76,15 +76,21 @@ public class Delete {
 		
 		this.tableName = tableName;
 		
-		// delete from table correct
+		//delete from table correct
 		
-		// check the where clause
-		
-		
+		//check the where clause
 		
 		
 		
+		//if syntax is correct, check if tableName and columnName exists
+		if(!GlobalUtil.validateTableName(this.tableName)){
+			JOptionPane.showMessageDialog(null, "Invalid Syntax: No such table exists", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+			
+		}
 		
+	   /// if everything is good, delete records	
+	
 	}
 	
 	
