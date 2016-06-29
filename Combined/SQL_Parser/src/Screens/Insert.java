@@ -47,10 +47,10 @@ public class Insert {
 
 		//statement = statement.toLowerCase();
 
-		if(tokens.length != 5 || tokens.length != 6){			
+      	/*if(tokens.length != 5 && tokens.length != 6){			
 			JOptionPane.showMessageDialog(null, "Invalid INSERT Statement", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
-		}
+		}*/
 
 
 		int intoIndex = (sql.indexOf("INTO") != -1) ? sql.indexOf("INTO") : sql.indexOf("into");
@@ -69,10 +69,10 @@ public class Insert {
 		// if reached here , means into and values are present;
 		// check if at correct position
 
-		if(!tokens[2].equalsIgnoreCase("INTO")){
+		if(!tokens[1].equalsIgnoreCase("INTO")){
 
 			JOptionPane.showMessageDialog(null, "Invalid location of INTO clause", "Error", JOptionPane.ERROR_MESSAGE);
-
+            return;
 		 }
 
 		// INSERT INTO correct	 
@@ -86,10 +86,10 @@ public class Insert {
 	  
 		// check if values is at position 4 or 5
 		if(columnsPresent && !tokens[4].equalsIgnoreCase("values")){	    	
-		    JOptionPane.showMessageDialog(null, "Invalid location of values clause", "Error", JOptionPane.ERROR_MESSAGE);   
+		    JOptionPane.showMessageDialog(null, "Invalid position of VALUES clause", "Error", JOptionPane.ERROR_MESSAGE);   
 		    return;
 		}else if(!tokens[3].equalsIgnoreCase("values")){
-			JOptionPane.showMessageDialog(null, "Invalid location of values clause", "Error", JOptionPane.ERROR_MESSAGE);   
+			JOptionPane.showMessageDialog(null, "Invalid position of VALUES clause", "Error", JOptionPane.ERROR_MESSAGE);   
 		    return;
 		}
 
@@ -162,7 +162,7 @@ public class Insert {
 
 
 		if(!colValues.startsWith("(") || !colValues.endsWith(")")){
-			JOptionPane.showMessageDialog(null, "Invalid Syntax: Column Values not surrounded with ()", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Invalid Syntax: Invalid Format of Column Values", "Error", JOptionPane.ERROR_MESSAGE);
 			return;			
 		}else{
 
@@ -179,8 +179,7 @@ public class Insert {
 			}
 			
 			// check if val is a comma separated string
-			System.out.println("val: "+val);
-			
+			System.out.println("val: "+val);			
 			String [] columnValues = val.split(",");
 
 			boolean flag = true;
