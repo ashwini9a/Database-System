@@ -61,7 +61,7 @@ public class Home extends JFrame {
 		getContentPane().add(textArea);
 		
 		JButton btnOk = new JButton("OK");
-		btnOk.setBounds(594, 232, 61, 31);
+		btnOk.setBounds(559, 232, 75, 31);
 		btnOk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -79,7 +79,7 @@ public class Home extends JFrame {
 		getContentPane().add(btnOk);
 		
 		JButton btnClear = new JButton("Clear");
-		btnClear.setBounds(691, 232, 75, 31);
+		btnClear.setBounds(644, 232, 84, 31);
 		btnClear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				textArea.setText("");
