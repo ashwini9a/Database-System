@@ -14,7 +14,7 @@ import org.json.simple.parser.ParseException;
 
 public class Insert {
 
-	private Table tableName;
+	private String tableName;
 	private List<String> columns;
 	private List<String> values;
 	private boolean columnsPresent = false;
@@ -29,12 +29,12 @@ public class Insert {
 	}
 
 
-	public Table getTableName() {
+	public String getTableName() {
 		return tableName;
 	}
 
 
-	public void setTableName(Table tableName) {
+	public void setTableName(String tableName) {
 		this.tableName = tableName;
 	}
 
@@ -116,7 +116,7 @@ public class Insert {
 			return;
 		}else{
 			System.out.println("TableName: "+tableName);
-			setTableName(new Table(tableName));
+			this.tableName = tableName;
 		}	
 
 		// check if the brackets are balanced
@@ -197,7 +197,7 @@ public class Insert {
 				return;
 			}
 			
-			// check if val is a comma separated string
+			//check if val is a comma separated string
 			System.out.println("val: "+val);			
 			String [] columnValues = val.split(",");
 
@@ -241,81 +241,20 @@ public class Insert {
 	
 	
 	 private boolean validateSemantics(){
-		
-		boolean tableExists = true;
-		//check if tableName exists
-		File file = new File("Data/Metadata/"+this.tableName+".json");
-		if(!file.exists())
-			tableExists = false;
-		
-		if(!tableExists){			
+				
+		if(!GlobalUtil.validateTableName(this.tableName)){			
 			JOptionPane.showMessageDialog(null, "Invalid Syntax: No such table exists", "Error", JOptionPane.ERROR_MESSAGE);
 			return false;
-		}else{
-			
+		}else{			
 			// if table exists
 			//check if columnNames are valid
-			JSONParser parser = new JSONParser();
-			ArrayList<String> columnNamesList = new ArrayList<String>();
-			
-			if(this.columnsPresent){
-				
-				FileReader f1;
-				try {
-					
-					f1 = new FileReader("Data/MetaData/" + this.tableName + ".json");
-					Object obj = parser.parse(f1);
-					JSONObject json = (JSONObject) obj;
-					JSONArray headers = (JSONArray) json.get("headers");
-				
-			    	for(int i = 0 ; i < headers.size(); i++){
-			    		
-			    		Object temp = parser.parse(headers.get(i).toString());
-						JSONObject temp1 = (JSONObject) temp;			
-						
-						String columnName = (String) temp1.get("Column Name");
-						columnNamesList.add(columnName);
-						
-							    	       	
-			    	}
-					
-				} catch (IOException | ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				
-				//check if each in the sql exists in the columnList
-				boolean isValidColName = true;
-				
-				for(String colName : this.columns){					
-					if(!columnNamesList.contains(colName)){
-						
-						isValidColName = false;
-						break;
-						
-					}else
-						continue;					
-				}
-				
-				
-				if(!isValidColName){					
+			if(this.columnsPresent){								
+				if(!GlobalUtil.validateColumnNames(this.columns, this.tableName)){					
 					JOptionPane.showMessageDialog(null, "Column Name invalid", "Error", JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
-				
-				
-				
-				
 			}
-			
-			
-			
 		}
-		
-		
-		
-		
 		
 		return false;
 	}
