@@ -1,19 +1,11 @@
 package Screens;
-
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.TextArea;
-import java.awt.GridBagConstraints;
 import javax.swing.JTextArea;
-import java.awt.Insets;
 import javax.swing.JButton;
 import java.awt.Font;
 import java.awt.event.ActionListener;
@@ -21,7 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class Home extends JFrame {
+public class Home extends JFrame{
 
 	private JPanel contentPane;
 
@@ -61,7 +53,7 @@ public class Home extends JFrame {
 		getContentPane().add(textArea);
 		
 		JButton btnOk = new JButton("OK");
-		btnOk.setBounds(594, 232, 61, 31);
+		btnOk.setBounds(559, 232, 75, 31);
 		btnOk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -79,7 +71,7 @@ public class Home extends JFrame {
 		getContentPane().add(btnOk);
 		
 		JButton btnClear = new JButton("Clear");
-		btnClear.setBounds(691, 232, 75, 31);
+		btnClear.setBounds(644, 232, 84, 31);
 		btnClear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				textArea.setText("");

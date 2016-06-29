@@ -36,7 +36,7 @@ public class QValidation {
 			createValidation(words);
 			break;
 		case "delete":
-			deleteValidation(words);
+			deleteValidation(query);
 			break;
 		default:
 			JOptionPane.showMessageDialog(null, "Invalid database operation", "Error", JOptionPane.ERROR_MESSAGE);
@@ -252,12 +252,25 @@ public class QValidation {
 	}
 	
 	
+	
 	public static void createValidation(String[] words)
 	{
 		
 	}
-	public static void deleteValidation(String[] words)
+	
+	
+	
+	
+	public static void deleteValidation(String query)
 	{
 		
+		Delete delete = new Delete();
+		//validate the syntax and semantics
+		delete.parse(query);
+		
+		
 	}
+	
+	
+	
 }
