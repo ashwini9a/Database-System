@@ -4,8 +4,11 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
@@ -28,6 +31,13 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.JButton;
 import java.awt.Font;
 
+import jdbm.RecordManager;
+import jdbm.RecordManagerFactory;
+
+import jdbm.helper.Tuple;
+import jdbm.helper.TupleBrowser;
+import jdbm.helper.StringComparator;
+
 public class SelectAtt extends JFrame {
 
 	private JTable table;
@@ -46,12 +56,12 @@ public class SelectAtt extends JFrame {
 
 		JSONParser parser = new JSONParser();
 		try {
-			FileReader f1 =new FileReader("Data/MetaData/" + tableName + ".json");
+			FileReader f1 = new FileReader("Data/MetaData/" + tableName + ".json");
 			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray) json.get("headers");
 
-			columnNames = new String[] {"Column Name", "Include?"};
+			columnNames = new String[] { "Column Name", "Include?" };
 
 			table = new JTable();
 			table.setModel(new DefaultTableModel(new Object[][] {}, columnNames) {
@@ -130,7 +140,8 @@ public class SelectAtt extends JFrame {
 					}
 				}
 				if (selectedAtts.isEmpty()) {
-					JOptionPane.showMessageDialog(null, "Please select at least one attribute!", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Please select at least one attribute!", "Error",
+							JOptionPane.ERROR_MESSAGE);
 				} else {
 					ProjectionRecords display = new ProjectionRecords();
 					display.projectRecords(tableName, selectedAtts);
@@ -140,6 +151,36 @@ public class SelectAtt extends JFrame {
 
 		getContentPane().add(btnSelected);
 
+		// testing code
+		JButton btnNewButton = new JButton("New button");
+		btnNewButton.setBounds(124, 174, 117, 29);
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				JSONParser parser = new JSONParser();
+				try {
+					FileReader f1 = new FileReader("Data/Records/" + tableName + ".json");
+					Object obj = parser.parse(f1);
+					JSONObject json = (JSONObject) obj;
+					JSONArray headers = (JSONArray) json.get("Records");
+					System.out.println(headers.get(0).toString());
+					BPlusTreeIndexing tree = new BPlusTreeIndexing(headers, "Name");
+
+				} catch (FileNotFoundException ex) {
+					ex.printStackTrace();
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				} catch (ParseException ex) {
+					ex.printStackTrace();
+				}
+
+			}
+		});
+		getContentPane().add(btnNewButton);
+		// testing code
+		
+		
+		
 		this.setVisible(true);
 	}
 }
