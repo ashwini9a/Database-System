@@ -1,11 +1,16 @@
 package Screens;
 
-
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-
 import javax.swing.JOptionPane;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class Insert {
 
@@ -80,15 +85,16 @@ public class Insert {
 		// check if columnNames present
 		int firstBracketIndex = sql.indexOf("(");
 
-		if(firstBracketIndex < valueIndex){	    	
+		if(firstBracketIndex != -1 && firstBracketIndex < valueIndex){	    	
 			this.columnsPresent = true;
 		}
 	  
+		
 		// check if values is at position 4 or 5
-		if(columnsPresent && !tokens[4].equalsIgnoreCase("values")){	    	
+		if(columnsPresent && tokens.length > 4 && !tokens[4].equalsIgnoreCase("values")){
 		    JOptionPane.showMessageDialog(null, "Invalid position of VALUES clause", "Error", JOptionPane.ERROR_MESSAGE);   
 		    return;
-		}else if(!tokens[3].equalsIgnoreCase("values")){
+		}else if(!columnsPresent && tokens.length > 3 && !tokens[3].equalsIgnoreCase("values")){
 			JOptionPane.showMessageDialog(null, "Invalid position of VALUES clause", "Error", JOptionPane.ERROR_MESSAGE);   
 		    return;
 		}
@@ -96,6 +102,8 @@ public class Insert {
 		//fetch tableName
 
 		String tableName = "";
+		
+		System.out.println("columnsPresent"+columnsPresent);
 		
 		if(columnsPresent){
 			tableName = sql.substring(intoIndex, firstBracketIndex).trim().substring(4).trim();
@@ -154,11 +162,22 @@ public class Insert {
 		// fetch columnValues
 
 		String colValues = null;
+		
+		
 
-		if(columnsPresent){			
-			colValues = tokens[5];
-		}else
-			colValues = tokens[4];
+		if(columnsPresent){	
+			if(tokens.length <= 5){				
+				JOptionPane.showMessageDialog(null, "Invalid Syntax: Column Values Missing", "Error", JOptionPane.ERROR_MESSAGE);
+				return;	
+			}else
+				colValues = tokens[5];
+		}else{
+			if(tokens.length <= 4){				
+				JOptionPane.showMessageDialog(null, "Invalid Syntax: Column Values Missing", "Error", JOptionPane.ERROR_MESSAGE);
+				return;	
+			}else
+			  colValues = tokens[4];
+		}
 
 
 		if(!colValues.startsWith("(") || !colValues.endsWith(")")){
@@ -202,10 +221,106 @@ public class Insert {
 			}
 
          System.out.println(values);
+         
+         //once syntax is correct, check if table name and all columnNames exists         
+         boolean isValid = validateSemantics();
+         
+         if(!isValid)
+        	  return;
+         else{       	 
+        	 // save the record in the database
+        	 // need to do this.      	 
+         }
+        	 
 
 		}
 
 	}
+
+
+	
+	
+	 private boolean validateSemantics(){
+		
+		boolean tableExists = true;
+		//check if tableName exists
+		File file = new File("Data/Metadata/"+this.tableName+".json");
+		if(!file.exists())
+			tableExists = false;
+		
+		if(!tableExists){			
+			JOptionPane.showMessageDialog(null, "Invalid Syntax: No such table exists", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}else{
+			
+			// if table exists
+			//check if columnNames are valid
+			JSONParser parser = new JSONParser();
+			ArrayList<String> columnNamesList = new ArrayList<String>();
+			
+			if(this.columnsPresent){
+				
+				FileReader f1;
+				try {
+					
+					f1 = new FileReader("Data/MetaData/" + this.tableName + ".json");
+					Object obj = parser.parse(f1);
+					JSONObject json = (JSONObject) obj;
+					JSONArray headers = (JSONArray) json.get("headers");
+				
+			    	for(int i = 0 ; i < headers.size(); i++){
+			    		
+			    		Object temp = parser.parse(headers.get(i).toString());
+						JSONObject temp1 = (JSONObject) temp;			
+						
+						String columnName = (String) temp1.get("Column Name");
+						columnNamesList.add(columnName);
+						
+							    	       	
+			    	}
+					
+				} catch (IOException | ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				
+				//check if each in the sql exists in the columnList
+				boolean isValidColName = true;
+				
+				for(String colName : this.columns){					
+					if(!columnNamesList.contains(colName)){
+						
+						isValidColName = false;
+						break;
+						
+					}else
+						continue;					
+				}
+				
+				
+				if(!isValidColName){					
+					JOptionPane.showMessageDialog(null, "Column Name invalid", "Error", JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+				
+				
+				
+				
+			}
+			
+			
+			
+		}
+		
+		
+		
+		
+		
+		return false;
+	}
+	
+	
 
 
 	private boolean balancedBrackets(String sql){
