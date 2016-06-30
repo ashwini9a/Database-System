@@ -164,8 +164,9 @@ public class SelectAtt extends JFrame {
 					JSONObject json = (JSONObject) obj;
 					JSONArray headers = (JSONArray) json.get("Records");
 					System.out.println(headers.get(0).toString());
+					String att = "Name";
 					BPlusTreeIndexing indexing = new BPlusTreeIndexing();
-					BTree tree = indexing.GetBPlusTreeIndexing(headers, tableName, "Name");
+					BTree tree = indexing.GetBPlusTreeIndexing(headers, tableName, att);
 
 					// traverse people in order
 					TupleBrowser browser = tree.browse();
@@ -175,12 +176,13 @@ public class SelectAtt extends JFrame {
 						System.out.println(obj1);
 					}
 					JSONObject test = (JSONObject) tree.find("George");
-					tree.insert("George2", test, false);
+					
+					//tree.insert("George2", test, false);		//this is tested
 					// traverse people in reverse order
 					System.out.println("test 1!!!!");
 					System.out.println(test==headers.get(1));
 
-					System.out.println("test 2!!!!"+test.get("Name"));
+					System.out.println("test 2!!!!"+test.get(att));
 
 					System.out.println("Reverse order:");
 					browser = tree.browse(null); // position browser at end of
@@ -192,7 +194,37 @@ public class SelectAtt extends JFrame {
 					}
 					
 					System.out.println("Save:");
-					indexing.SaveBTree(headers, tree, tableName);
+					indexing.SaveBTree(headers, tree, tableName,att);
+					
+					//below is the test for tree load from saved index file
+					System.out.println("!!!!");
+					System.out.println("below is the test for tree load from saved index file");
+					BTree tree2 = indexing.LoadBTree(headers, tableName, att);
+					
+					TupleBrowser browser2 = tree2.browse();
+					Tuple tuple2 = new Tuple();
+					while (browser.getNext(tuple2)) {
+						Object obj1 = tuple2.getKey();
+						System.out.println(obj1);
+					}
+					JSONObject test2 = (JSONObject) tree2.find("George");
+					
+					//tree.insert("George2", test, false);		//this is tested
+					// traverse people in reverse order
+					System.out.println("test 1!!!!");
+					System.out.println(test2==headers.get(1));
+
+					System.out.println("test 2!!!!"+test2.get(att));
+
+					System.out.println("Reverse order:");
+					browser = tree.browse(null); // position browser at end of
+													// the list
+
+					while (browser.getPrevious(tuple2)) {
+						Object obj1 = tuple2.getKey();
+						System.out.println(obj1);
+					}
+					
 					
 				} catch (FileNotFoundException ex) {
 					ex.printStackTrace();
