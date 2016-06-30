@@ -6,4 +6,16 @@
 		<item value="197" key="y"/>
 		<item value="635" key="height"/>
 	</section>
+	<section name="org.eclipse.wb.internal.swing.model.layout.gbl.ui.RowEditDialog">
+		<item value="735" key="x"/>
+		<item value="450" key="width"/>
+		<item value="248" key="y"/>
+		<item value="534" key="height"/>
+	</section>
+	<section name="org.eclipse.wb.internal.swing.model.layout.gbl.ui.ColumnEditDialog">
+		<item value="735" key="x"/>
+		<item value="450" key="width"/>
+		<item value="285" key="y"/>
+		<item value="459" key="height"/>
+	</section>
 </section>

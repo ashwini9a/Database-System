@@ -1,0 +1,11 @@
+package Screens;
+
+public class WhereClause {
+	String attribute1;
+	String attribute2;
+	char operation;
+	boolean attribute2value;
+	boolean bool, valid;
+	boolean boolOP;
+
+}
