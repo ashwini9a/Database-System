@@ -4,8 +4,11 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
@@ -28,6 +31,13 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.JButton;
 import java.awt.Font;
 
+import jdbm.RecordManager;
+import jdbm.RecordManagerFactory;
+import jdbm.btree.BTree;
+import jdbm.helper.Tuple;
+import jdbm.helper.TupleBrowser;
+import jdbm.helper.StringComparator;
+
 public class SelectAtt extends JFrame {
 
 	private JTable table;
@@ -46,12 +56,12 @@ public class SelectAtt extends JFrame {
 
 		JSONParser parser = new JSONParser();
 		try {
-			FileReader f1 =new FileReader("Data/MetaData/" + tableName + ".json");
+			FileReader f1 = new FileReader("Data/MetaData/" + tableName + ".json");
 			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray) json.get("headers");
 
-			columnNames = new String[] {"Column Name", "Include?"};
+			columnNames = new String[] { "Column Name", "Include?" };
 
 			table = new JTable();
 			table.setModel(new DefaultTableModel(new Object[][] {}, columnNames) {
@@ -130,7 +140,8 @@ public class SelectAtt extends JFrame {
 					}
 				}
 				if (selectedAtts.isEmpty()) {
-					JOptionPane.showMessageDialog(null, "Please select at least one attribute!", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Please select at least one attribute!", "Error",
+							JOptionPane.ERROR_MESSAGE);
 				} else {
 					ProjectionRecords display = new ProjectionRecords();
 					display.projectRecords(tableName, selectedAtts);
@@ -139,6 +150,94 @@ public class SelectAtt extends JFrame {
 		});
 
 		getContentPane().add(btnSelected);
+
+		// testing code
+		JButton btnNewButton = new JButton("New button");
+		btnNewButton.setBounds(124, 174, 117, 29);
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				JSONParser parser = new JSONParser();
+				try {
+					FileReader f1 = new FileReader("Data/Records/" + tableName + ".json");
+					Object obj = parser.parse(f1);
+					JSONObject json = (JSONObject) obj;
+					JSONArray headers = (JSONArray) json.get("Records");
+					System.out.println(headers.get(0).toString());
+					String att = "Name";
+					BPlusTreeIndexing indexing = new BPlusTreeIndexing();
+					BTree tree = indexing.GetBPlusTreeIndexing(headers, tableName, att);
+
+					// traverse people in order
+					TupleBrowser browser = tree.browse();
+					Tuple tuple = new Tuple();
+					while (browser.getNext(tuple)) {
+						Object obj1 = tuple.getKey();
+						System.out.println(obj1);
+					}
+					JSONObject test = (JSONObject) tree.find("George");
+					
+					//tree.insert("George2", test, false);		//this is tested
+					// traverse people in reverse order
+					System.out.println("test 1!!!!");
+					System.out.println(test==headers.get(1));
+
+					System.out.println("test 2!!!!"+test.get(att));
+
+					System.out.println("Reverse order:");
+					browser = tree.browse(null); // position browser at end of
+													// the list
+
+					while (browser.getPrevious(tuple)) {
+						Object obj1 = tuple.getKey();
+						System.out.println(obj1);
+					}
+					
+					System.out.println("Save:");
+					indexing.SaveBTree(headers, tree, tableName,att);
+					
+					//below is the test for tree load from saved index file
+					System.out.println("!!!!");
+					System.out.println("below is the test for tree load from saved index file");
+					BTree tree2 = indexing.LoadBTree(headers, tableName, att);
+					
+					TupleBrowser browser2 = tree2.browse();
+					Tuple tuple2 = new Tuple();
+					while (browser.getNext(tuple2)) {
+						Object obj1 = tuple2.getKey();
+						System.out.println(obj1);
+					}
+					JSONObject test2 = (JSONObject) tree2.find("George");
+					
+					//tree.insert("George2", test, false);		//this is tested
+					// traverse people in reverse order
+					System.out.println("test 1!!!!");
+					System.out.println(test2==headers.get(1));
+
+					System.out.println("test 2!!!!"+test2.get(att));
+
+					System.out.println("Reverse order:");
+					browser = tree.browse(null); // position browser at end of
+													// the list
+
+					while (browser.getPrevious(tuple2)) {
+						Object obj1 = tuple2.getKey();
+						System.out.println(obj1);
+					}
+					
+					
+				} catch (FileNotFoundException ex) {
+					ex.printStackTrace();
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				} catch (ParseException ex) {
+					ex.printStackTrace();
+				}
+
+			}
+		});
+		getContentPane().add(btnNewButton);
+		// testing code
 
 		this.setVisible(true);
 	}

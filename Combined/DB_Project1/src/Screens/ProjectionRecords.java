@@ -29,14 +29,8 @@ public class ProjectionRecords {
 	 */
 	public void projectRecords(String tableName, ArrayList<String> SelectedAttributes) {
 		
-		//EventQueue.invokeLater(new Runnable(){
-			
-			//public void run(){
+
 		try {
-
-			//ProjectionRecords window = new ProjectionRecords();
-			System.out.println(tableName);
-
 			// populate records in the table
 			frame.setTitle(tableName);
 			populateRecords("Data/Records/" + tableName + ".json", SelectedAttributes);
@@ -47,8 +41,6 @@ public class ProjectionRecords {
 			e.printStackTrace();
 		}
 	}
-		//});
-	//}
 
 	public static void projectRecords(String tableName) {
 		//EventQueue.invokeLater(new Runnable() {
@@ -68,9 +60,7 @@ public class ProjectionRecords {
 			e.printStackTrace();
 		}
    }
-		//});
-	//}
-	
+
 
 	public void populateRecords(String name, ArrayList<String> SelectedAttributes) {
 		JSONParser parser = new JSONParser();
@@ -162,9 +152,6 @@ public class ProjectionRecords {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
 
 	public void populateRecords(String name) {
 		JSONParser parser = new JSONParser();
