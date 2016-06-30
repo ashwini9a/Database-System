@@ -65,7 +65,7 @@ public class FamousPeople {
         try {
             // open database and setup an object cache
             recman = RecordManagerFactory.createRecordManager( DATABASE, props );
-
+            
             // try to reload an existing B+Tree
             recid = recman.getNamedObject( BTREE_NAME );
             if ( recid != 0 ) {

@@ -33,7 +33,7 @@ import java.awt.Font;
 
 import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
-
+import jdbm.btree.BTree;
 import jdbm.helper.Tuple;
 import jdbm.helper.TupleBrowser;
 import jdbm.helper.StringComparator;
@@ -164,8 +164,36 @@ public class SelectAtt extends JFrame {
 					JSONObject json = (JSONObject) obj;
 					JSONArray headers = (JSONArray) json.get("Records");
 					System.out.println(headers.get(0).toString());
-					BPlusTreeIndexing tree = new BPlusTreeIndexing(headers, "Name");
+					BPlusTreeIndexing indexing = new BPlusTreeIndexing();
+					BTree tree = indexing.GetBPlusTreeIndexing(headers, tableName, "Name");
 
+					// traverse people in order
+					TupleBrowser browser = tree.browse();
+					Tuple tuple = new Tuple();
+					while (browser.getNext(tuple)) {
+						Object obj1 = tuple.getKey();
+						System.out.println(obj1);
+					}
+					JSONObject test = (JSONObject) tree.find("George");
+					tree.insert("George2", test, false);
+					// traverse people in reverse order
+					System.out.println("test 1!!!!");
+					System.out.println(test==headers.get(1));
+
+					System.out.println("test 2!!!!"+test.get("Name"));
+
+					System.out.println("Reverse order:");
+					browser = tree.browse(null); // position browser at end of
+													// the list
+
+					while (browser.getPrevious(tuple)) {
+						Object obj1 = tuple.getKey();
+						System.out.println(obj1);
+					}
+					
+					System.out.println("Save:");
+					indexing.SaveBTree(headers, tree, tableName);
+					
 				} catch (FileNotFoundException ex) {
 					ex.printStackTrace();
 				} catch (IOException ex) {
@@ -178,9 +206,7 @@ public class SelectAtt extends JFrame {
 		});
 		getContentPane().add(btnNewButton);
 		// testing code
-		
-		
-		
+
 		this.setVisible(true);
 	}
 }
