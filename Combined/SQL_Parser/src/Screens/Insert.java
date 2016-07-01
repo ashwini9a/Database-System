@@ -1,16 +1,22 @@
 package Screens;
 
+
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
+import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import javax.swing.JOptionPane;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+
+
+//[\w+]*[,\w+]*
 
 public class Insert {
 
@@ -161,9 +167,7 @@ public class Insert {
 
 		// fetch columnValues
 
-		String colValues = null;
-		
-		
+		String colValues = null;	
 
 		if(columnsPresent){	
 			if(tokens.length <= 5){				
@@ -220,27 +224,129 @@ public class Insert {
 				}
 			}
 
-         System.out.println(values);
+
+         // check if columNamesList and ValueList size matches
+         
+         if(this.columnsPresent && this.values != null && this.columns.size() != this.values.size()){
+        	 JOptionPane.showMessageDialog(null, "Invalid Syntax: Mismatch between data and columnName size", "Error", JOptionPane.ERROR_MESSAGE);
+			 return;        	 
+         }
          
          //once syntax is correct, check if table name and all columnNames exists         
          boolean isValid = validateSemantics();
          
          if(!isValid)
         	  return;
-         else{       	 
-        	 // save the record in the database
-        	 // need to do this.      	 
-         }
+         else{      
         	 
-
-		}
+        	 // save the record in the database
+         	 // need to do this.      
+        	 insertRecord();       	 
+         }
+	  }
 
 	}
 
 
 	
 	
-	 private boolean validateSemantics(){
+	private boolean insertRecord(){
+		
+		JSONObject newJson = new JSONObject();
+		
+		if(!this.columnsPresent){
+			
+			 HashMap<String,String> columnMap = GlobalUtil.fetchColumnNames(this.tableName);
+			 
+			 Set<String> columnNames = columnMap.keySet();
+			 
+			 int i = 0;
+			 
+			 for(String name : columnNames){
+				 
+				 String val = this.values.get(i);   				 
+				 //check if dataType matches
+				 if(!GlobalUtil.validateDataType(columnMap.get(name),val)){
+					 JOptionPane.showMessageDialog(null, "Invalid Syntax: Mismatch between dataType and Value", "Error", JOptionPane.ERROR_MESSAGE);
+					 return false;
+				 }else{		
+					 newJson.put(name, val);
+				 }	
+				 
+				 i++;
+			 }			
+		}else{
+			
+			int i = 0;
+			for(String name : this.columns){
+							
+				 String val = this.values.get(i);   				 
+				 //check if dataType matches				 
+				 HashMap<String,String> columnMap = GlobalUtil.fetchColumnNames(this.tableName);
+				 
+				 if(!GlobalUtil.validateDataType(columnMap.get(name),val)){
+					 JOptionPane.showMessageDialog(null, "Invalid DataType: Mismatch between dataType and Value", "Error", JOptionPane.ERROR_MESSAGE);
+					 return false;
+				 }else{		
+					 newJson.put(name, val);
+				 }		 
+				
+				i++;
+			}		
+		}
+		
+		// save the json in the table.json file.
+		saveRecordInFile(newJson);
+			 
+		return true;
+		
+	}
+
+
+	private void saveRecordInFile(JSONObject newJson) {
+		
+		JSONParser parser = new JSONParser();
+		try {
+			
+			FileReader f1 =new FileReader("Data/Records/" + this.tableName + ".json");
+			Object obj = parser.parse(f1);
+			JSONObject json1 = (JSONObject) obj;
+			//System.out.println(json1.toJSONString());
+
+			try {
+				
+				JSONArray headers = (JSONArray) json1.get("Records");
+				headers.add(newJson);
+				json1.put("Records", headers);
+				
+			} catch (ClassCastException e) {
+				JSONArray JA = new JSONArray();
+				JA.add(newJson);
+				json1.put("Records", JA);
+			}
+			
+			//System.out.println(json1.toJSONString());
+			File file = new File("Data/Records/" + this.tableName + ".json");
+			FileWriter fw = null;
+			BufferedWriter bw = null;
+			fw = new FileWriter(file.getAbsoluteFile());
+			bw = new BufferedWriter(fw);
+
+			bw.write(json1.toJSONString());
+			bw.flush();
+			bw.close();
+			f1.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+			
+		
+	}
+
+
+	private boolean validateSemantics(){
 				
 		if(!GlobalUtil.validateTableName(this.tableName)){			
 			JOptionPane.showMessageDialog(null, "Invalid Syntax: No such table exists", "Error", JOptionPane.ERROR_MESSAGE);
