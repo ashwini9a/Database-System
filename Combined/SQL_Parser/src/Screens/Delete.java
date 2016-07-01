@@ -11,8 +11,6 @@ public class Delete {
 	boolean conditionFlag = false;
 	
 	
-	
-	
 	public void parse(String sql) {
 		
 		
@@ -79,6 +77,15 @@ public class Delete {
 		//delete from table correct
 		
 		//check the where clause
+		if(tokens.length > 3 && !"where".equalsIgnoreCase(tokens[3])){			
+			JOptionPane.showMessageDialog(null, "Invalid Syntax,Missing WHERE clause", "Error", JOptionPane.ERROR_MESSAGE);
+			return;			
+		}else{
+			
+			
+			
+			
+		}
 		
 		
 		
@@ -91,6 +98,9 @@ public class Delete {
 		
 	   /// if everything is good, delete records	
 	
+		
+		
+		
 	}
 	
 	

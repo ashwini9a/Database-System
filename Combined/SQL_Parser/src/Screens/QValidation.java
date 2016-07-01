@@ -27,7 +27,7 @@ public class QValidation {
 			selectValidation(words);
 			break;
 		case "update":
-			updateValidation(words);
+			updateValidation(words,query);
 			break;
 		case "insert":
 			insertValidation(words,query);
@@ -171,16 +171,19 @@ public class QValidation {
 		{
 			return;
 		}
+		
 		if(projection.contains(",") && (projection.get(projection.size()-1).equals(",") || projection.get(0).equals(",")))
 		{
 			JOptionPane.showMessageDialog(null, "Invalid location of \",\"", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+		
 		if(projection.contains(","))
 		{
 			int index = projection.indexOf(",");
 			projection.remove(index);
 		}
+		
 		Iterator itr1 =projection.iterator();
 		String tempProj1="";
 		while(itr1.hasNext())
@@ -233,8 +236,11 @@ public class QValidation {
 		
  	}
 	
-	public static void updateValidation(String[] words)
+	public static void updateValidation(String[] words,String statement)
 	{
+		 Update update = new Update();
+		 boolean result = update.parse(words, statement);
+		
 		
 	}
 	
