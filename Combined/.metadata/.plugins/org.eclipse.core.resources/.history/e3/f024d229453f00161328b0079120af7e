@@ -9,7 +9,6 @@ import javax.swing.JOptionPane;
 
 public class QValidation {
 	static boolean cond_flag;
-	static boolean order_flag;
 	static ArrayList<WhereClause> conditionArray;
 	public static void validateQ1(String query)
 	{
@@ -28,7 +27,7 @@ public class QValidation {
 		switch(type)
 		{
 		case "select":
-			selectValidation(words,query.toLowerCase()+" ");
+			selectValidation(words,query+" ");
 			break;
 		case "update":
 			updateValidation(words);
@@ -50,8 +49,6 @@ public class QValidation {
 	public static void selectValidation(String[] words, String query)
 	{
 		cond_flag = false;
-		order_flag =false;
-		OrderBy OB = new OrderBy();
 		conditionArray = new ArrayList<>();
 		ArrayList<String> projection = new ArrayList<>();
 		ArrayList<String> tables = new ArrayList();
@@ -118,82 +115,6 @@ public class QValidation {
 			}
 			displayConditions();
 		}
-		if(query.contains(" order by "))
-		{
-			order_flag =true;
-		}
-		if(order_flag)
-		{
-			
-			if(!orderValidation(OB, query))
-			{
-				return;
-			}
-			
-			System.out.println(OB.Ordercols.toString()+ OB.order);
-			
-		}
-			if(order_flag)
-			{
-				if(!columnValidation(projection,tables,alias,OB,order_flag))
-				{
-					return;
-				}
-			}
-			else
-			{
-				if(!columnValidation(projection,tables,alias,order_flag))
-				{
-					return;
-				}
-			}
-	}
-	private static boolean columnValidation(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,OrderBy OB,boolean order_flag)
-	{
-		return true;
-	}
-	private static boolean columnValidation(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,boolean order_flag)
-	{
-		return true;
-	}
-	private static boolean orderValidation(OrderBy OB, String query)
-	{
-		query+=" ";
-		int ind1 = query.indexOf("order by"); 
-		int ind2 =query.indexOf("asc");
-		boolean order=true;
-		String qtable;
-		if(ind2 <= 0)
-		{
-			ind2 =query.indexOf("desc");
-			if(ind2 <= 0)
-			{
-				qtable = query.substring(ind1+8);
-			}
-			else
-			{
-				order=false;
-				qtable = query.substring(ind1+8, ind2);
-			}
-		}
-		else
-		{
-			qtable = query.substring(ind1+8, ind2);
-		}
-		String[] attributes = qtable.split(",");
-		int index = 0;
-		while(index < attributes.length)
-		{
-			if(attributes[index].trim().length()==0 || attributes[index].isEmpty())
-			{
-				JOptionPane.showMessageDialog(null, "Invalid order by attributes", "Error", JOptionPane.ERROR_MESSAGE);
-				return false;
-			}
-			OB.Ordercols.add(attributes[index].trim());
-			index++;
-		}
-		OB.order=order;
-		return true;
 	}
 	private static void displayConditions() {
 		Iterator<WhereClause> itr = conditionArray.iterator();
@@ -370,27 +291,12 @@ public class QValidation {
 		{
 			String temp =cond.get(1).trim();
 			String[] att2 = temp.split("\"");
-			int cnt=0,index=0,value=-1;
-			if(att2.length > 2 && !att2[0].isEmpty() && !att2[1].isEmpty())
+			if(att2.length > 1)
 			{
 				JOptionPane.showMessageDialog(null, "Invalid condition", "Error", JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
-//			while(index<att2.length)
-//			{
-//				if(!att2[index].isEmpty() && !(att2[index].trim().length()==0))
-//				{
-//					value=index;
-//					cnt++;
-//				}
-//				index++;
-//			}
-//			if(cnt>1)
-//			{
-//				JOptionPane.showMessageDialog(null, "Invalid condition", "Error", JOptionPane.ERROR_MESSAGE);
-//				return false;
-//			}
-			w1.attribute2 = att2[1];
+			w1.attribute2 = att2[0];
 			w1.attribute2value = true;
 		}
 		else

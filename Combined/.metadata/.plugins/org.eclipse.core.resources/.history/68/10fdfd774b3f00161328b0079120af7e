@@ -125,40 +125,18 @@ public class QValidation {
 		if(order_flag)
 		{
 			
-			if(!orderValidation(OB, query))
+			if(!orderValidation(OB, query));
 			{
 				return;
 			}
-			
-			System.out.println(OB.Ordercols.toString()+ OB.order);
-			
-		}
-			if(order_flag)
-			{
-				if(!columnValidation(projection,tables,alias,OB,order_flag))
-				{
-					return;
-				}
-			}
 			else
 			{
-				if(!columnValidation(projection,tables,alias,order_flag))
-				{
-					return;
-				}
+				System.out.println(OB.Ordercols.toString()+ OB.order);
 			}
-	}
-	private static boolean columnValidation(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,OrderBy OB,boolean order_flag)
-	{
-		return true;
-	}
-	private static boolean columnValidation(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,boolean order_flag)
-	{
-		return true;
+		}
 	}
 	private static boolean orderValidation(OrderBy OB, String query)
 	{
-		query+=" ";
 		int ind1 = query.indexOf("order by"); 
 		int ind2 =query.indexOf("asc");
 		boolean order=true;
@@ -180,16 +158,16 @@ public class QValidation {
 		{
 			qtable = query.substring(ind1+8, ind2);
 		}
-		String[] attributes = qtable.split(",");
+		String[] attributes = qtable.trim().split(",");
 		int index = 0;
 		while(index < attributes.length)
 		{
-			if(attributes[index].trim().length()==0 || attributes[index].isEmpty())
+			if(attributes[index].trim().length()==0 && attributes[index].isEmpty())
 			{
 				JOptionPane.showMessageDialog(null, "Invalid order by attributes", "Error", JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
-			OB.Ordercols.add(attributes[index].trim());
+			OB.Ordercols.add(attributes[index]);
 			index++;
 		}
 		OB.order=order;

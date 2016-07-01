@@ -133,28 +133,6 @@ public class QValidation {
 			System.out.println(OB.Ordercols.toString()+ OB.order);
 			
 		}
-			if(order_flag)
-			{
-				if(!columnValidation(projection,tables,alias,OB,order_flag))
-				{
-					return;
-				}
-			}
-			else
-			{
-				if(!columnValidation(projection,tables,alias,order_flag))
-				{
-					return;
-				}
-			}
-	}
-	private static boolean columnValidation(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,OrderBy OB,boolean order_flag)
-	{
-		return true;
-	}
-	private static boolean columnValidation(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,boolean order_flag)
-	{
-		return true;
 	}
 	private static boolean orderValidation(OrderBy OB, String query)
 	{
@@ -168,17 +146,17 @@ public class QValidation {
 			ind2 =query.indexOf("desc");
 			if(ind2 <= 0)
 			{
-				qtable = query.substring(ind1+8);
+				qtable = query.substring(ind1+8)+" ";
 			}
 			else
 			{
 				order=false;
-				qtable = query.substring(ind1+8, ind2);
+				qtable = query.substring(ind1+8, ind2)+" ";
 			}
 		}
 		else
 		{
-			qtable = query.substring(ind1+8, ind2);
+			qtable = query.substring(ind1+8, ind2)+" ";
 		}
 		String[] attributes = qtable.split(",");
 		int index = 0;
@@ -189,7 +167,7 @@ public class QValidation {
 				JOptionPane.showMessageDialog(null, "Invalid order by attributes", "Error", JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
-			OB.Ordercols.add(attributes[index].trim());
+			OB.Ordercols.add(attributes[index]);
 			index++;
 		}
 		OB.order=order;

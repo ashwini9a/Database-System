@@ -133,28 +133,6 @@ public class QValidation {
 			System.out.println(OB.Ordercols.toString()+ OB.order);
 			
 		}
-			if(order_flag)
-			{
-				if(!columnValidation(projection,tables,alias,OB,order_flag))
-				{
-					return;
-				}
-			}
-			else
-			{
-				if(!columnValidation(projection,tables,alias,order_flag))
-				{
-					return;
-				}
-			}
-	}
-	private static boolean columnValidation(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,OrderBy OB,boolean order_flag)
-	{
-		return true;
-	}
-	private static boolean columnValidation(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,boolean order_flag)
-	{
-		return true;
 	}
 	private static boolean orderValidation(OrderBy OB, String query)
 	{

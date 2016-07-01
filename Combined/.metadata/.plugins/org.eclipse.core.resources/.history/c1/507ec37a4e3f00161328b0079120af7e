@@ -150,11 +150,11 @@ public class QValidation {
 	}
 	private static boolean columnValidation(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,OrderBy OB,boolean order_flag)
 	{
-		return true;
+		
 	}
 	private static boolean columnValidation(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,boolean order_flag)
 	{
-		return true;
+		
 	}
 	private static boolean orderValidation(OrderBy OB, String query)
 	{
