@@ -281,8 +281,7 @@ public class Insert {
 			for(String name : this.columns){
 							
 				 String val = this.values.get(i);   				 
-				 //check if dataType matches
-				 
+				 //check if dataType matches				 
 				 HashMap<String,String> columnMap = GlobalUtil.fetchColumnNames(this.tableName);
 				 
 				 if(!GlobalUtil.validateDataType(columnMap.get(name),val)){
