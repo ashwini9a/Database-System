@@ -75,7 +75,7 @@ public class DisplayRecords {
 
 				table = new JTable();
 				// table.setAutoResizeMode(table.AUTO_RESIZE_ALL_COLUMNS);
-				// table.setBounds(427, 0, -424, 83);
+				table.setBounds(100, 100, 400, 300);
 
 				table.setModel(new DefaultTableModel(new Object[][] {}, columnNames) {
 					@Override
@@ -102,7 +102,7 @@ public class DisplayRecords {
 
 				table.setFillsViewportHeight(true);
 				JScrollPane scrollPane = new JScrollPane(table);
-				scrollPane.setBounds(37, 5, 468, 100);
+				scrollPane.setBounds(37, 5, 468, 400);
 				scrollPane.setViewportView(table);
 				scrollPane.setPreferredSize(new Dimension(468, 100));
 				frame.getContentPane().add(scrollPane);
@@ -132,7 +132,7 @@ public class DisplayRecords {
 	 */
 	private void initialize(String tnm, boolean flag) {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 600, 300);
+		frame.setBounds(100, 100, 600, 511);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
@@ -233,7 +233,7 @@ public class DisplayRecords {
 			btnNewUpdate.setBounds(370, 214, 89, 23);
 			frame.getContentPane().add(btnNewUpdate);
 		}
-		btnNewButton.setBounds(468, 214, 89, 23);
+		btnNewButton.setBounds(485, 422, 89, 23);
 		frame.getContentPane().add(btnNewButton);
 	}
 
