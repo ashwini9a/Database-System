@@ -136,26 +136,416 @@ public class QValidation {
 		}
 			if(order_flag)
 			{
-				if(!columnValidation(projection,tables,alias,OB,order_flag))
+				if(!columnValidation(projection,tables,alias,OB,cond_flag))
 				{
 					return;
 				}
 			}
 			else
 			{
-				if(!columnValidation(projection,tables,alias,order_flag))
+				if(!columnValidation(projection,tables,alias,cond_flag))
 				{
 					return;
 				}
 			}
+			if(order_flag)
+			{
+				Select.displaySelection(projection,tables,alias,OB,cond_flag);
+			}
+			else
+			{
+				Select.displaySelection(projection,tables,alias,cond_flag);
+			}
+			
 	}
-	private static boolean columnValidation(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,OrderBy OB,boolean order_flag)
+	private static boolean columnValidation(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,OrderBy OB,boolean cond)
 	{
+		Iterator<String> itr = tables.iterator();
+		while(itr.hasNext())
+		{
+			if(!GlobalUtil.validateTableName(itr.next()))
+			{
+				JOptionPane.showMessageDialog(null, "Invalid table name", "Error", JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
+		}
+		if(projection.size()==1 && projection.get(0)=="*")
+		{
+			
+		}
+		else{
+		Iterator<String> itr1 = projection.iterator();
+		while(itr1.hasNext())
+		{
+			String att = itr1.next();
+			if(att.contains("."))
+			{
+				String[] att2 = att.trim().split(".");
+				String tnm;
+				if(att2.length> 2 || att2[0].isEmpty() || att2[1].isEmpty())
+				{
+					JOptionPane.showMessageDialog(null, "Invalid projection attribute name", "Error", JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+				if(alias.contains(att2[0]))
+				{
+					int index = alias.indexOf(att2[0]);
+					tnm = tables.get(index);
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(null, "Invalid projection table name"+att2[0], "Error", JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+				
+				if(!GlobalUtil.validateColumnNames(att2[1],tnm))
+				{
+					JOptionPane.showMessageDialog(null, "Invalid projection attribute name", "Error", JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+			}
+			else
+			{
+				boolean valid = false;
+				Iterator<String> itr2 = tables.iterator();
+				while(itr2.hasNext())
+				{
+					if(GlobalUtil.validateColumnNames(att,itr2.next()))
+					{
+						valid=true;
+					}
+				}
+				if(!valid)
+				{
+					JOptionPane.showMessageDialog(null, "Projection attribute name not in tables", "Error", JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+			}
+		}
+		}
+		if(cond)
+		{
+			Iterator it = conditionArray.iterator();
+			while(it.hasNext())
+			{
+				WhereClause w = (WhereClause) it.next();
+				if(!w.bool)
+				{
+					String att = w.attribute1;
+					if(att.contains("."))
+					{
+						String[] att2 = att.trim().split(".");
+						String tnm;
+						if(att2.length> 2 || att2[0].isEmpty() || att2[1].isEmpty())
+						{
+							JOptionPane.showMessageDialog(null, "Invalid condition attribute name", "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+						if(alias.contains(att2[0]))
+						{
+							int index = alias.indexOf(att2[0]);
+							tnm = tables.get(index);
+						}
+						else
+						{
+							JOptionPane.showMessageDialog(null, "Invalid condition table name"+att2[0], "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+						
+						if(!GlobalUtil.validateColumnNames(att2[1],tnm))
+						{
+							JOptionPane.showMessageDialog(null, "Invalid condition attribute name", "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+					}
+					else
+					{
+						boolean valid = false;
+						Iterator<String> itr2 = tables.iterator();
+						while(itr2.hasNext())
+						{
+							if(GlobalUtil.validateColumnNames(att,itr2.next()))
+							{
+								valid=true;
+							}
+						}
+						if(!valid)
+						{
+							JOptionPane.showMessageDialog(null, "Condition attribute name not in tables", "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+					}
+
+					String att1 = w.attribute2;
+					if(att1.contains("."))
+					{
+						String[] att2 = att1.trim().split(".");
+						String tnm;
+						if(att2.length> 2 || att2[0].isEmpty() || att2[1].isEmpty())
+						{
+							JOptionPane.showMessageDialog(null, "Invalid condition attribute name", "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+						if(alias.contains(att2[0]))
+						{
+							int index = alias.indexOf(att2[0]);
+							tnm = tables.get(index);
+						}
+						else
+						{
+							JOptionPane.showMessageDialog(null, "Invalid condition table name"+att2[0], "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+						
+						if(!GlobalUtil.validateColumnNames(att2[1],tnm))
+						{
+							JOptionPane.showMessageDialog(null, "Invalid condition attribute name", "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+					}
+					else
+					{
+						boolean valid = false;
+						Iterator<String> itr2 = tables.iterator();
+						while(itr2.hasNext())
+						{
+							if(GlobalUtil.validateColumnNames(att1,itr2.next()))
+							{
+								valid=true;
+							}
+						}
+						if(!valid)
+						{
+							JOptionPane.showMessageDialog(null, "Condition attribute name not in tables", "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+					}
+				
+				}
+			}
+		}
+		Iterator it1 = OB.Ordercols.iterator();
+		while(it1.hasNext())
+		{
+			String att =(String) it1.next();
+			if(att.contains("."))
+			{
+				String[] att2 = att.trim().split(".");
+				String tnm;
+				if(att2.length> 2 || att2[0].isEmpty() || att2[1].isEmpty())
+				{
+					JOptionPane.showMessageDialog(null, "Invalid order attribute name", "Error", JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+				if(alias.contains(att2[0]))
+				{
+					int index = alias.indexOf(att2[0]);
+					tnm = tables.get(index);
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(null, "Invalid order table name"+att2[0], "Error", JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+				
+				if(!GlobalUtil.validateColumnNames(att2[1],tnm))
+				{
+					JOptionPane.showMessageDialog(null, "Invalid order attribute name", "Error", JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+			}
+			else
+			{
+				boolean valid = false;
+				Iterator<String> itr2 = tables.iterator();
+				while(itr2.hasNext())
+				{
+					if(GlobalUtil.validateColumnNames(att,itr2.next()))
+					{
+						valid=true;
+					}
+				}
+				if(!valid)
+				{
+					JOptionPane.showMessageDialog(null, "Order attribute name not in tables", "Error", JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+			}
+		
+		}
+		System.out.println("Valid");
 		return true;
 	}
-	private static boolean columnValidation(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,boolean order_flag)
+	private static boolean columnValidation(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,boolean cond)
 	{
+
+		Iterator<String> itr = tables.iterator();
+		while(itr.hasNext())
+		{
+			if(!GlobalUtil.validateTableName(itr.next()))
+			{
+				JOptionPane.showMessageDialog(null, "Invalid table name", "Error", JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
+		}
+		if(projection.size()==1 && projection.get(0)=="*")
+		{
+			
+		}
+		else{
+		Iterator<String> itr1 = projection.iterator();
+		while(itr1.hasNext())
+		{
+			String att = itr1.next();
+			if(att.contains("."))
+			{
+				String[] att2 = att.trim().split(".");
+				String tnm;
+				if(att2.length> 2 || att2[0].isEmpty() || att2[1].isEmpty())
+				{
+					JOptionPane.showMessageDialog(null, "Invalid projection attribute name", "Error", JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+				if(alias.contains(att2[0]))
+				{
+					int index = alias.indexOf(att2[0]);
+					tnm = tables.get(index);
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(null, "Invalid projection table name"+att2[0], "Error", JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+				
+				if(!GlobalUtil.validateColumnNames(att2[1],tnm))
+				{
+					JOptionPane.showMessageDialog(null, "Invalid projection attribute name", "Error", JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+			}
+			else
+			{
+				boolean valid = false;
+				Iterator<String> itr2 = tables.iterator();
+				while(itr2.hasNext())
+				{
+					if(GlobalUtil.validateColumnNames(att,itr2.next()))
+					{
+						valid=true;
+					}
+				}
+				if(!valid)
+				{
+					JOptionPane.showMessageDialog(null, "Projection attribute name not in tables", "Error", JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+			}
+		}
+		}
+		if(cond)
+		{
+			Iterator it = conditionArray.iterator();
+			while(it.hasNext())
+			{
+				WhereClause w = (WhereClause) it.next();
+				if(!w.bool)
+				{
+					String att = w.attribute1;
+					if(att.contains("."))
+					{
+						String[] att2 = att.trim().split(".");
+						String tnm;
+						if(att2.length> 2 || att2[0].isEmpty() || att2[1].isEmpty())
+						{
+							JOptionPane.showMessageDialog(null, "Invalid condition attribute name", "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+						if(alias.contains(att2[0]))
+						{
+							int index = alias.indexOf(att2[0]);
+							tnm = tables.get(index);
+						}
+						else
+						{
+							JOptionPane.showMessageDialog(null, "Invalid condition table name"+att2[0], "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+						
+						if(!GlobalUtil.validateColumnNames(att2[1],tnm))
+						{
+							JOptionPane.showMessageDialog(null, "Invalid condition attribute name", "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+					}
+					else
+					{
+						boolean valid = false;
+						Iterator<String> itr2 = tables.iterator();
+						while(itr2.hasNext())
+						{
+							if(GlobalUtil.validateColumnNames(att,itr2.next()))
+							{
+								valid=true;
+							}
+						}
+						if(!valid)
+						{
+							JOptionPane.showMessageDialog(null, "Condition attribute name not in tables", "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+					}
+
+					String att1 = w.attribute2;
+					if(att1.contains("."))
+					{
+						String[] att2 = att1.trim().split(".");
+						String tnm;
+						if(att2.length> 2 || att2[0].isEmpty() || att2[1].isEmpty())
+						{
+							JOptionPane.showMessageDialog(null, "Invalid condition attribute name", "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+						if(alias.contains(att2[0]))
+						{
+							int index = alias.indexOf(att2[0]);
+							tnm = tables.get(index);
+						}
+						else
+						{
+							JOptionPane.showMessageDialog(null, "Invalid condition table name"+att2[0], "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+						
+						if(!GlobalUtil.validateColumnNames(att2[1],tnm))
+						{
+							JOptionPane.showMessageDialog(null, "Invalid condition attribute name", "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+					}
+					else
+					{
+						boolean valid = false;
+						Iterator<String> itr2 = tables.iterator();
+						while(itr2.hasNext())
+						{
+							if(GlobalUtil.validateColumnNames(att1,itr2.next()))
+							{
+								valid=true;
+							}
+						}
+						if(!valid)
+						{
+							JOptionPane.showMessageDialog(null, "Condition attribute name not in tables", "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+					}
+				
+				}
+			}
+		}
+		System.out.println("Valid");
 		return true;
+	
 	}
 	private static boolean orderValidation(OrderBy OB, String query)
 	{
@@ -367,10 +757,10 @@ public class QValidation {
 			return false;
 		}
 		w1.attribute1 = cond.get(0);
-		if(cond.get(1).contains("\""))
+		if(cond.get(1).contains("\'"))
 		{
 			String temp =cond.get(1).trim();
-			String[] att2 = temp.split("\"");
+			String[] att2 = temp.split("\'");
 			int cnt=0,index=0,value=-1;
 			if(att2.length > 2 && !att2[0].isEmpty() && !att2[1].isEmpty())
 			{
@@ -477,78 +867,7 @@ public class QValidation {
 		return true;
 	}
 	
-//		if(tables.size()==1)
-//		{
-//			return true;
-//		}
-//		if(tables.contains(",") && (tables.get(tables.size()-1).equals(",") || tables.get(0).equals(",")))
-//		{
-//			JOptionPane.showMessageDialog(null, "Invalid location of \",\"", "Error", JOptionPane.ERROR_MESSAGE);
-//			return false;
-//		}
-//		while(tables.contains(","))
-//		{
-//			int index = tables.indexOf(",");
-//			tables.remove(index);
-//		}
-//		Iterator itr1 =tables.iterator();
-//		String tempProj1="";
-//		while(itr1.hasNext())
-//		{
-//			tempProj1+=itr1.next();
-//			
-//		}
-//		if(tempProj1.contains(",,"))
-//		{
-//			JOptionPane.showMessageDialog(null, "Invalid sequence \",,\"", "Error", JOptionPane.ERROR_MESSAGE);
-//			return false;
-//		}
-//		Iterator itr =tables.iterator();
-//		String tempProj="";
-//		while(itr.hasNext())
-//		{
-//			tempProj+=itr.next()+" ";
-//			
-//		}
-//		if(tempProj.charAt(0)==',' || tempProj.charAt(tempProj.length()-1)==',')
-//		{
-//			JOptionPane.showMessageDialog(null, "Invalid location of \",\"", "Error", JOptionPane.ERROR_MESSAGE);
-//			return false;
-//		}
-//		//tempProj.replace(",", " ");
-//		System.out.println(tempProj);
-//		String[] proj = tempProj.split(",");
-//		
-//		tables.clear();
-//		System.out.println("old : "+tables.toString());;
-//		int len =0 ;
-//		while(len < proj.length)
-//		{
-//			if(proj[len].contains(" "))
-//			{
-//				String[] tempS = proj[len].split(" ");
-//				int ind = 0;
-//				while(ind<tempS.length)
-//				{
-//					if(!tempS[ind].isEmpty())
-//					{
-//						tables.add(tempS[ind]);
-//					}
-//					ind++;
-//				}
-//				
-//			}
-//			else
-//			{
-//				tables.add(proj[len]);
-//			}
-//			System.out.println(proj[len]);
-//			len++;
-//		}
-//		
-//		System.out.println("tables :"+tables.toString());;
-//		return true;
-// 	}
+
 	public static boolean projectionValid(ArrayList<String> projection)
 	{
 		if(projection.size()==1 && projection.get(0).equals("*"))

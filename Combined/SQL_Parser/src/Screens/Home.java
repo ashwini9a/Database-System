@@ -26,6 +26,7 @@ public class Home extends JFrame{
 				try {
 					Home frame = new Home();
 					frame.setVisible(true);
+					GlobalUtil.initTableArray();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -51,7 +52,25 @@ public class Home extends JFrame{
 		textArea.setBounds(135, 30, 631, 174);
 		textArea.setFont(new Font("Times New Roman", Font.PLAIN, 20));
 		getContentPane().add(textArea);
-		
+		JButton btnCreate = new JButton("Create Table");
+		btnCreate.setBounds(400, 232, 150, 31);
+		btnCreate.setFont(new Font("Times New Roman", Font.BOLD, 18));
+		btnCreate.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					
+					CreateTable frame = new CreateTable();
+					frame.setTitle("Create Table");
+					frame.setVisible(true);
+					
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				
+			}
+			});
+		getContentPane().add(btnCreate);
 		JButton btnOk = new JButton("OK");
 		btnOk.setBounds(559, 232, 75, 31);
 		btnOk.addMouseListener(new MouseAdapter() {
