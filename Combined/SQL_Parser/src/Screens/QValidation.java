@@ -14,7 +14,7 @@ public class QValidation {
 	static ArrayList<WhereClause> conditionArray;
 	public static void validateQ1(String query)
 	{
-		String[] words = query.toLowerCase().split(" ");
+		String[] words = query.toLowerCase().split("\\s+");
 		int i=0;
 		while(true)
 		{
@@ -32,16 +32,13 @@ public class QValidation {
 			selectValidation(words,query.toLowerCase()+" ");
 			break;
 		case "update":
-			updateValidation(words);
+			updateValidation(words,query.toLowerCase());
 			break;
 		case "insert":
-			insertValidation(words,query);
-			break;
-		case "create":
-			createValidation(words);
+			insertValidation(words,query.toLowerCase());
 			break;
 		case "delete":
-			deleteValidation(query);
+			deleteValidation(query.toLowerCase());
 			break;
 		default:
 			JOptionPane.showMessageDialog(null, "Invalid database operation", "Error", JOptionPane.ERROR_MESSAGE);
@@ -626,29 +623,19 @@ public class QValidation {
 	
 
 	
-	public static void updateValidation(String[] words)
+	public static void updateValidation(String[] words, String statement)
 	{
+		
+		Update update = new Update();
+		boolean result = update.parse(words, statement);
 		
 	}
 	
 	public static void insertValidation(String[] words, String statement)
-	{
-				
+	{				
 	     Insert insert = new Insert();
 	     insert.parse(words, statement);
-	     
-		
-		
-		
-		
-		
-	}
-	
-	
-	
-	public static void createValidation(String[] words)
-	{
-		
+	     		
 	}
 	
 	
@@ -659,7 +646,13 @@ public class QValidation {
 		
 		Delete delete = new Delete();
 		//validate the syntax and semantics
-		delete.parse(query);
+		boolean isValid = delete.parse(query);
+		
+		if(isValid){
+			 delete.deleteRecords();
+			 JOptionPane.showMessageDialog(null, "Records deleted successfully", "Error", JOptionPane.ERROR_MESSAGE);
+			 return;
+		}	
 		
 		
 	}
