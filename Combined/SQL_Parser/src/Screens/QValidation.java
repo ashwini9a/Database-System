@@ -1,19 +1,16 @@
-
 package Screens;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 
 public class QValidation {
 	static boolean cond_flag;
-	static ArrayList<WhereClause> conditionArray;
 	public static void validateQ1(String query)
 	{
-		String[] words = query.toLowerCase().split(" ");
-		int i=0;
+		String[] words = query.split("\\s+");
+		int i = 0;
 		while(true)
 		{
 			System.out.println(words[i].toLowerCase().toString());
@@ -27,7 +24,7 @@ public class QValidation {
 		switch(type)
 		{
 		case "select":
-			selectValidation(words,query+" ");
+			selectValidation(words);
 			break;
 		case "update":
 			updateValidation(words);
@@ -46,14 +43,12 @@ public class QValidation {
 		}
 			
 	}
-	public static void selectValidation(String[] words, String query)
+	public static void selectValidation(String[] words)
 	{
 		cond_flag = false;
-		conditionArray = new ArrayList<>();
 		ArrayList<String> projection = new ArrayList<>();
-		ArrayList<String> tables = new ArrayList();
-		//WhereClause w1 =new WhereClause();
-		ArrayList<String> alias = new ArrayList<>();
+		ArrayList<String> tables = new ArrayList<>();
+		ArrayList<String> conditions = new ArrayList<>();
 		int i=1;
 		while( i< words.length && !(words[i].equals("from")))
 		{
@@ -74,398 +69,114 @@ public class QValidation {
 		if(i!= words.length)
 		{
 			cond_flag =true;
+			i++;
+			while(i!= words.length)
+			{
+				conditions.add(words[i]);
+				i++;
+			}
 			
 		}
 		System.out.println(tables.toString());
-		if(!tableValidation(query, tables, alias))
+		if(!tableValidation(tables))
 		{
 			System.out.println(tables.toString());
 			return;
 		}
 		
 			//System.out.println(projection.toString());
-		if(!projectionValid(projection))
-		{
-			return;
-		}
-		int len = projection.size();
-		int ind =0;
-		int ind1 = query.indexOf("select");
-		int ind2 = query.indexOf("from");
-		String query1 = query.substring(ind1+6, ind2);
-		while(ind<len-1)
-		{
-			int i1 = query1.indexOf((String)projection.get(ind));
-			int i2 = query1.indexOf((String)projection.get(ind+1));
-			String sub = query1.substring(i1+1, i2);
-			System.out.println(sub);
-			if(sub.trim().length()==0)
-			{
-				JOptionPane.showMessageDialog(null, "Invalid projection attributes", "Error", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			
-			ind++;
-		}
-		if(cond_flag)
-		{
-			if(!conditionSplit(query))
-			{
-				return;
-			}
-			displayConditions();
-		}
-	}
-	private static void displayConditions() {
-		Iterator<WhereClause> itr = conditionArray.iterator();
-		while(itr.hasNext())
-		{
-			WhereClause temp = itr.next();
-			if(temp.bool)
-			{
-				if(temp.boolOP)
-					System.out.print(" AND ");
-				else
-					System.out.print(" OR ");
-			}
-			else
-			{
-				System.out.print(temp.attribute1+" "+temp.operation+" "+temp.attribute2);
-			}
-		}
+			projectionValid(projection);
+			//System.out.println(projection.toString());
+		
 		
 	}
-	public static boolean conditionSplit(String query)
+	public static boolean tableValidation(ArrayList<String> tables)
 	{
-		//query = query.trim();
-		int ind1 = query.indexOf("where"); 
-		int ind2 =query.indexOf("order by");
-		String qtable;
-		if(ind2 <= 0)
+		if(tables.size()==0)
 		{
-			qtable = query.substring(ind1+5);
+			JOptionPane.showMessageDialog(null, "Please specify from clause", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+			
 		}
-		else
+
+		if(tables.size()==1)
 		{
-			qtable = query.substring(ind1+5, ind2);
+			return true;
 		}
-		String[] andString = qtable.split("and");
-		int len = andString.length;
-		int ind =0 ;
-		while(ind < len)
+		if(tables.contains(",") && (tables.get(tables.size()-1).equals(",") || tables.get(0).equals(",")))
 		{
-			if(ind!=0)
-			{
-				WhereClause wr1 =new WhereClause();
-				wr1.bool = true;
-				wr1.boolOP = true;
-				conditionArray.add(wr1);
-			}
-			if(andString[ind].isEmpty() || andString[ind].trim().length()==0)
-			{
-				JOptionPane.showMessageDialog(null, "Invalid projection attributes", "Error", JOptionPane.ERROR_MESSAGE);
-				return false;
-			}
-			String[] orString = andString[ind].split(" or ");
-			int len1 = orString.length;
-			int ind11 =0 ;
-			while(ind11 < len1)
-			{
-				if(ind11!=0)
-				{
-					WhereClause wr =new WhereClause();
-					wr.bool = true;
-					wr.boolOP = false;
-					conditionArray.add(wr);
-				}
-				if(orString[ind11].isEmpty() || orString[ind11].trim().length()==0)
-				{
-					JOptionPane.showMessageDialog(null, "Invalid projection attributes", "Error", JOptionPane.ERROR_MESSAGE);
-					return false;
-				}
-				WhereClause tempWr = new WhereClause();
-				if(!conditionValidation(orString[ind11],tempWr))
-				{
-					return false;
-				}
-				conditionArray.add(tempWr);
-				ind11++;
-			}
-			ind++;
-		}
-		return true;
-	}
-	public static boolean conditionValidation(String qtable, WhereClause w1)
-	{
-		qtable+=" ";
-		char ops = 0;
-		ArrayList<String> cond =new ArrayList<>();
-		String[] q1 = qtable.split(">");
-		int len = q1.length;
-		int ind =0;
-		while(ind<len)
-		{
-			if(q1[ind].isEmpty() || q1[ind].trim().length()==0)
-			{
-				JOptionPane.showMessageDialog(null, "Invalid conditions in where clause", "Error", JOptionPane.ERROR_MESSAGE);
-				return false;
-			}
-			ind++;
-		}
-		if(q1.length>2)
-		{
-			JOptionPane.showMessageDialog(null, "Invalid conditions in where clause", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Invalid location of \",\" after from", "Error", JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
-		else if(q1.length==2)
+		if(tables.contains(","))
 		{
-			cond.add(q1[0].trim());
-			cond.add(q1[1].trim());
-			ops ='>';
+			int index = tables.indexOf(",");
+			tables.remove(index);
 		}
-		else if(q1.length==1)
+		Iterator itr1 =tables.iterator();
+		String tempProj1="";
+		while(itr1.hasNext())
 		{
-			String[] q11 = qtable.split("<");
-			int len1 = q11.length;
-			int ind11 =0;
-			while(ind11<len1)
-			{
-				if(q11[ind11].isEmpty() || q11[ind11].trim().length()==0)
-				{
-					JOptionPane.showMessageDialog(null, "Invalid conditions in where clause", "Error", JOptionPane.ERROR_MESSAGE);
-					return false;
-				}
-				ind11++;
-			}
-			if(q11.length>2)
-			{
-				JOptionPane.showMessageDialog(null, "Invalid conditions in where clause", "Error", JOptionPane.ERROR_MESSAGE);
-				return false;
-			}
-			else if(q11.length==2)
-			{
-				cond.add(q11[0].trim());
-				cond.add(q11[1].trim());
-				ops ='<';
-			}
-			else if(q11.length==1)
-			{
-				String[] q111 = qtable.split("=");
-				int len11 = q111.length;
-				int ind111 =0;
-				while(ind111<len11)
-				{
-					if(q111[ind111].isEmpty() || q111[ind111].trim().length()==0)
-					{
-						JOptionPane.showMessageDialog(null, "Invalid conditions in where clause", "Error", JOptionPane.ERROR_MESSAGE);
-						return false;
-					}
-					ind111++;
-				}
-				if(q111.length>2)
-				{
-					JOptionPane.showMessageDialog(null, "Invalid conditions in where clause", "Error", JOptionPane.ERROR_MESSAGE);
-					return false;
-				}
-				else if(q111.length==2)
-				{
-					cond.add(q111[0].trim());
-					cond.add(q111[1].trim());
-					ops ='=';
-				}
-				else if(q111.length==1)
-				{
-					JOptionPane.showMessageDialog(null, "Please Specify a condition", "Error", JOptionPane.ERROR_MESSAGE);
-					return false;
-				}
-			}
+			tempProj1+=itr1.next();
+			
 		}
-		System.out.println("conditions :"+cond.toString()+ "operation "+ ops);
-		if(cond.size()>2)
+		if(tempProj1.contains(",,"))
 		{
-			JOptionPane.showMessageDialog(null, "Invalid condition", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Invalid sequence \",,\" after from", "Error", JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
-		w1.attribute1 = cond.get(0);
-		if(cond.get(1).contains("\""))
+		Iterator itr =tables.iterator();
+		String tempProj="";
+		while(itr.hasNext())
 		{
-			String temp =cond.get(1).trim();
-			String[] att2 = cond.get(1).split("\"");
-			if(att2.length > 1)
-			{
-				JOptionPane.showMessageDialog(null, "Invalid condition", "Error", JOptionPane.ERROR_MESSAGE);
-				return false;
-			}
-			w1.attribute2 = att2[0];
-			w1.attribute2value = true;
+			tempProj+=itr.next()+" ";
+			
 		}
-		else
+		if(tempProj.charAt(0)==',' || tempProj.charAt(tempProj.length()-1)==',')
 		{
-			w1.attribute2 = cond.get(1);
-			w1.attribute2value= false;
+			JOptionPane.showMessageDialog(null, "Invalid location of \",\" after from", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
 		}
-		w1.bool =false;
-		w1.operation = ops;
-		//System.out.println("conditions :"+conditions.toString());
-		return true;
-	}
-	public static boolean tableValidation(String query, ArrayList<String> tables, ArrayList< String> alias)
-	{
+		//tempProj.replace(",", " ");
+		String[] proj = tempProj.split(",");
 		tables.clear();
-		int ind1 = query.indexOf("from"); 
-		int ind2 =query.indexOf("where");
-		String qtable;
-		if(ind2 < 0)
+		int len =0 ;
+		while(len < proj.length)
 		{
-			qtable = query.substring(ind1+4);
-		}
-		else
-		{
-			qtable = query.substring(ind1+4, ind2);
-		}
-		String[] tabs = qtable.split(",");
-		int len = tabs.length;
-		int ind =0;
-		while(ind < len)
-		{
-			if(tabs[ind].isEmpty() || tabs[ind].trim().length()==0)
+			if(proj[len].contains(" "))
 			{
-				JOptionPane.showMessageDialog(null, "Invalid tables", "Error", JOptionPane.ERROR_MESSAGE);
-				return false;
-			}
-			ind++;
-		}
-		ind = 0;
-		while(ind < len)
-		{
-			String[] tempQ = tabs[ind].split(" ");
-			ArrayList<String> tQ= new ArrayList<>(); 
-			int tlen = tempQ.length;
-			int i1= 0;
-			while(i1<tlen)
-			{
-				if(!tempQ[i1].isEmpty())
+				String[] tempS = proj[len].split(" ");
+				int ind = 0;
+				while(ind<tempS.length)
 				{
-					tQ.add(tempQ[i1]);
+					tables.add(tempS[ind]);
+					ind++;
 				}
-				i1++;
-			}
-			if(tQ.size() > 2)
-			{
-				JOptionPane.showMessageDialog(null, "Invalid tables", "Error", JOptionPane.ERROR_MESSAGE);
-				return false;
-			}
-			else if(tQ.size() == 2)
-			{
-				if(alias.contains(tQ.get(1)))
-				{
-					JOptionPane.showMessageDialog(null, "Table alias name repeted", "Error", JOptionPane.ERROR_MESSAGE);
-					return false;
-				}
-				tables.add(tQ.get(0));
-				alias.add(tQ.get(1));
-			}
-			else if(tQ.size() == 1)
-			{
-				tables.add(tQ.get(0));
-				alias.add("NULL");
+				
 			}
 			else
 			{
-				JOptionPane.showMessageDialog(null, "Invalid tables", "Error", JOptionPane.ERROR_MESSAGE);
-				return false;
+				tables.add(proj[len]);
 			}
-			ind++;
+			len++;
 		}
-		System.out.println("tables :"+tables.toString());
-		System.out.println("Alias :"+alias.toString());
+		
+		System.out.println(tables.toString());;
 		return true;
 	}
 	
-//		if(tables.size()==1)
-//		{
-//			return true;
-//		}
-//		if(tables.contains(",") && (tables.get(tables.size()-1).equals(",") || tables.get(0).equals(",")))
-//		{
-//			JOptionPane.showMessageDialog(null, "Invalid location of \",\"", "Error", JOptionPane.ERROR_MESSAGE);
-//			return false;
-//		}
-//		while(tables.contains(","))
-//		{
-//			int index = tables.indexOf(",");
-//			tables.remove(index);
-//		}
-//		Iterator itr1 =tables.iterator();
-//		String tempProj1="";
-//		while(itr1.hasNext())
-//		{
-//			tempProj1+=itr1.next();
-//			
-//		}
-//		if(tempProj1.contains(",,"))
-//		{
-//			JOptionPane.showMessageDialog(null, "Invalid sequence \",,\"", "Error", JOptionPane.ERROR_MESSAGE);
-//			return false;
-//		}
-//		Iterator itr =tables.iterator();
-//		String tempProj="";
-//		while(itr.hasNext())
-//		{
-//			tempProj+=itr.next()+" ";
-//			
-//		}
-//		if(tempProj.charAt(0)==',' || tempProj.charAt(tempProj.length()-1)==',')
-//		{
-//			JOptionPane.showMessageDialog(null, "Invalid location of \",\"", "Error", JOptionPane.ERROR_MESSAGE);
-//			return false;
-//		}
-//		//tempProj.replace(",", " ");
-//		System.out.println(tempProj);
-//		String[] proj = tempProj.split(",");
-//		
-//		tables.clear();
-//		System.out.println("old : "+tables.toString());;
-//		int len =0 ;
-//		while(len < proj.length)
-//		{
-//			if(proj[len].contains(" "))
-//			{
-//				String[] tempS = proj[len].split(" ");
-//				int ind = 0;
-//				while(ind<tempS.length)
-//				{
-//					if(!tempS[ind].isEmpty())
-//					{
-//						tables.add(tempS[ind]);
-//					}
-//					ind++;
-//				}
-//				
-//			}
-//			else
-//			{
-//				tables.add(proj[len]);
-//			}
-//			System.out.println(proj[len]);
-//			len++;
-//		}
-//		
-//		System.out.println("tables :"+tables.toString());;
-//		return true;
-// 	}
-	public static boolean projectionValid(ArrayList<String> projection)
+	public static void projectionValid(ArrayList<String> projection)
 	{
 		if(projection.size()==1 && projection.get(0).equals("*"))
 		{
-			return true;
+			return;
 		}
 		if(projection.contains(",") && (projection.get(projection.size()-1).equals(",") || projection.get(0).equals(",")))
 		{
 			JOptionPane.showMessageDialog(null, "Invalid location of \",\"", "Error", JOptionPane.ERROR_MESSAGE);
-			return false;
+			return;
 		}
-		while(projection.contains(","))
+		if(projection.contains(","))
 		{
 			int index = projection.indexOf(",");
 			projection.remove(index);
@@ -480,7 +191,7 @@ public class QValidation {
 		if(tempProj1.contains(",,"))
 		{
 			JOptionPane.showMessageDialog(null, "Invalid sequence \",,\"", "Error", JOptionPane.ERROR_MESSAGE);
-			return false;
+			return;
 		}
 		Iterator itr =projection.iterator();
 		String tempProj="";
@@ -492,14 +203,11 @@ public class QValidation {
 		if(tempProj.charAt(0)==',' || tempProj.charAt(tempProj.length()-1)==',')
 		{
 			JOptionPane.showMessageDialog(null, "Invalid location of \",\"", "Error", JOptionPane.ERROR_MESSAGE);
-			return false;
+			return;
 		}
 		//tempProj.replace(",", " ");
-		System.out.println(tempProj);
 		String[] proj = tempProj.split(",");
-		
 		projection.clear();
-		System.out.println("old : "+projection.toString());;
 		int len =0 ;
 		while(len < proj.length)
 		{
@@ -509,10 +217,7 @@ public class QValidation {
 				int ind = 0;
 				while(ind<tempS.length)
 				{
-					if(!tempS[ind].isEmpty())
-					{
-						projection.add(tempS[ind]);
-					}
+					projection.add(tempS[ind]);
 					ind++;
 				}
 				
@@ -521,15 +226,12 @@ public class QValidation {
 			{
 				projection.add(proj[len]);
 			}
-			System.out.println(proj[len]);
 			len++;
 		}
 		
 		System.out.println(projection.toString());;
-		return true;
+		
  	}
-	
-
 	
 	public static void updateValidation(String[] words)
 	{
@@ -568,4 +270,7 @@ public class QValidation {
 		
 		
 	}
+	
+	
+	
 }
