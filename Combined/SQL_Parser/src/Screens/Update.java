@@ -43,8 +43,7 @@ public class Update {
 			
 		}
 		
-		/// check if tableName exists
-		
+		/// check if tableName exists		
 		String tableName  =  sql.substring(0, setIndex).trim().substring(6).trim();
 		
 		
