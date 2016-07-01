@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.swing.JOptionPane;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -88,9 +86,7 @@ public class Update {
 			//columnData is available
 			
 			// check if whereClause is present
-			
 				
-			
 			if(whereIndex != -1){
 				whereClausePresent = true;
 			}
