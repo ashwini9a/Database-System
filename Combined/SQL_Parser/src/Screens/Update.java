@@ -1,16 +1,16 @@
 package Screens;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-
+import java.util.Set;
 import javax.swing.JOptionPane;
 
 public class Update {
 	
 	String tableName;
-	List<String> columns;
-	List<String> values;
+	//List<String> columns;
+	//List<String> values;
 	boolean conditionsPresent;
 	HashMap<String,String> columnDataMap = new HashMap<String,String>();
 	
@@ -56,6 +56,13 @@ public class Update {
 			return false;			
 		}
 		
+		//check if tableName exists in db
+		if(!GlobalUtil.validateTableName(this.tableName)){
+			JOptionPane.showMessageDialog(null, "Invalid Syntax: Table Name does not exists", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;	
+		}
+		
+		
 		//everything good till here
 		
 		if(tokens.length < 4){		
@@ -95,22 +102,23 @@ public class Update {
 				JOptionPane.showMessageDialog(null, "Invalid Syntax,column Data to set is not correct", "Error", JOptionPane.ERROR_MESSAGE);
 				return false;	
 			}
-						
-	
-			
-			
+								
 		}
-				
 		
+		//check if columnName matches
+		Set<String> colNames = this.columnDataMap.keySet();
+		
+		if(!GlobalUtil.validateColumnNames(new ArrayList<String>(colNames),this.tableName)){
+			 JOptionPane.showMessageDialog(null, "Invalid Statement,column name does not exists in table", "Error", JOptionPane.ERROR_MESSAGE);
+			 return false;
+		}		
+			
 		return true;
 			
 	}
 	
 	
 	public boolean fetchColumnData(String sql){
-		
-		
-       System.out.println("inside fetch col");
 		
 		int equalIndex = sql.indexOf("=",0);
 		

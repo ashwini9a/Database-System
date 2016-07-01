@@ -32,9 +32,6 @@ public class QValidation {
 		case "insert":
 			insertValidation(words,query);
 			break;
-		case "create":
-			createValidation(words);
-			break;
 		case "delete":
 			deleteValidation(query);
 			break;
@@ -248,23 +245,11 @@ public class QValidation {
 	{
 				
 	     Insert insert = new Insert();
-	     insert.parse(words, statement);
-	     
-		
-		
+	     insert.parse(words, statement);	
 		
 		
 		
 	}
-	
-	
-	
-	public static void createValidation(String[] words)
-	{
-		
-	}
-	
-	
 	
 	
 	public static void deleteValidation(String query)

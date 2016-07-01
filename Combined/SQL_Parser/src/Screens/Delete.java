@@ -81,13 +81,9 @@ public class Delete {
 			JOptionPane.showMessageDialog(null, "Invalid Syntax,Missing WHERE clause", "Error", JOptionPane.ERROR_MESSAGE);
 			return;			
 		}else{
-			
-			
-			
-			
+				
 		}
-		
-		
+			
 		
 		//if syntax is correct, check if tableName and columnName exists
 		if(!GlobalUtil.validateTableName(this.tableName)){
@@ -96,8 +92,10 @@ public class Delete {
 			
 		}
 		
-	   /// if everything is good, delete records	
-	
+	   ///if everything is good, delete records	
+	   
+		
+		
 		
 		
 		
