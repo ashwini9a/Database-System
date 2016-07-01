@@ -1,6 +1,8 @@
 package Screens;
 
+import java.util.HashMap;
 import java.util.List;
+
 
 import javax.swing.JOptionPane;
 
@@ -10,6 +12,7 @@ public class Update {
 	List<String> columns;
 	List<String> values;
 	boolean conditionsPresent;
+	HashMap<String,String> columnDataMap = new HashMap<String,String>();
 	
 	public boolean parse(String[] tokens, String sql) {
 
@@ -55,7 +58,7 @@ public class Update {
 		
 		//everything good till here
 		
-		if(tokens.length != 4){		
+		if(tokens.length < 4){		
 			
 			JOptionPane.showMessageDialog(null, "Invalid Syntax: Missing columnData to set", "Error", JOptionPane.ERROR_MESSAGE);
 			return false;
@@ -86,26 +89,84 @@ public class Update {
 			
 			
 			// fetch columnData
-			if(tokens[3].contains(",")){
-				
-				// split it based on comma
-				
-				
+			boolean isValid = fetchColumnData(tokens[3]);
+			
+			if(!isValid){
+				JOptionPane.showMessageDialog(null, "Invalid Syntax,column Data to set is not correct", "Error", JOptionPane.ERROR_MESSAGE);
+				return false;	
 			}
-			
-			
+						
+	
 			
 			
 		}
-		
-		
-		
-		
-		
+				
 		
 		return true;
 			
 	}
+	
+	
+	public boolean fetchColumnData(String sql){
+		
+		
+       System.out.println("inside fetch col");
+		
+		int equalIndex = sql.indexOf("=",0);
+		
+		if(equalIndex == -1){
+			return false;
+		}
+
+		
+		if(sql.startsWith(",") || sql.endsWith(",")){
+			return false;
+		}
+		 
+		// split based on comma
+		String [] columnData = sql.split(",\\s*");
+				
+		for(String columnSet : columnData){
+			
+			  String [] colArr = columnSet.split("=\\s*");
+			  
+			  if(colArr.length < 2){
+				  return false;
+			  }
+			  
+			  String colName = colArr[0];
+			  String colVal = colArr[1];
+			  
+			  if("".equals(colName.trim()) || "".equals(colVal.trim()))
+				   return false;
+			  
+			  System.out.println("colName: "+colName);
+			  System.out.println("colVal:"+colVal);
+			  
+			  // validate that colVal is inside quotes
+			  
+			  if(!validateColVal(colVal))
+				   return false;
+			  
+			  this.columnDataMap.put(colName, colVal);
+			
+			
+		}
+		
+		return true;
+		
+
+	}
+	
+	private boolean validateColVal(String val){
+
+		if(!val.startsWith("'") || !val.endsWith("'"))
+			return false;
+
+		return true;
+
+	}
+
 	
 	
 	
