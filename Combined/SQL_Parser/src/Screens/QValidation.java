@@ -257,7 +257,13 @@ public class QValidation {
 		
 		Delete delete = new Delete();
 		//validate the syntax and semantics
-		delete.parse(query);
+		boolean isValid = delete.parse(query);
+		
+		if(isValid){
+			 delete.deleteRecords();
+			 JOptionPane.showMessageDialog(null, "Records deleted successfully", "Error", JOptionPane.ERROR_MESSAGE);
+			 return;
+		}		 
 		
 		
 	}
