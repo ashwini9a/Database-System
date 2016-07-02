@@ -14,8 +14,6 @@ import org.json.simple.parser.ParseException;
 
 public class GlobalUtil {
 
-
-
 	public static boolean validateTableName(String name){
 
 		boolean tableExists = false;
@@ -99,6 +97,73 @@ public class GlobalUtil {
 
 	}
 
+	
+	
+	public static HashMap<String,String> getTableColumnMap(List<WhereClause> conditions, String tableName){
+		
+		HashMap<String,String> tableNameMap = new HashMap<String,String>();
+		
+		FileReader f1;
+		Iterator< String> itr = GlobalData.allTables.iterator();
+		while(itr.hasNext())
+		{
+			String tnm= itr.next();
+			if(tableName.equalsIgnoreCase(tnm))
+			{
+				tableName = tnm;
+				break;
+			}
+		}
+
+		JSONParser parser = new JSONParser();
+		ArrayList<String> columnNames = new ArrayList<String>();
+		boolean isValidColName = true;
+
+
+		try {
+
+			f1 = new FileReader("Data/MetaData/" +tableName+ ".json");
+			Object obj = parser.parse(f1);
+			JSONObject json = (JSONObject) obj;
+			JSONArray headers = (JSONArray) json.get("headers");
+
+			for(int i = 0 ; i < headers.size(); i++){
+
+				Object temp = parser.parse(headers.get(i).toString());
+				JSONObject temp1 = (JSONObject) temp;			
+
+				String columnName = (String) temp1.get("Column Name");
+				columnNames.add(columnName);
+			}
+
+			//check if each column in the sql exists in the columnList
+			for(WhereClause where : conditions){		
+				boolean found = false;				
+				String colName = where.attribute1;
+				for(String tableCol : columnNames){
+
+					if(tableCol.equalsIgnoreCase(colName)){
+						found = true;
+						tableNameMap.put(colName, tableCol);
+						break;
+					}	  
+				}
+				
+				if(!found){					
+					isValidColName = false;
+					break;					
+				}else 
+					continue;		
+			}
+			
+		} catch (IOException | ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return tableNameMap;
+	}
+	
 
 
 	public static boolean validateColumnNames(String colnm, String tableName){
@@ -278,9 +343,6 @@ public class GlobalUtil {
 		return true;	
 	}
 
-	
-	
-	
     public static HashMap<String,String> fetchColumnDataType(String tableName){
     	
     	FileReader f1;
@@ -315,7 +377,6 @@ public class GlobalUtil {
 
 				if(!columnName.toLowerCase().equalsIgnoreCase(GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase())))
 				     columnDetailMap.put(columnName.toLowerCase(),dataType);
-
 			}
 			
 	     //check if each in the sql exists in the columnList
