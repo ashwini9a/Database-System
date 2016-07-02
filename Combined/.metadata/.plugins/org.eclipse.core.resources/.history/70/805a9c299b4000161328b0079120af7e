@@ -127,54 +127,13 @@ public class ProjectionRecords {
 			{
 				if(and)
 				{
-					JSONArray andJ = getJSONCond(tableName,w);
-					JSONArray andArray =new JSONArray();
-					String key = (String)GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase());
+					JSONArray andJ = getJSONCond(w);
 					and=false;
-					Iterator<JSONObject> andJitr = andJ.iterator();
-					while(andJitr.hasNext())
-					{
-						JSONObject temp1 = andJitr.next();
-						Iterator<JSONObject> hitr = headers.iterator();
-						while(hitr.hasNext())
-						{
-							JSONObject temp2 = (JSONObject)hitr.next();
-							if(((String)temp2.get(key)).equalsIgnoreCase((String)temp1.get(key)))
-							{
-								andArray.add(temp2);							
-							}
-						}
-					}
-					headers = andArray;
 				}
 				else if(or)
 				{
-					JSONArray orJ = getJSONCond(tableName,w);
+					JSONArray orJ = getJSONCond(w);
 					or=false;
-					boolean pre =false;
-					JSONArray andArray =new JSONArray();
-					String key = (String)GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase());
-					and=false;
-					Iterator<JSONObject> andJitr = orJ.iterator();
-					while(andJitr.hasNext())
-					{
-						JSONObject temp1 = andJitr.next();
-						Iterator<JSONObject> hitr = headers.iterator();
-						while(hitr.hasNext())
-						{
-							JSONObject temp2 = (JSONObject)hitr.next();
-							if(((String)temp2.get(key)).equalsIgnoreCase((String)temp1.get(key)))
-							{
-								pre=true;
-								break;
-							}
-						}
-						if(!pre)
-						{
-							headers.add(temp1);
-							pre=false;
-						}
-					}
 				}
 				else
 				{
@@ -183,7 +142,7 @@ public class ProjectionRecords {
 			}
 		}
 	}
-	public static void loadJsonCond(String tableName,WhereClause w)
+	public static JSONArray loadJsonCond(String tableName,WhereClause w)
 	{
 		String att1;
 		headers = new JSONArray();
@@ -198,7 +157,7 @@ public class ProjectionRecords {
 		}
 		if(w.attribute2value)
 		{
-			if(GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase()).equalsIgnoreCase(att1))
+			if(GlobalData.tablePrimaryKeyMap.get(tableName).equalsIgnoreCase(att1))
 			{
 				// btree code 
 			}
@@ -288,114 +247,11 @@ public class ProjectionRecords {
 				}
 			}
 		}
+		return headers;
 	}
-	public static JSONArray getJSONCond(String tableName, WhereClause w)
+	public static JSONArray getJSONCond(WhereClause w)
 	{
 		JSONArray condJ = new JSONArray();
-
-		String att1;
-		if(w.attribute1.contains("."))
-		{
-			String[] atts = w.attribute1.split("\\.");
-			att1 = atts[1];
-		}
-		else
-		{
-			att1 = w.attribute1;
-		}
-		if(w.attribute2value)
-		{
-			if(GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase()).equalsIgnoreCase(att1))
-			{
-				// btree code 
-			}
-			else
-			{
-				String type = GlobalUtil.getDataType(tableName, att1);
-				switch(type)
-				{
-				case "INT":
-					int att2 = Integer.parseInt(w.attribute2);
-					JSONParser parser = new JSONParser();
-					JSONArray tempArray =new JSONArray();
-					try {
-						FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
-						Object obj = parser.parse(f1);
-						JSONObject json = (JSONObject) obj;
-						tempArray = (JSONArray) json.get("Records");
-						System.out.println(condJ.toString());
-						f1.close();
-					}
-					catch(Exception E)
-					{
-					
-					}
-					Iterator<JSONObject> itr = tempArray.iterator();
-					while(itr.hasNext())
-					{
-						JSONObject json1 = (JSONObject) itr.next();
-						if(att2 == Integer.parseInt((String)json1.get(att1)))
-						{
-							condJ.add(json1);
-						}
-					}
-					break;
-				case "FLOAT":
-					float att21 = Float.parseFloat(w.attribute2);
-					JSONParser parser1 = new JSONParser();
-					JSONArray tempArray1 =new JSONArray();
-					try {
-						FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
-						Object obj = parser1.parse(f1);
-						JSONObject json = (JSONObject) obj;
-						tempArray1 = (JSONArray) json.get("Records");
-						System.out.println(condJ.toString());
-						f1.close();
-					}
-					catch(Exception E)
-					{
-					
-					}
-					Iterator<JSONObject> itr1 = tempArray1.iterator();
-					while(itr1.hasNext())
-					{
-						JSONObject json1 = (JSONObject) itr1.next();
-						if(att21 == Float.parseFloat((String)json1.get(att1)))
-						{
-							condJ.add(json1);
-						}
-					}
-					break;
-				case "VARCHAR":
-					String att22 = w.attribute2;
-					JSONParser parser11 = new JSONParser();
-					JSONArray tempArray11 =new JSONArray();
-					try {
-						FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
-						Object obj = parser11.parse(f1);
-						JSONObject json = (JSONObject) obj;
-						tempArray11 = (JSONArray) json.get("Records");
-						System.out.println(condJ.toString());
-						f1.close();
-					}
-					catch(Exception E)
-					{
-					
-					}
-					Iterator<JSONObject> itr11 = tempArray11.iterator();
-					while(itr11.hasNext())
-					{
-						JSONObject json1 = (JSONObject) itr11.next();
-						if(att22.equalsIgnoreCase((String)json1.get(att1)))
-						{
-							condJ.add(json1);
-						}
-					}
-					break;
-				}
-			}
-		}
-	
 		return condJ;
 	}
 	public static void projectRecords(String tableName, OrderBy OB, boolean cond) {

@@ -128,53 +128,12 @@ public class ProjectionRecords {
 				if(and)
 				{
 					JSONArray andJ = getJSONCond(tableName,w);
-					JSONArray andArray =new JSONArray();
-					String key = (String)GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase());
 					and=false;
-					Iterator<JSONObject> andJitr = andJ.iterator();
-					while(andJitr.hasNext())
-					{
-						JSONObject temp1 = andJitr.next();
-						Iterator<JSONObject> hitr = headers.iterator();
-						while(hitr.hasNext())
-						{
-							JSONObject temp2 = (JSONObject)hitr.next();
-							if(((String)temp2.get(key)).equalsIgnoreCase((String)temp1.get(key)))
-							{
-								andArray.add(temp2);							
-							}
-						}
-					}
-					headers = andArray;
 				}
 				else if(or)
 				{
 					JSONArray orJ = getJSONCond(tableName,w);
 					or=false;
-					boolean pre =false;
-					JSONArray andArray =new JSONArray();
-					String key = (String)GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase());
-					and=false;
-					Iterator<JSONObject> andJitr = orJ.iterator();
-					while(andJitr.hasNext())
-					{
-						JSONObject temp1 = andJitr.next();
-						Iterator<JSONObject> hitr = headers.iterator();
-						while(hitr.hasNext())
-						{
-							JSONObject temp2 = (JSONObject)hitr.next();
-							if(((String)temp2.get(key)).equalsIgnoreCase((String)temp1.get(key)))
-							{
-								pre=true;
-								break;
-							}
-						}
-						if(!pre)
-						{
-							headers.add(temp1);
-							pre=false;
-						}
-					}
 				}
 				else
 				{
