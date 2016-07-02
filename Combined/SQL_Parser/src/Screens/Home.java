@@ -1,4 +1,5 @@
 package Screens;
+
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -13,7 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class Home extends JFrame{
+public class Home extends JFrame {
 
 	private JPanel contentPane;
 
@@ -43,16 +44,16 @@ public class Home extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 792, 342);
 		getContentPane().setLayout(null);
-		
+
 		JLabel lblSqlQuery = new JLabel("SQL Query : ");
 		lblSqlQuery.setBounds(10, 44, 116, 24);
 		lblSqlQuery.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		getContentPane().add(lblSqlQuery);
-		
+
 		JTextArea textArea = new JTextArea();
 		textArea.setBounds(135, 30, 631, 174);
 		textArea.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-		
+
 		getContentPane().add(textArea);
 		JButton btnCreate = new JButton("Create Table");
 		btnCreate.setBounds(400, 232, 150, 31);
@@ -61,17 +62,17 @@ public class Home extends JFrame{
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					
+
 					CreateTable frame = new CreateTable();
 					frame.setTitle("Create Table");
 					frame.setVisible(true);
-					
+
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
-				
+
 			}
-			});
+		});
 		getContentPane().add(btnCreate);
 		JButton btnOk = new JButton("OK");
 		btnOk.setBounds(559, 232, 75, 31);
@@ -79,18 +80,16 @@ public class Home extends JFrame{
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				String query = textArea.getText();
-				if(query.isEmpty())
-				{
+				if (query.isEmpty()) {
 					JOptionPane.showMessageDialog(null, "Please enter a Query", "Error", JOptionPane.ERROR_MESSAGE);
-				}
-				else{
+				} else {
 					QValidation.validateQ1(query);
 				}
 			}
 		});
 		btnOk.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		getContentPane().add(btnOk);
-		
+
 		JButton btnClear = new JButton("Clear");
 		btnClear.setBounds(644, 232, 84, 31);
 		btnClear.addActionListener(new ActionListener() {
@@ -100,9 +99,30 @@ public class Home extends JFrame{
 		});
 		btnClear.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		getContentPane().add(btnClear);
-		contentPane = new JPanel(new GridLayout(5, 5));
-		
-		
-	}
 
+		JButton btnLoadComplaintdb = new JButton("Load complaint.db");
+
+		btnLoadComplaintdb.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				LoadData ld = new LoadData();
+
+				GlobalData.allTables.add("complaints");
+				try {
+					GlobalData.updateTableFile();
+					GlobalData.addTableJSonArray("complaints");
+					GlobalData.addAttBTreeIndex("complaints", "id");
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+			}
+		});
+
+		btnLoadComplaintdb.setBounds(122, 234, 150, 29);
+		getContentPane().add(btnLoadComplaintdb);
+		contentPane = new JPanel(new GridLayout(5, 5));
+
+	}
 }
