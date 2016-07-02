@@ -63,4 +63,19 @@ public class BTree<TKey extends Comparable<TKey>, TValue> {
 		
 		return (BTreeLeafNode<TKey, TValue>)node;
 	}
+	
+	public void printbtree() {
+		BTreeNode<TKey> node = this.root;
+		while (node.getNodeType() == TreeNodeType.InnerNode) {
+			node = ((BTreeInnerNode<TKey>) node).getChild(0);
+		}
+
+		while (true) {
+			for (int i = 0; i < node.getKeyCount(); i++)
+				System.out.println(node.getKey(i));
+			if (node.rightSibling == null)
+				break;
+			node = node.rightSibling;
+		}
+	}
 }
