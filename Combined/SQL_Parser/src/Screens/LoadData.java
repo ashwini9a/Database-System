@@ -12,7 +12,6 @@ import java.sql.Statement;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import jdbm.btree.BTree;
 
 public class LoadData {
 
@@ -123,9 +122,6 @@ public class LoadData {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
 		}
-		
-
-		
 		
 		System.out.println("Records created successfully");
 	}
