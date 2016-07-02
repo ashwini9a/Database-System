@@ -98,6 +98,12 @@ public class GlobalUtil {
 
 	
 	
+	/**
+	 * To get column Names from table mapping with column names in insert query
+	 * @param conditions
+	 * @param tableName
+	 * @return
+	 */
 	public static HashMap<String,String> getTableColumnMap(List<WhereClause> conditions, String tableName){
 		
 		HashMap<String,String> tableNameMap = new HashMap<String,String>();
@@ -223,6 +229,7 @@ public class GlobalUtil {
 		
 		FileReader f1;
 		Iterator< String> itr = GlobalData.allTables.iterator();
+		
 		while(itr.hasNext())
 		{
 			String tnm= itr.next();
@@ -234,7 +241,6 @@ public class GlobalUtil {
 		}
 		JSONParser parser = new JSONParser();
 		HashMap<String,String> columnDetailMap = new HashMap<String,String>();
-
 
 		try {
 
@@ -258,6 +264,7 @@ public class GlobalUtil {
 
 			}
 			
+		  f1.close();	
 	      //check if each in the sql exists in the columnList
 		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
@@ -302,7 +309,10 @@ public class GlobalUtil {
 					dataType = (String)temp1.get("Data Type");
 					break;
 				}
+		
 			}
+			
+			f1.close();
 			
 			//check if each in the sql exists in the columnList
 		} catch (IOException | ParseException e) {
@@ -377,7 +387,8 @@ public class GlobalUtil {
 				if(!columnName.toLowerCase().equalsIgnoreCase(GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase())))
 				     columnDetailMap.put(columnName.toLowerCase(),dataType);
 			}
-			
+		
+			f1.close();
 	    
 		}catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
@@ -387,5 +398,59 @@ public class GlobalUtil {
 		return columnDetailMap;
     		
     }
+    
+    
+    public static ArrayList<String> fetchOnlyColumnNames(String tableName){
+    	
+    	
+    	FileReader f1;
+		Iterator< String> itr = GlobalData.allTables.iterator();
+		while(itr.hasNext())
+		{
+			String tnm= itr.next();
+			if(tableName.equalsIgnoreCase(tnm))
+			{
+				tableName = tnm;
+				break;
+			}
+		}
+		
+		JSONParser parser = new JSONParser();
+		
+		ArrayList<String> columnNames = new ArrayList<String>();
+		
+		try {
+
+			f1 = new FileReader("Data/MetaData/" +tableName+ ".json");
+			Object obj = parser.parse(f1);
+			JSONObject json = (JSONObject) obj;
+			JSONArray headers = (JSONArray) json.get("headers");
+
+			
+			for(int i = 0 ; i < headers.size(); i++){
+
+				Object temp = parser.parse(headers.get(i).toString());
+				JSONObject temp1 = (JSONObject) temp;			
+
+				String columnName = (String) temp1.get("Column Name");
+				String dataType = (String)temp1.get("Data Type");
+
+				if(!columnName.toLowerCase().equalsIgnoreCase(GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase())))
+					columnNames.add(columnName);
+			}
+		
+			f1.close();
+	    
+		}catch (IOException | ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return columnNames;
+    		
+       	
+    }
+    
+    
 	
 }
