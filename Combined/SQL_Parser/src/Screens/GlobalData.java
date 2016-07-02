@@ -30,7 +30,7 @@ public class GlobalData{
 	            BufferedReader bufferedReader = 
 	                new BufferedReader(fileReader);
 
-	            while((line = bufferedReader.readLine()) != null) {
+	            while((line = bufferedReader.readLine()) != null){
 	            	allTables.add(line);
 	            	System.out.println(line);
 	            }   
@@ -69,7 +69,7 @@ public class GlobalData{
 						String keynm = (String) temp1.get("Column Name");
 						
 						tablePrimaryKeyMap.put(tnm.toLowerCase(), keynm);
-						System.out.println("tablePrimaryKeyMap: "+tablePrimaryKeyMap.get(tnm));
+						//System.out.println("tablePrimaryKeyMap: "+tablePrimaryKeyMap.get(tnm));
 					}
 					
 					

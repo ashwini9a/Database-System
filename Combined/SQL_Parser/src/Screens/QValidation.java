@@ -36,7 +36,7 @@ public class QValidation {
 			updateValidation(words,query.toLowerCase());
 			break;
 		case "insert":
-			insertValidation(words,query.toLowerCase());
+			insertValidation(query);
 			break;
 		case "delete":
 			deleteValidation(query.toLowerCase());
@@ -948,10 +948,10 @@ public class QValidation {
 		
 	}
 	
-	public static void insertValidation(String[] words, String statement)
+	public static void insertValidation(String statement)
 	{				
 	     Insert insert = new Insert();
-	     insert.parse(words, statement);
+	     insert.parse(statement);
 	     		
 	}
 	
