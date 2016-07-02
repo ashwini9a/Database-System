@@ -267,8 +267,7 @@ public class Delete {
 
 	public void deleteRecords(){
 		
-		System.out.println("inside delete record");
-
+		//System.out.println("inside delete record");
 		JSONParser parser = new JSONParser();
 
 		try {
@@ -284,8 +283,7 @@ public class Delete {
 				
 			    if("And".equalsIgnoreCase(conditionOp)){
 			    	
-			    	System.out.println("conditionOp: "+this.conditionOp);
-			    	
+			    	System.out.println("conditionOp: "+this.conditionOp);			    	
 			    	boolean result = allConditionsMatch(temp);
 			    	
 			    	if(result)
@@ -293,28 +291,18 @@ public class Delete {
 			    	
 			    }else if("Or".equalsIgnoreCase(conditionOp)){
 			    	
-			    	System.out.println("conditionOp: "+this.conditionOp);
-			    	
+			    	System.out.println("conditionOp: "+this.conditionOp);			    	
 			    	boolean result = eitherConditionsMatch(temp);
 			    	
 			    	if(result)			    		
 			    		headers.remove(i);
 			    	
-			    }else{
-			    	
-			    	// there is only one condition in the where clause
-			    	
+			    }else{			    	
+			    	// there is only one condition in the where clause			    	
 			    	boolean result = checkIfConditionMatch(temp);
 			    	if(result)
-			    		headers.remove(i);
-			    	
-			    	
-			    }
-				
-				//if(allConditionsMatch){					
-					// delete the record from the json file
-				  //  headers.remove(i);					
-				//}			
+			    		headers.remove(i);			    	
+			    }	
 			}
 
 			// write the file back to disk
@@ -382,7 +370,7 @@ public class Delete {
 					 BigDecimal searchVal = new BigDecimal(colVal);
 					 BigDecimal actualVal = new BigDecimal(value.toString());
 
-					 if(actualVal.compareTo(searchVal) <= 0){
+					 if(actualVal.compareTo(searchVal) < 0){
 						 match = true;
 						 break;
 					 }
@@ -390,20 +378,32 @@ public class Delete {
 
 					 System.out.println("Inside ="); 
 
+					 System.out.println("col val: "+colVal);
+					 
 					 BigDecimal searchVal = new BigDecimal(colVal);
 					 BigDecimal actualVal = new BigDecimal(value.toString()); 
-					 if(searchVal.compareTo(actualVal) != 0){
+					 
+					 if(searchVal.compareTo(actualVal) == 0){
 						 match = true;
 						 break;								
 					 }		
 				   }
 				 }else{							 
-					// System.out.println(:);
-					 colVal = colVal.substring(1, colVal.length()-1);					 
-					 if(value != null && colVal != null && colVal.equalsIgnoreCase(value.toString())){						 
-						 match = true;
-						 break;
-					 }											 
+					 
+					 if(value != null && colVal != null){
+						 
+						 colVal = colVal.substring(1, colVal.length()-1);
+						 
+						 System.out.println("after substring: "+colVal);
+						 
+						 if(colVal.equalsIgnoreCase(value.toString())){
+							 
+							  System.out.println(colVal+" matches "+value);
+						      match = true;
+						      break;
+						      
+						 }						 
+					}									 
 			 }				
 		}
 	
@@ -458,6 +458,7 @@ public class Delete {
 						 allConditionsMatch = false;
 						 break;
 					 }
+					 
 				 }else if(operator == '=') {
 
 					 System.out.println("Inside ="); 
@@ -472,15 +473,18 @@ public class Delete {
 				   }
 				 }else{		
 									 
-					 if(value != null && colVal != null){
+					 if(value != null && colVal != null){	
 						 
-						 colVal = colVal.substring(1, colVal.length()-1);
-						 
+						 colVal = colVal.substring(1, colVal.length()-1);						 
 						 System.out.println("after substring: "+colVal);
 						 
 						 if(colVal.equalsIgnoreCase(value.toString())){
 							  System.out.println(colVal+" matches "+value);
 						      continue;
+						 }else{
+							 
+							 allConditionsMatch = false;
+							 break;
 						 }
 						 
 					 }else{
@@ -506,7 +510,7 @@ public class Delete {
 			 String colName = whereClause.attribute1;
 			 String colVal = whereClause.attribute2;
 			 
-			 // get table columnName
+			 //get table columnName
 			 String tableColName = tableColumnMap.get(colName);					 
 			 
 			 Object value = temp.get(tableColName);			 
@@ -573,9 +577,7 @@ public class Delete {
 						 break;
 					 }												 
 			 }				
-		}
-		
-		
+		}		
 		
 		return match;
 			
