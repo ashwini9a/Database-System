@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -379,7 +378,7 @@ public class GlobalUtil {
 				     columnDetailMap.put(columnName.toLowerCase(),dataType);
 			}
 			
-	     //check if each in the sql exists in the columnList
+	    
 		}catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
