@@ -18,44 +18,13 @@ import org.json.simple.parser.ParseException;
 public class GlobalUtil {
 	
 	
-	static List<String> allTables;
-	public static void initTableArray() throws Exception
-	{
-		 allTables = new ArrayList<String>();
-		 String fileName = "Data/TableIndex.txt";
-
-	        // This will reference one line at a time
-	     String line = null;
-
-	     try {
-	            // FileReader reads text files in the default encoding.
-	         FileReader fileReader = new FileReader(fileName);
-
-	            // Always wrap FileReader in BufferedReader.
-	            BufferedReader bufferedReader = 
-	                new BufferedReader(fileReader);
-
-	            while((line = bufferedReader.readLine()) != null) {
-	            	allTables.add(line);
-	            	System.out.println(line);
-	            }   
-
-	            // Always close files.
-	            bufferedReader.close();         
-	        }
-	        catch(FileNotFoundException ex) {
-	            System.out.println(
-	                "Unable to open file '" + 
-	                fileName + "'");                
-	        }
-	}
-
+	
 	public static boolean validateTableName(String name){
 		
 		boolean tableExists = false;
 		
 		//check if tableName exists
-		Iterator< String> itr = allTables.iterator();
+		Iterator< String> itr = GlobalData.allTables.iterator();
 		while(itr.hasNext())
 		{
 			if(name.equalsIgnoreCase(itr.next()))
@@ -72,7 +41,7 @@ public class GlobalUtil {
 	public static boolean validateColumnNames(List<String> columnNamesList, String tableName){
 		
 		FileReader f1;
-		Iterator< String> itr = allTables.iterator();
+		Iterator< String> itr = GlobalData.allTables.iterator();
 		while(itr.hasNext())
 		{
 			String tnm= itr.next();
@@ -128,7 +97,7 @@ public class GlobalUtil {
 public static boolean validateColumnNames(String colnm, String tableName){
 		
 		FileReader f1;
-		Iterator< String> itr = allTables.iterator();
+		Iterator< String> itr = GlobalData.allTables.iterator();
 		while(itr.hasNext())
 		{
 			String tnm= itr.next();
@@ -184,7 +153,7 @@ public static boolean validateColumnNames(String colnm, String tableName){
 		
 	public static HashMap<String,String> fetchColumnNames(String tableName){
 		FileReader f1;
-		Iterator< String> itr = allTables.iterator();
+		Iterator< String> itr = GlobalData.allTables.iterator();
 		while(itr.hasNext())
 		{
 			String tnm= itr.next();
@@ -227,7 +196,56 @@ public static boolean validateColumnNames(String colnm, String tableName){
 		
 	}
 	
-	
+	public static String getDataType(String tableName, String att)
+	{
+		FileReader f1;
+		String dataType = null;
+		Iterator< String> itr = GlobalData.allTables.iterator();
+		while(itr.hasNext())
+		{
+			String tnm= itr.next();
+			if(tableName.equalsIgnoreCase(tnm))
+			{
+				tableName = tnm;
+				break;
+			}
+		}
+		JSONParser parser = new JSONParser();
+		HashMap<String,String> columnDetailMap = new HashMap<String,String>();
+		
+		
+		try {
+			
+			f1 = new FileReader("Data/MetaData/" +tableName+ ".json");
+			Object obj = parser.parse(f1);
+			JSONObject json = (JSONObject) obj;
+			JSONArray headers = (JSONArray) json.get("headers");
+		
+	    	for(int i = 0 ; i < headers.size(); i++){
+	    		
+	    		Object temp = parser.parse(headers.get(i).toString());
+				JSONObject temp1 = (JSONObject) temp;			
+				
+				if(att.equalsIgnoreCase(((String) temp1.get("Column Name"))))
+				{
+					dataType = (String)temp1.get("Data Type");
+					break;
+				}
+					
+				
+								    	       	
+	    	}
+	    	
+	    	//check if each in the sql exists in the columnList
+			
+			
+		} catch (IOException | ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}				
+		return dataType;
+		
+	}
 	
 	
 	public static boolean validateDataType(String dataType, String val){

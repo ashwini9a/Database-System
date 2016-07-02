@@ -272,7 +272,7 @@ public class QValidation {
 							return false;
 						}
 					}
-					if(!w.attribute2value){
+
 					String att1 = w.attribute2;
 					if(att1.contains("."))
 					{
@@ -316,7 +316,6 @@ public class QValidation {
 							JOptionPane.showMessageDialog(null, "Condition attribute name not in tables", "Error", JOptionPane.ERROR_MESSAGE);
 							return false;
 						}
-					}
 					}
 				
 				}
@@ -492,7 +491,7 @@ public class QValidation {
 							return false;
 						}
 					}
-					if(!w.attribute2value){
+
 					String att1 = w.attribute2;
 					if(att1.contains("."))
 					{
@@ -536,7 +535,6 @@ public class QValidation {
 							JOptionPane.showMessageDialog(null, "Condition attribute name not in tables", "Error", JOptionPane.ERROR_MESSAGE);
 							return false;
 						}
-					}
 					}
 				
 				}
@@ -756,34 +754,38 @@ public class QValidation {
 			return false;
 		}
 		w1.attribute1 = cond.get(0);
-		w1.attribute2 = cond.get(1);
-//		if(cond.get(1).contains("\'"))
-//		{
-//			String temp =cond.get(1).trim();
-//			String[] att2 = temp.split("\'");
-//			int cnt=0,index=0,value=-1;
-//			if(att2.length > 2 && !att2[0].isEmpty() && !att2[1].isEmpty())
+		if(cond.get(1).contains("\'"))
+		{
+			String temp =cond.get(1).trim();
+			String[] att2 = temp.split("\'");
+			int cnt=0,index=0,value=-1;
+			if(att2.length > 2 && !att2[0].isEmpty() && !att2[1].isEmpty())
+			{
+				JOptionPane.showMessageDialog(null, "Invalid condition", "Error", JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
+//			while(index<att2.length)
+//			{
+//				if(!att2[index].isEmpty() && !(att2[index].trim().length()==0))
+//				{
+//					value=index;
+//					cnt++;
+//				}
+//				index++;
+//			}
+//			if(cnt>1)
 //			{
 //				JOptionPane.showMessageDialog(null, "Invalid condition", "Error", JOptionPane.ERROR_MESSAGE);
 //				return false;
 //			}
-//			w1.attribute2 = att2[1];
-//			w1.attribute2value = true;
-//		}
-//		else
-//		{
-//			try 
-//			{
-//				w1.attribute2 = cond.get(1);
-//				w1.attribute2value= true;
-//			}
-//			catch()
-//			{
-//				w1.attribute2 = cond.get(1);
-//				w1.attribute2value= false;
-//			}
-//			
-//		}
+			w1.attribute2 = att2[1];
+			w1.attribute2value = true;
+		}
+		else
+		{
+			w1.attribute2 = cond.get(1);
+			w1.attribute2value= false;
+		}
 		w1.bool =false;
 		w1.operation = ops;
 		//System.out.println("conditions :"+conditions.toString());

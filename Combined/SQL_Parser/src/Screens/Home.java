@@ -26,7 +26,8 @@ public class Home extends JFrame{
 				try {
 					Home frame = new Home();
 					frame.setVisible(true);
-					GlobalUtil.initTableArray();
+					GlobalData.initTableArray();
+					GlobalData.initprimaryKey();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
