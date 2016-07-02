@@ -6,9 +6,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 import javax.swing.JOptionPane;
 import org.json.simple.JSONArray;
@@ -278,7 +279,7 @@ public class Insert {
 				boolean result = insertRecord();     
 				
 				if(result){
-					JOptionPane.showMessageDialog(null, "Record Inserted Successfully", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Record Inserted Successfully", "Message", JOptionPane.INFORMATION_MESSAGE);
 					return; 					
 				}else
 					return;
@@ -322,7 +323,7 @@ public class Insert {
 			// add data for primary key
 
 			// get last primaryKey value from json record
-			int lastKeyId = getLastPrimaryKey(this.tableName);	
+			long lastKeyId = getLastPrimaryKey(this.tableName);	
 			newJson.put(GlobalData.tablePrimaryKeyMap.get(this.tableName), lastKeyId+1);
 			
 		}else{
@@ -349,7 +350,7 @@ public class Insert {
 
 			// add data for primary key
 			// get last primaryKey value from json record
-			int lastKeyId = getLastPrimaryKey(this.tableName);		
+			long lastKeyId = getLastPrimaryKey(this.tableName);		
 			newJson.put(GlobalData.tablePrimaryKeyMap.get(this.tableName), lastKeyId+1);
 
 		}
@@ -361,27 +362,55 @@ public class Insert {
 	}
 
 
-	private int getLastPrimaryKey(String tableName){
+	private long getLastPrimaryKey(String tableName){
 
 		JSONParser parser = new JSONParser();
 
-		int lastKeyId = 0;
+		long lastKeyId = 0;
 
+		ArrayList<Long> keyData = new ArrayList<Long>();
+		
 		try {
 
 			FileReader f1 =new FileReader("Data/Records/" + this.tableName + ".json");
 			Object obj = parser.parse(f1);
 			JSONObject json1 = (JSONObject) obj;
-			//System.out.println(json1.toJSONString());
 			JSONArray headers = (JSONArray) json1.get("Records");
 
 			int size = headers.size();
 			
-			if(size != 0)
-				lastKeyId = size;
+			//get the last record from json
 			
-			System.out.println("lastKeyId"+lastKeyId);
+			System.out.println("Json size:"+size);
 			
+			if(size != 0){
+
+				for(int i = 0; i < size ; i++){
+
+					JSONObject temp = (JSONObject) headers.get(i);					
+					// get the last primary key value				
+					long keyValue =  (Long)temp.get(GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase()));				
+					//lastKeyId = size;		
+					keyData.add(keyValue);			
+				}	
+
+				// sort the data
+				Collections.sort(keyData, new Comparator<Long>(){
+				    public int compare(Long o1, Long o2) {
+				        return o2.compareTo(o1);
+				    }
+				});
+				
+				System.out.println("KeyData: "+keyData);
+
+				// fetch the max value
+				
+
+				lastKeyId = keyData.get(0);
+
+				System.out.println("lastKeyId"+lastKeyId);
+			
+			}
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
