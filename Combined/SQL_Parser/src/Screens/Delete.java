@@ -96,6 +96,8 @@ public class Delete {
 
 			//get the string after where clause
 			String condition = sql.substring(whereIndex,sql.length()).trim().substring(5).trim();
+			
+			System.out.println("conditions: "+condition);
 
 			if("".equals(condition)){
 
@@ -142,6 +144,7 @@ public class Delete {
 		
 		
 		deleteRecords();
+		
 		return true;
 
 	}
@@ -183,7 +186,6 @@ public class Delete {
 			 System.out.println(condition);
 			
 			 if(conditionFlag){	
-				  
 			      char operator;	
 			      String opt;
 			      
@@ -264,6 +266,8 @@ public class Delete {
 
 
 	public void deleteRecords(){
+		
+		System.out.println("inside delete record");
 
 		JSONParser parser = new JSONParser();
 
@@ -277,78 +281,40 @@ public class Delete {
 			for (int i = 0; i < headers.size(); i++) {
 
 				JSONObject temp = (JSONObject) parser.parse(headers.get(i).toString());
-
-				//iterate through each condition and check
-				boolean allConditionsMatch = true;
 				
-				for(WhereClause whereClause: this.whereConditions){
-					
-					 String colName = whereClause.attribute1;
-					 String colVal = whereClause.attribute2;
-					 
-					 // get table columnName
-					 String tableColName = tableColumnMap.get(colName);
-					 
-					 System.out.println();					 
-					 
-					 Object value = temp.get(tableColName);
-					 
-					 
-					 char operator = whereClause.operation;
-					 
-					 if(value != null && !(value instanceof String)){
-						 
-						 if(operator == '>'){
-							 
-							 System.out.println("Inside > ");     
-							 
-						     System.out.println("Table value: "+value.toString());
-
-							 BigDecimal searchVal = new BigDecimal(colVal);
-							 BigDecimal actualVal = new BigDecimal(value.toString());
-
-							 if(actualVal.compareTo(searchVal) <= 0){
-								 allConditionsMatch = false;
-								 break;
-							 }	
-
-						 }else if(operator == '<'){
-							 System.out.println("Inside < ");
-
-							 BigDecimal searchVal = new BigDecimal(colVal);
-							 BigDecimal actualVal = new BigDecimal(value.toString());
-
-							 if(actualVal.compareTo(searchVal) <= 0){
-								 allConditionsMatch = false;
-								 break;
-							 }
-						 }else if(operator == '=') {
-
-							 System.out.println("Inside ="); 
-
-							 BigDecimal searchVal = new BigDecimal(colVal);
-							 BigDecimal actualVal = new BigDecimal(value.toString()); 
-
-							 if(searchVal.compareTo(actualVal) != 0){
-								 allConditionsMatch = false;
-								 break;								
-							 }		
-						   }
-						 }else{		
-							 
-							 if(value != null && colVal.equalsIgnoreCase(value.toString())){						 
-								 continue;
-							 }else{
-								 allConditionsMatch = false;
-								 break;
-							 }												 
-					 }				
-				}
+			    if("And".equalsIgnoreCase(conditionOp)){
+			    	
+			    	System.out.println("conditionOp: "+this.conditionOp);
+			    	
+			    	boolean result = allConditionsMatch(temp);
+			    	
+			    	if(result)
+			    		headers.remove(i);
+			    	
+			    }else if("Or".equalsIgnoreCase(conditionOp)){
+			    	
+			    	System.out.println("conditionOp: "+this.conditionOp);
+			    	
+			    	boolean result = eitherConditionsMatch(temp);
+			    	
+			    	if(result)			    		
+			    		headers.remove(i);
+			    	
+			    }else{
+			    	
+			    	// there is only one condition in the where clause
+			    	
+			    	boolean result = checkIfConditionMatch(temp);
+			    	if(result)
+			    		headers.remove(i);
+			    	
+			    	
+			    }
 				
-				if(allConditionsMatch){					
+				//if(allConditionsMatch){					
 					// delete the record from the json file
-				    headers.remove(i);					
-				}			
+				  //  headers.remove(i);					
+				//}			
 			}
 
 			// write the file back to disk
@@ -364,7 +330,8 @@ public class Delete {
 			bw.write(json.toJSONString());
 			bw.flush();
 			fw.close();
-			bw.close();
+			bw.close();			
+			f1.close();
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -377,6 +344,242 @@ public class Delete {
 	}
 
 
+	public boolean eitherConditionsMatch(JSONObject temp){
 
+		//iterate through each condition and check
+		boolean match = false;
+		
+		for(WhereClause whereClause: this.whereConditions){
+			
+			 String colName = whereClause.attribute1;
+			 String colVal = whereClause.attribute2;
+			 
+			 // get table columnName
+			 String tableColName = tableColumnMap.get(colName);					 
+			 
+			 Object value = temp.get(tableColName);			 
+			 char operator = whereClause.operation;
+			 
+			 if(value != null && !(value instanceof String)){
+				 
+				 if(operator == '>'){
+					 
+					 System.out.println("Inside > ");     							 
+				    // System.out.println("Table value: "+value.toString());
 
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString());
+
+					 if(actualVal.compareTo(searchVal) > 0){
+						 match = true;
+						 break;
+					 }	
+
+				 }else if(operator == '<'){
+					 
+					 System.out.println("Inside < ");
+
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString());
+
+					 if(actualVal.compareTo(searchVal) <= 0){
+						 match = true;
+						 break;
+					 }
+				 }else if(operator == '=') {
+
+					 System.out.println("Inside ="); 
+
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString()); 
+					 if(searchVal.compareTo(actualVal) != 0){
+						 match = true;
+						 break;								
+					 }		
+				   }
+				 }else{							 
+					// System.out.println(:);
+					 colVal = colVal.substring(1, colVal.length()-1);					 
+					 if(value != null && colVal != null && colVal.equalsIgnoreCase(value.toString())){						 
+						 match = true;
+						 break;
+					 }											 
+			 }				
+		}
+	
+		return match;
+	}
+	
+	
+	public boolean allConditionsMatch(JSONObject temp){
+		
+		boolean allConditionsMatch = true;
+		
+		System.out.println("inside allConditionsMatch");
+		
+		for(WhereClause whereClause: this.whereConditions){
+			
+			 String colName = whereClause.attribute1;
+			 String colVal = whereClause.attribute2;
+			 
+			 System.out.println("colName:" + colName);
+			 
+			 System.out.println("colVal:" + colVal);
+			 
+			 // get table columnName
+			 String tableColName = tableColumnMap.get(colName);					 
+			 
+			 Object value = temp.get(tableColName);			 
+			 char operator = whereClause.operation;
+			 
+			 if(value != null && !(value instanceof String)){
+				 
+				 if(operator == '>'){
+					 
+					 System.out.println("Inside > ");     							 
+				     System.out.println("Table value: "+value.toString());
+
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString());
+
+					 if(actualVal.compareTo(searchVal) <= 0){
+						 allConditionsMatch = false;
+						 break;
+					 }	
+
+				 }else if(operator == '<'){
+					 
+					 System.out.println("Inside < ");
+
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString());
+
+					 if(actualVal.compareTo(searchVal) >= 0){
+						 allConditionsMatch = false;
+						 break;
+					 }
+				 }else if(operator == '=') {
+
+					 System.out.println("Inside ="); 
+
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString()); 
+
+					 if(searchVal.compareTo(actualVal) != 0){
+						 allConditionsMatch = false;
+						 break;								
+					 }		
+				   }
+				 }else{		
+									 
+					 if(value != null && colVal != null){
+						 
+						 colVal = colVal.substring(1, colVal.length()-1);
+						 
+						 System.out.println("after substring: "+colVal);
+						 
+						 if(colVal.equalsIgnoreCase(value.toString())){
+							  System.out.println(colVal+" matches "+value);
+						      continue;
+						 }
+						 
+					 }else{
+						 allConditionsMatch = false;
+						 break;
+					 }												 
+			 }				
+		}
+		
+		return allConditionsMatch;
+			
+	}
+	
+	
+	public boolean checkIfConditionMatch(JSONObject temp){
+		
+		boolean match = true;
+		
+		System.out.println("inside checkIfConditionMatch");
+		
+		for(WhereClause whereClause: this.whereConditions){
+			
+			 String colName = whereClause.attribute1;
+			 String colVal = whereClause.attribute2;
+			 
+			 // get table columnName
+			 String tableColName = tableColumnMap.get(colName);					 
+			 
+			 Object value = temp.get(tableColName);			 
+			 char operator = whereClause.operation;
+			 
+			 if(value != null && !(value instanceof String)){
+				 
+				 if(operator == '>'){
+					 
+					 System.out.println("Inside > ");     							 
+				     System.out.println("Table value: "+value.toString());
+
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString());
+
+					 if(actualVal.compareTo(searchVal) <= 0){
+						 match = false;
+						 break;
+					 }	
+
+				 }else if(operator == '<'){
+					 
+					 System.out.println("Inside < ");
+
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString());
+
+					 if(actualVal.compareTo(searchVal) >= 0){
+						 match = false;
+						 break;
+					 }
+				 }else if(operator == '=') {
+
+					 System.out.println("Inside ="); 
+
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString()); 
+
+					 if(searchVal.compareTo(actualVal) != 0){
+						 match = false;
+						 break;								
+					 }else{
+						 System.out.println("match = true for "+searchVal+","+actualVal);						 
+					 }
+				   }
+				 }else{		
+									 
+					 if(value != null && colVal != null){
+						 
+						 colVal = colVal.substring(1, colVal.length()-1);	
+						 
+						 System.out.println("after substring: "+colVal);
+						 
+						 if(colVal.equalsIgnoreCase(value.toString())){							 
+							 match = true;
+							 break;
+						 }else{
+							 match = false;
+							 break;
+						 }
+						 
+					 }else{
+						 match = false;
+						 break;
+					 }												 
+			 }				
+		}
+		
+		
+		
+		return match;
+			
+	}
+	
+		
 }

@@ -967,7 +967,7 @@ public class QValidation {
 		
 		if(isValid){
 			 delete.deleteRecords();
-			 JOptionPane.showMessageDialog(null, "Records deleted successfully", "Error", JOptionPane.ERROR_MESSAGE);
+			 JOptionPane.showMessageDialog(null, "Records deleted successfully", "Message", JOptionPane.INFORMATION_MESSAGE);
 			 return;
 		}	
 		
