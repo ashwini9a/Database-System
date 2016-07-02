@@ -19,7 +19,7 @@ public class GlobalData{
 		 allTables = new ArrayList<String>();
 		 String fileName = "Data/TableIndex.txt";
 
-	        // This will reference one line at a time
+	     // This will reference one line at a time
 	     String line = null;
 
 	     try {

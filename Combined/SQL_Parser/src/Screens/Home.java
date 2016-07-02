@@ -50,7 +50,8 @@ public class Home extends JFrame{
 		
 		JTextArea textArea = new JTextArea();
 		textArea.setBounds(135, 30, 631, 174);
-		textArea.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+		textArea.setFont(new Font("Times New Roman", Font.PLAIN, 15));
+		
 		getContentPane().add(textArea);
 		JButton btnCreate = new JButton("Create Table");
 		btnCreate.setBounds(400, 232, 150, 31);
