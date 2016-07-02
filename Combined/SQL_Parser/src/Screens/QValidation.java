@@ -166,7 +166,7 @@ public class QValidation {
 				return false;
 			}
 		}
-		if(projection.size()==1 && projection.get(0)=="*")
+		if(projection.size()==1 && projection.get(0).equals("*"))
 		{
 			
 		}
@@ -177,7 +177,7 @@ public class QValidation {
 			String att = itr1.next();
 			if(att.contains("."))
 			{
-				String[] att2 = att.trim().split(".");
+				String[] att2 = att.trim().split("\\.");
 				String tnm;
 				if(att2.length> 2 || att2[0].isEmpty() || att2[1].isEmpty())
 				{
@@ -231,7 +231,7 @@ public class QValidation {
 					String att = w.attribute1;
 					if(att.contains("."))
 					{
-						String[] att2 = att.trim().split(".");
+						String[] att2 = att.trim().split("\\.");
 						String tnm;
 						if(att2.length> 2 || att2[0].isEmpty() || att2[1].isEmpty())
 						{
@@ -254,16 +254,50 @@ public class QValidation {
 							JOptionPane.showMessageDialog(null, "Invalid condition attribute name", "Error", JOptionPane.ERROR_MESSAGE);
 							return false;
 						}
+						String dataType = GlobalUtil.getDataType(tnm,att2[1]);
+						if((dataType.equals("INT") || dataType.equals("FLOAT")) && w.attribute2.contains("\'"))
+						{
+							JOptionPane.showMessageDialog(null, "Invalid condition", "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+						if(w.attribute2.contains("\'"))
+						{
+							String temp =w.attribute2.trim();
+							String[] att21 = temp.split("\'");
+							int cnt=0,index=0,value=-1;
+							if(att21.length > 2 && !att21[0].isEmpty() && !att21[1].isEmpty())
+							{
+								JOptionPane.showMessageDialog(null, "Invalid condition", "Error", JOptionPane.ERROR_MESSAGE);
+								return false;
+							}
+							w.attribute2 = att21[1];
+							w.attribute2value = true;
+						}
+						else
+						{
+							if(GlobalUtil.validateDataType(dataType, w.attribute2))
+							{
+								w.attribute2value = true;
+							}
+							else
+							{
+								w.attribute2value = false;
+							}
+							
+						}
 					}
 					else
 					{
+						String tnm = null;
 						boolean valid = false;
 						Iterator<String> itr2 = tables.iterator();
 						while(itr2.hasNext())
 						{
-							if(GlobalUtil.validateColumnNames(att,itr2.next()))
+							tnm=itr2.next();
+							if(GlobalUtil.validateColumnNames(att,tnm))
 							{
 								valid=true;
+								break;
 							}
 						}
 						if(!valid)
@@ -271,12 +305,43 @@ public class QValidation {
 							JOptionPane.showMessageDialog(null, "Condition attribute name not in tables", "Error", JOptionPane.ERROR_MESSAGE);
 							return false;
 						}
+						String dataType = GlobalUtil.getDataType(tnm,att);
+						if((dataType.equals("INT") || dataType.equals("FLOAT")) && w.attribute2.contains("\'"))
+						{
+							JOptionPane.showMessageDialog(null, "Invalid condition", "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+						if(w.attribute2.contains("\'"))
+						{
+							String temp =w.attribute2.trim();
+							String[] att21 = temp.split("\'");
+							int cnt=0,index=0,value=-1;
+							if(att21.length > 2 && !att21[0].isEmpty() && !att21[1].isEmpty())
+							{
+								JOptionPane.showMessageDialog(null, "Invalid condition", "Error", JOptionPane.ERROR_MESSAGE);
+								return false;
+							}
+							w.attribute2 = att21[1];
+							w.attribute2value = true;
+						}
+						else
+						{
+							if(GlobalUtil.validateDataType(dataType, w.attribute2))
+							{
+								w.attribute2value = true;
+							}
+							else
+							{
+								w.attribute2value = false;
+							}
+							
+						}
 					}
 					if(!w.attribute2value){
 					String att1 = w.attribute2;
 					if(att1.contains("."))
 					{
-						String[] att2 = att1.trim().split(".");
+						String[] att2 = att1.trim().split("\\.");
 						String tnm;
 						if(att2.length> 2 || att2[0].isEmpty() || att2[1].isEmpty())
 						{
@@ -328,7 +393,7 @@ public class QValidation {
 			String att =(String) it1.next();
 			if(att.contains("."))
 			{
-				String[] att2 = att.trim().split(".");
+				String[] att2 = att.trim().split("\\.");
 				String tnm;
 				if(att2.length> 2 || att2[0].isEmpty() || att2[1].isEmpty())
 				{
@@ -386,7 +451,7 @@ public class QValidation {
 				return false;
 			}
 		}
-		if(projection.size()==1 && projection.get(0)=="*")
+		if(projection.size()==1 && projection.get(0).equals("*"))
 		{
 			
 		}
@@ -397,9 +462,9 @@ public class QValidation {
 			String att = itr1.next();
 			if(att.contains("."))
 			{
-				String[] att2 = att.trim().split(".");
+				String[] att2 = att.trim().split("\\.");
 				String tnm;
-				if(att2.length> 2 || att2[0].isEmpty() || att2[1].isEmpty())
+				if(att2.length!=2)
 				{
 					JOptionPane.showMessageDialog(null, "Invalid projection attribute name", "Error", JOptionPane.ERROR_MESSAGE);
 					return false;
@@ -451,7 +516,7 @@ public class QValidation {
 					String att = w.attribute1;
 					if(att.contains("."))
 					{
-						String[] att2 = att.trim().split(".");
+						String[] att2 = att.trim().split("\\.");
 						String tnm;
 						if(att2.length> 2 || att2[0].isEmpty() || att2[1].isEmpty())
 						{
@@ -474,16 +539,50 @@ public class QValidation {
 							JOptionPane.showMessageDialog(null, "Invalid condition attribute name", "Error", JOptionPane.ERROR_MESSAGE);
 							return false;
 						}
+						String dataType = GlobalUtil.getDataType(tnm,att2[1]);
+						if((dataType.equals("INT") || dataType.equals("FLOAT")) && w.attribute2.contains("\'"))
+						{
+							JOptionPane.showMessageDialog(null, "Invalid condition", "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+						if(w.attribute2.contains("\'"))
+						{
+							String temp =w.attribute2.trim();
+							String[] att21 = temp.split("\'");
+							int cnt=0,index=0,value=-1;
+							if(att21.length > 2 && !att21[0].isEmpty() && !att21[1].isEmpty())
+							{
+								JOptionPane.showMessageDialog(null, "Invalid condition", "Error", JOptionPane.ERROR_MESSAGE);
+								return false;
+							}
+							w.attribute2 = att21[1];
+							w.attribute2value = true;
+						}
+						else
+						{
+							if(GlobalUtil.validateDataType(dataType, w.attribute2))
+							{
+								w.attribute2value = true;
+							}
+							else
+							{
+								w.attribute2value = false;
+							}
+							
+						}
 					}
 					else
 					{
+						String tnm = null;
 						boolean valid = false;
 						Iterator<String> itr2 = tables.iterator();
 						while(itr2.hasNext())
 						{
-							if(GlobalUtil.validateColumnNames(att,itr2.next()))
+							tnm=itr2.next();
+							if(GlobalUtil.validateColumnNames(att,tnm))
 							{
 								valid=true;
+								break;
 							}
 						}
 						if(!valid)
@@ -491,12 +590,43 @@ public class QValidation {
 							JOptionPane.showMessageDialog(null, "Condition attribute name not in tables", "Error", JOptionPane.ERROR_MESSAGE);
 							return false;
 						}
+						String dataType = GlobalUtil.getDataType(tnm,att);
+						if((dataType.equals("INT") || dataType.equals("FLOAT")) && w.attribute2.contains("\'"))
+						{
+							JOptionPane.showMessageDialog(null, "Invalid condition", "Error", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
+						if(w.attribute2.contains("\'"))
+						{
+							String temp =w.attribute2.trim();
+							String[] att21 = temp.split("\'");
+							int cnt=0,index=0,value=-1;
+							if(att21.length > 2 && !att21[0].isEmpty() && !att21[1].isEmpty())
+							{
+								JOptionPane.showMessageDialog(null, "Invalid condition", "Error", JOptionPane.ERROR_MESSAGE);
+								return false;
+							}
+							w.attribute2 = att21[1];
+							w.attribute2value = true;
+						}
+						else
+						{
+							if(GlobalUtil.validateDataType(dataType, w.attribute2))
+							{
+								w.attribute2value = true;
+							}
+							else
+							{
+								w.attribute2value = false;
+							}
+							
+						}
 					}
 					if(!w.attribute2value){
 					String att1 = w.attribute2;
 					if(att1.contains("."))
 					{
-						String[] att2 = att1.trim().split(".");
+						String[] att2 = att1.trim().split("\\.");
 						String tnm;
 						if(att2.length> 2 || att2[0].isEmpty() || att2[1].isEmpty())
 						{
