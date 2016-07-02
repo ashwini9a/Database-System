@@ -19,11 +19,12 @@ import org.json.simple.parser.ParseException;
 public class Delete {	
 
 	String tableName;
-	List<WhereClause> whereConditions;
+	List<WhereClause> whereConditions = new ArrayList<WhereClause>();
 	boolean conditionFlag = false;
 	HashMap<String,String> conditions = new HashMap<String,String>();
 	String conditionOp;
 
+    HashMap<String,String> tableColumnMap;
 
 	public boolean parse(String sql) {
 
@@ -136,7 +137,10 @@ public class Delete {
 			return false;			
 		}
 		
-		///if everything is good, delete records	
+		///if everything is good, delete records
+		tableColumnMap = GlobalUtil.getTableColumnMap(this.whereConditions, tableName);
+		
+		
 		deleteRecords();
 		return true;
 
@@ -240,6 +244,8 @@ public class Delete {
 			  }
 			
 		}
+		
+		
 	
 		return true;
 
@@ -280,65 +286,74 @@ public class Delete {
 					 String colName = whereClause.attribute1;
 					 String colVal = whereClause.attribute2;
 					 
-					 String value = (String)temp.get(colName);
+					 // get table columnName
+					 String tableColName = tableColumnMap.get(colName);
+					 
+					 System.out.println();					 
+					 
+					 Object value = temp.get(tableColName);
+					 
 					 
 					 char operator = whereClause.operation;
 					 
-					 if(operator == '>'){
-						  System.out.println("Inside > ");                         						 
-						  BigDecimal searchVal = new BigDecimal(colVal);
-		                  BigDecimal actualVal = new BigDecimal(value);
-		                  
-		                  if(actualVal.compareTo(searchVal) <= 0){
-		                	  allConditionsMatch = false;
-	                		  break;
-	                	 }	
-		                	 	
-					 }else if(operator == '<'){
-						  System.out.println("Inside < ");
-                        						 
-						  BigDecimal searchVal = new BigDecimal(colVal);
-		                  BigDecimal actualVal = new BigDecimal(value);
-		                  
-		                  if(actualVal.compareTo(searchVal) <= 0){
-		                	  allConditionsMatch = false;
-	                		  break;
-	                	 }
-					 }else if(operator == '=') {
-						
-						 System.out.println("Inside ="); 
+					 if(value != null && !(value instanceof String)){
 						 
-						 BigDecimal searchVal = new BigDecimal(colVal);
-	                	 BigDecimal actualVal = new BigDecimal(value); 
-	                	 
-						 if(searchVal.compareTo(actualVal) != 0){
-							 allConditionsMatch = false;
-							 break;								
-						 }		
-					 }else{
-						 
-						 if(colVal.equalsIgnoreCase(value)){						 
-							 continue;
-						 }else{
-							 allConditionsMatch = false;
-							 break;
-						 }
-												 
+						 if(operator == '>'){
+							 
+							 System.out.println("Inside > ");     
+							 
+						     System.out.println("Table value: "+value.toString());
+
+							 BigDecimal searchVal = new BigDecimal(colVal);
+							 BigDecimal actualVal = new BigDecimal(value.toString());
+
+							 if(actualVal.compareTo(searchVal) <= 0){
+								 allConditionsMatch = false;
+								 break;
+							 }	
+
+						 }else if(operator == '<'){
+							 System.out.println("Inside < ");
+
+							 BigDecimal searchVal = new BigDecimal(colVal);
+							 BigDecimal actualVal = new BigDecimal(value.toString());
+
+							 if(actualVal.compareTo(searchVal) <= 0){
+								 allConditionsMatch = false;
+								 break;
+							 }
+						 }else if(operator == '=') {
+
+							 System.out.println("Inside ="); 
+
+							 BigDecimal searchVal = new BigDecimal(colVal);
+							 BigDecimal actualVal = new BigDecimal(value.toString()); 
+
+							 if(searchVal.compareTo(actualVal) != 0){
+								 allConditionsMatch = false;
+								 break;								
+							 }		
+						   }
+						 }else{		
+							 
+							 if(value != null && colVal.equalsIgnoreCase(value.toString())){						 
+								 continue;
+							 }else{
+								 allConditionsMatch = false;
+								 break;
+							 }												 
 					 }				
 				}
 				
-				if(allConditionsMatch){
-					
+				if(allConditionsMatch){					
 					// delete the record from the json file
-				
-					
-				}
-			
+				    headers.remove(i);					
+				}			
 			}
 
 			// write the file back to disk
 			json.put("Records", headers);
-			System.out.println(json.toJSONString());
+			//System.out.println(json.toJSONString());
 
 			File file = new File("Data/Records/" + tableName + ".json");
 			FileWriter fw = null;
