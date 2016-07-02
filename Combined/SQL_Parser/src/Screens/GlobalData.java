@@ -52,7 +52,9 @@ public class GlobalData{
 		JSONParser parser = new JSONParser();
 	      while(itr.hasNext()) {
 	         String tnm = (itr.next()).toString();
+	         
 	         FileReader f1=new FileReader("Data/Metadata/"+tnm+".json");
+	         
 	         Object obj = parser.parse(f1);
 				JSONObject json = (JSONObject) obj;
 				
@@ -65,11 +67,15 @@ public class GlobalData{
 					if((boolean)temp1.get("Key"))
 					{
 						String keynm = (String) temp1.get("Column Name");
-						tablePrimaryKeyMap.put(tnm, keynm);
+						
+						tablePrimaryKeyMap.put(tnm.toLowerCase(), keynm);
+						System.out.println("tablePrimaryKeyMap: "+tablePrimaryKeyMap.get(tnm));
 					}
 					
 					
-				}	
+				}
+				
+		     		
 	         f1.close();
 	      }
 	}
