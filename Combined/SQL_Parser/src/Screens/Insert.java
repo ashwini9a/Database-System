@@ -164,10 +164,8 @@ public class Insert {
 				String columnNames = columnData.substring(startIndex+1, endIndex).trim();
 
 				if("".equals(columnNames)){
-
 					JOptionPane.showMessageDialog(null, "Invalid Syntax: Column Names missing", "Error", JOptionPane.ERROR_MESSAGE);
 					return;
-
 				}else{
 					String [] colNames = columnNames.split(",");
 					this.columns = new ArrayList<String>();
@@ -297,21 +295,21 @@ public class Insert {
 		if(!this.columnsPresent){
 
 			HashMap<String,String> columnMap = GlobalUtil.fetchColumnNames(this.tableName);			
-			Set<String> columnNames = columnMap.keySet();
+			ArrayList<String> columnNames = GlobalUtil.fetchOnlyColumnNames(this.tableName);
 			
 			if(columnNames.size() < this.values.size()){
 				JOptionPane.showMessageDialog(null, "Mismatch between no of columns in table and values size", "Error", JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
 			
-			ArrayList<String> colName = new ArrayList<String>(columnNames);
+			//ArrayList<String> colName = new ArrayList<String>(columnNames);
 			int i = 0;
 			
 			for(String val : this.values){
 
-				String name = colName.get(i);   				 
+				String name = columnNames.get(i);   				 
 				//check if dataType matches
-				System.out.println("colName: "+name);
+				//System.out.println("colName: "+name);
 				if(!GlobalUtil.validateDataType(columnMap.get(name),val)){
 					JOptionPane.showMessageDialog(null, "Invalid Syntax: Mismatch between dataType and Value", "Error", JOptionPane.ERROR_MESSAGE);
 					return false;
@@ -350,11 +348,8 @@ public class Insert {
 			}
 
 			// add data for primary key
-
 			// get last primaryKey value from json record
-			int lastKeyId = getLastPrimaryKey(this.tableName);
-			//System.out.println("table name: "+this.tableName);			
-			//System.out.println(GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase()));			
+			int lastKeyId = getLastPrimaryKey(this.tableName);		
 			newJson.put(GlobalData.tablePrimaryKeyMap.get(this.tableName), lastKeyId+1);
 
 		}
@@ -381,8 +376,10 @@ public class Insert {
 			JSONArray headers = (JSONArray) json1.get("Records");
 
 			int size = headers.size();
+			
 			if(size != 0)
-				lastKeyId = size - 1;
+				lastKeyId = size;
+			
 			System.out.println("lastKeyId"+lastKeyId);
 			
 		}catch(Exception e) {
@@ -394,7 +391,7 @@ public class Insert {
 	}
 
 
-	private void saveRecordInFile(JSONObject newJson) {
+	private void saveRecordInFile(JSONObject newJson){
 
 		JSONParser parser = new JSONParser();
 		try {
