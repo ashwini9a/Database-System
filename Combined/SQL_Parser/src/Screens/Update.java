@@ -20,7 +20,11 @@ public class Update {
 	boolean conditionsPresent;
 	HashMap<String,String> columnDataMap = new HashMap<String,String>();
 	List<WhereClause> whereConditions = new ArrayList<WhereClause>();
-	String conditionOp;
+	String conditionOp = null;
+	
+	HashMap<String,String> tableColumnMap;
+	
+	
 	
 	public boolean parse(String[] tokens, String sql) {
 
@@ -92,6 +96,7 @@ public class Update {
 			
 			if(whereClausePresent){
 				
+				this.conditionsPresent = true;
 				//check if columnData available
 				String btwSetWhere = sql.substring(setIndex,whereIndex).trim().substring(3).trim();
 				
@@ -165,15 +170,40 @@ public class Update {
 			return false;			
 		}
 			
+		// initialize the table column map
+		initializeTheTableMap();
 		
 		//syntax and semantic correct
 		updateRecordInDb();
-		
-		
-		
+	
 		return true;
 			
 	}
+	
+	
+	public void initializeTheTableMap(){
+		
+		List<String> columnsInSql = new ArrayList<String>();
+		
+		if(this.conditionsPresent){
+			
+			for(WhereClause clause: this.whereConditions){				
+				columnsInSql.add(clause.attribute1);				
+			}
+		}
+		
+		for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
+
+			String columnName = entryMap.getKey();
+	        columnsInSql.add(columnName);		
+
+		}
+				
+		// fetch table column names
+		this.tableColumnMap = GlobalUtil.getTableColumnNameMap(columnsInSql, tableName);
+			
+	}
+	
 	
 	
 	public boolean fetchColumnData(String sql){
@@ -268,8 +298,7 @@ public class Update {
 				  }else{
 					  return false;
 				  }
-				  
-				  System.out.println("i am here");
+				 
 				  // split based on operator
 				  String [] columData = condition.split(opt);
 				  
@@ -299,24 +328,25 @@ public class Update {
 				  
 			  }else if(andOrFlag){
 				  
+				  //System.out.println("condition:"+condition);
+				  
 				  if(condition.equals("and"))
 					   this.conditionOp = "and";
 				  else if(condition.equals("or"))
 					   this.conditionOp = "or";		
-				  else{
+				  else{	  
 					  return false;
 				  }
 				  
 				  andOrFlag = false;
 				  conditionFlag = true;
-						  
-			  }
-			
+				  		  
+			  }			
 		}
 	
+		 System.out.println("condition op:"+this.conditionOp);
+		
 		return true;
-
-
 	}
 	
 	
@@ -336,7 +366,7 @@ public class Update {
 	}
 	
 	
-	public void updateRecordInDb(){
+	public boolean updateRecordInDb(){
 				
 		JSONParser parser = new JSONParser();
 		
@@ -345,94 +375,121 @@ public class Update {
 			FileReader f1 = new FileReader("Data/Records/" + this.tableName + ".json");
 			Object obj = parser.parse(f1);
 			JSONObject json1 = (JSONObject) obj;
-			System.out.println(json1.toJSONString());
+			///System.out.println(json1.toJSONString());
 			
 			try {
-				
+
 				JSONArray headers = (JSONArray) json1.get("Records");
-				
-				int rindex=-1;
-				
+
+				//int rindex=-1;
+
 				int size = headers.size();
-				
+
 				for(int i=0; i <size;i++)
 				{
-				
+
 					JSONObject temp = (JSONObject) headers.get(i);
-					boolean allConditionsMatch = true;
-					
-					for(WhereClause whereClause: this.whereConditions){
-						
-						 String colName = whereClause.attribute1;
-						 String colVal = whereClause.attribute2;
-						 
-						 String value = (String)temp.get(colName);
-						 
-						 char operator = whereClause.operation;
-						 
-						 if(operator == '>'){
-							  System.out.println("Inside > ");                         						 
-							  BigDecimal searchVal = new BigDecimal(colVal);
-			                  BigDecimal actualVal = new BigDecimal(value);
-			                  
-			                  if(actualVal.compareTo(searchVal) <= 0){
-			                	  allConditionsMatch = false;
-		                		  break;
-		                	 }	
-			                	 	
-						 }else if(operator == '<'){
-							  System.out.println("Inside < ");
-	                        						 
-							  BigDecimal searchVal = new BigDecimal(colVal);
-			                  BigDecimal actualVal = new BigDecimal(value);
-			                  
-			                  if(actualVal.compareTo(searchVal) <= 0){
-			                	  allConditionsMatch = false;
-		                		  break;
-		                	 }
-						 }else if(operator == '=') {
+					//boolean allConditionsMatch = true;
+
+					if(this.conditionsPresent){
+												
+						if(this.conditionsPresent &&  conditionOp == null){
 							
-							 System.out.println("Inside ="); 
-							 
-							 BigDecimal searchVal = new BigDecimal(colVal);
-		                	 BigDecimal actualVal = new BigDecimal(value); 
-		                	 
-							 if(searchVal.compareTo(actualVal) != 0){
-								 allConditionsMatch = false;
-								 break;								
-							 }		
-						 }else{
-							 
-							 if(colVal.equalsIgnoreCase(value)){						 
-								 continue;
-							 }else{
-								 allConditionsMatch = false;
-								 break;
-							 }
-													 
-						 }				
+							System.out.println("no and/or: single where condition");
+							
+							boolean result = checkIfConditionMatch(temp);
+							
+							if(result){
+								
+								for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
+
+									String columnName = entryMap.getKey();
+									String columnValue = entryMap.getValue();
+
+									String tableColumnName = tableColumnMap.get(columnName);
+
+									// remove single quotes
+									columnValue = columnValue.substring(1, columnValue.length()-1);
+
+									temp.remove(tableColumnName);
+									temp.put(tableColumnName, columnValue);
+
+								}	
+								
+							}
+							
+
+						}else if(this.conditionsPresent && "And".equalsIgnoreCase(conditionOp)){
+
+							System.out.println("conditionOp: "+this.conditionOp);			    	
+							boolean result = allConditionsMatch(temp);
+
+							if(result){
+								// change here
+								for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
+
+									String columnName = entryMap.getKey();
+									String columnValue = entryMap.getValue();
+
+									String tableColumnName = tableColumnMap.get(columnName);
+
+									// remove single quotes
+									columnValue = columnValue.substring(1, columnValue.length()-1);
+
+									temp.remove(tableColumnName);
+									temp.put(tableColumnName, columnValue);
+
+								}
+							}	
+
+						}else if(this.conditionsPresent && "Or".equalsIgnoreCase(conditionOp)){
+
+							System.out.println("conditionOp: "+this.conditionOp);			    	
+							boolean result = eitherConditionsMatch(temp);
+
+							if(result){		
+								// change here
+								
+								for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
+
+									String columnName = entryMap.getKey();
+									String columnValue = entryMap.getValue();
+
+									String tableColumnName = tableColumnMap.get(columnName);
+
+									// remove single quotes
+									columnValue = columnValue.substring(1, columnValue.length()-1);
+
+									temp.remove(tableColumnName);
+									temp.put(tableColumnName, columnValue);
+
+								}
+								
+							}
+
+						}else{						
+							// no where clause present						
+							System.out.println("no where clause present");
+
+							for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
+
+								String columnName = entryMap.getKey();
+								String columnValue = entryMap.getValue();
+
+								String tableColumnName = tableColumnMap.get(columnName);
+
+								// remove single quotes
+								columnValue = columnValue.substring(1, columnValue.length()-1);
+
+								temp.remove(tableColumnName);
+								temp.put(tableColumnName, columnValue);
+
+							}
+						}				
 					}
-					
-					if(allConditionsMatch){
-						
-						// set the new values in the json object
-						for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
-							
-							  String colName = entryMap.getKey();
-							  String colVal = entryMap.getValue();
-							   
-							  temp.remove(colName);
-							  temp.put(colName, colVal);
-							
-						}
-						
-					}
-							
-					//headers.remove(rindex);
-					headers.add(i,temp);
-					json1.put("Records", headers);
-				
 				}
+
+			   json1.put("Records", headers);
 							
 			} catch (ClassCastException e) {
 				
@@ -440,6 +497,7 @@ public class Update {
 				
 			}
 			
+			f1.close();
 			
 			System.out.println(json1.toJSONString());
 
@@ -453,14 +511,268 @@ public class Update {
 			bw.write(json1.toJSONString());
 			bw.flush();
 			bw.close();
-			f1.close();
+			
 			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 			
 		}
+		
+		return true;
 	}
 	
+	
+	public boolean eitherConditionsMatch(JSONObject temp){
 
+		//iterate through each condition and check
+		boolean match = false;
+		
+		for(WhereClause whereClause: this.whereConditions){
+			
+			 String colName = whereClause.attribute1;
+			 String colVal = whereClause.attribute2;
+			 
+			 // get table columnName
+			 String tableColName = tableColumnMap.get(colName);					 
+			 
+			 Object value = temp.get(tableColName);			 
+			 char operator = whereClause.operation;
+			 
+			 if(value != null && !(value instanceof String)){
+				 
+				 if(operator == '>'){
+					 
+					 System.out.println("Inside > ");     							 
+				    // System.out.println("Table value: "+value.toString());
+
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString());
+
+					 if(actualVal.compareTo(searchVal) > 0){
+						 match = true;
+						 break;
+					 }	
+
+				 }else if(operator == '<'){
+					 
+					 System.out.println("Inside < ");
+
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString());
+
+					 if(actualVal.compareTo(searchVal) < 0){
+						 match = true;
+						 break;
+					 }
+				 }else if(operator == '=') {
+
+					 System.out.println("Inside ="); 
+
+					 System.out.println("col val: "+colVal);
+					 
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString()); 
+					 
+					 if(searchVal.compareTo(actualVal) == 0){
+						 match = true;
+						 break;								
+					 }		
+				   }
+				 }else{							 
+					 
+					 if(value != null && colVal != null){
+						 
+						 colVal = colVal.substring(1, colVal.length()-1);
+						 
+						 System.out.println("after substring: "+colVal);
+						 
+						 if(colVal.equalsIgnoreCase(value.toString())){
+							 
+							  System.out.println(colVal+" matches "+value);
+						      match = true;
+						      break;
+						      
+						 }						 
+					}									 
+			 }				
+		}
+	
+		return match;
+	}
+	
+	
+	public boolean allConditionsMatch(JSONObject temp){
+		
+		boolean allConditionsMatch = true;
+		
+		System.out.println("inside allConditionsMatch");
+		
+		for(WhereClause whereClause: this.whereConditions){
+			
+			 String colName = whereClause.attribute1;
+			 String colVal = whereClause.attribute2;
+			 
+			 System.out.println("colName:" + colName);
+			 
+			 System.out.println("colVal:" + colVal);
+			 
+			 // get table columnName
+			 String tableColName = tableColumnMap.get(colName);					 
+			 
+			 Object value = temp.get(tableColName);			 
+			 char operator = whereClause.operation;
+			 
+			 if(value != null && !(value instanceof String)){
+				 
+				 if(operator == '>'){
+					 
+					 System.out.println("Inside > ");     							 
+				     System.out.println("Table value: "+value.toString());
+
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString());
+
+					 if(actualVal.compareTo(searchVal) <= 0){
+						 allConditionsMatch = false;
+						 break;
+					 }	
+
+				 }else if(operator == '<'){
+					 
+					 System.out.println("Inside < ");
+
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString());
+
+					 if(actualVal.compareTo(searchVal) >= 0){
+						 allConditionsMatch = false;
+						 break;
+					 }
+					 
+				 }else if(operator == '=') {
+
+					 System.out.println("Inside ="); 
+
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString()); 
+
+					 if(searchVal.compareTo(actualVal) != 0){
+						 allConditionsMatch = false;
+						 break;								
+					 }		
+				   }
+				 }else{		
+									 
+					 if(value != null && colVal != null){	
+						 
+						 colVal = colVal.substring(1, colVal.length()-1);						 
+						 System.out.println("after substring: "+colVal);
+						 
+						 if(colVal.equalsIgnoreCase(value.toString())){
+							  System.out.println(colVal+" matches "+value);
+						      continue;
+						 }else{
+							 
+							 allConditionsMatch = false;
+							 break;
+						 }
+						 
+					 }else{
+						 allConditionsMatch = false;
+						 break;
+					 }												 
+			 }				
+		}
+		
+		return allConditionsMatch;
+			
+	}
+	
+	
+	public boolean checkIfConditionMatch(JSONObject temp){
+		
+		boolean match = true;
+		
+		System.out.println("inside checkIfConditionMatch");
+		
+		for(WhereClause whereClause: this.whereConditions){
+			
+			 String colName = whereClause.attribute1;
+			 String colVal = whereClause.attribute2;
+			 
+			 //get table columnName
+			 String tableColName = tableColumnMap.get(colName);					 
+			 
+			 Object value = temp.get(tableColName);			 
+			 char operator = whereClause.operation;
+			 
+			 if(value != null && !(value instanceof String)){
+				 
+				 if(operator == '>'){
+					 
+					 System.out.println("Inside > ");     							 
+				     System.out.println("Table value: "+value.toString());
+
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString());
+
+					 if(actualVal.compareTo(searchVal) <= 0){
+						 match = false;
+						 break;
+					 }	
+
+				 }else if(operator == '<'){
+					 
+					 System.out.println("Inside < ");
+
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString());
+
+					 if(actualVal.compareTo(searchVal) >= 0){
+						 match = false;
+						 break;
+					 }
+				 }else if(operator == '=') {
+
+					 System.out.println("Inside ="); 
+
+					 BigDecimal searchVal = new BigDecimal(colVal);
+					 BigDecimal actualVal = new BigDecimal(value.toString()); 
+
+					 if(searchVal.compareTo(actualVal) != 0){
+						 match = false;
+						 break;								
+					 }else{
+						 System.out.println("match = true for "+searchVal+","+actualVal);						 
+					 }
+				   }
+				 }else{		
+									 
+					 if(value != null && colVal != null){
+						 
+						 colVal = colVal.substring(1, colVal.length()-1);	
+						 
+						 System.out.println("after substring: "+colVal);
+						 
+						 if(colVal.equalsIgnoreCase(value.toString())){							 
+							 match = true;
+							 break;
+						 }else{
+							  
+							 match = false;
+							 break;
+						 }
+						 
+					 }else{
+						 match = false;
+						 break;
+					 }												 
+			 }				
+		}		
+		
+		return match;
+			
+	}
+	
 }

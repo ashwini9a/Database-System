@@ -247,11 +247,7 @@ public class Delete {
 			
 		}
 		
-		
-	
 		return true;
-
-
 	}
 
 
@@ -286,22 +282,28 @@ public class Delete {
 			    	System.out.println("conditionOp: "+this.conditionOp);			    	
 			    	boolean result = allConditionsMatch(temp);
 			    	
-			    	if(result)
+			    	if(result){
+			    		// change here
 			    		headers.remove(i);
+			    	}	
 			    	
 			    }else if("Or".equalsIgnoreCase(conditionOp)){
 			    	
 			    	System.out.println("conditionOp: "+this.conditionOp);			    	
 			    	boolean result = eitherConditionsMatch(temp);
 			    	
-			    	if(result)			    		
+			    	if(result){		
+			    		// change here
 			    		headers.remove(i);
+			    	}
 			    	
 			    }else{			    	
 			    	// there is only one condition in the where clause			    	
 			    	boolean result = checkIfConditionMatch(temp);
-			    	if(result)
-			    		headers.remove(i);			    	
+			    	if(result){
+			    		// change here
+			    		headers.remove(i);
+			    	}
 			    }	
 			}
 
@@ -568,6 +570,7 @@ public class Delete {
 							 match = true;
 							 break;
 						 }else{
+							  
 							 match = false;
 							 break;
 						 }
