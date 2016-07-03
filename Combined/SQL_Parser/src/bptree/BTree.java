@@ -84,6 +84,23 @@ public class BTree<TKey extends Comparable<TKey>, TValue> {
 		}
 	}
 
+	public int getTotalKeyNumbers() {
+		int total = 0;
+		BTreeNode<TKey> node = this.root;
+		while (node.getNodeType() == TreeNodeType.InnerNode) {
+			node = ((BTreeInnerNode<TKey>) node).getChild(0);
+		}
+
+		while (true) {
+			for (int i = 0; i < node.getKeyCount(); i++)
+				total++;
+			if (node.rightSibling == null)
+				break;
+			node = node.rightSibling;
+		}
+		return total;
+	}
+
 	public JSONArray SearchFrom(String op, TKey value) {
 		JSONArray result = new JSONArray();
 		if (op == ">") {
@@ -137,7 +154,6 @@ public class BTree<TKey extends Comparable<TKey>, TValue> {
 				for (int i = leafnode.keyCount - 1; i > -1; i--)
 					result.add(leafnode.getValue(i));
 			}
-
 		}
 		return result;
 	}
