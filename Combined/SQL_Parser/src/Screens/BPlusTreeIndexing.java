@@ -32,7 +32,7 @@ public class BPlusTreeIndexing extends BTree {
 			JSONObject currJson;
 			currJson = (JSONObject) headers.get(i);
 			if (type.equals("INT")) {
-				long key = Long.valueOf((String) currJson.get(att));
+				long key = (Long) currJson.get(att);
 				this.insert(key, headers.get(i));
 			} else if (type.equals("FLOAT")) {
 				float key = (float) currJson.get(att);
@@ -53,30 +53,32 @@ public class BPlusTreeIndexing extends BTree {
 	public static JSONArray qBptree(String att1, String op, Long value) {
 		JSONArray result = new JSONArray();
 		BPlusTreeIndexing tree = GlobalData.AttBTreeIndex.get(att1);
-		if (op == "=") {
-			result.add(tree.search(value));
-		}
-
-		if (op == ">" || op == "<") {
-			result.add(tree.SearchFrom(op, value));
-		}
-
-		if (op == ">=") {
+		tree.printbtree();
+		if (op.equals("=")) {
 			if (tree.search(value) != null)
 				result.add(tree.search(value));
-
-			JSONArray range = tree.SearchFrom(">", value);
-			for (int i = 0; i < range.size(); i++)
-				result.add(range.get(i));
 		}
-		if (op == "<=") {
-			if (tree.search(value) != null)
-				result.add(tree.search(value));
 
-			JSONArray range = tree.SearchFrom("<", value);
-			for (int i = 0; i < range.size(); i++)
-				result.add(range.get(i));
+		if (op.equals(">") || op.equals("<")) {
+			return tree.SearchFrom(op, value);
 		}
+
+//		if (op.equals(">=")) {
+//			if (tree.search(value) != null)
+//				result.add(tree.search(value));
+//
+//			JSONArray range = tree.SearchFrom(">", value);
+//			for (int i = 0; i < range.size(); i++)
+//				result.add(range.get(i));
+//		}
+//		if (op.equals("<=")) {
+//			if (tree.search(value) != null)
+//				result.add(tree.search(value));
+//
+//			JSONArray range = tree.SearchFrom("<", value);
+//			for (int i = 0; i < range.size(); i++)
+//				result.add(range.get(i));
+//		}
 
 		return result;
 	}
@@ -92,7 +94,7 @@ public class BPlusTreeIndexing extends BTree {
 		BPlusTreeIndexing tree2 = GlobalData.AttBTreeIndex.get(att2);
 		JSONArray jsa1 = GlobalData.tableJSonArray.get(table1);
 		JSONArray jsa2 = GlobalData.tableJSonArray.get(table2);
-		if (op == "=") {
+		if (op.equals("=")) {
 			if (jsa1.size() <= jsa2.size()) {
 				for (int i = 0; i < jsa1.size(); i++) {
 					JSONObject temp1 = (JSONObject) jsa1.get(i);
@@ -109,9 +111,10 @@ public class BPlusTreeIndexing extends BTree {
 				}
 			}
 		}
-		
+
 		return result;
 	}
+
 	public void SaveBTree(JSONArray headers, BTree tree, String tableName, String att) {
 		try {
 

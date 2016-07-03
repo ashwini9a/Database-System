@@ -38,15 +38,15 @@ public class Home extends JFrame {
 					// newly added
 					GlobalData.initTableJSonArray();
 					GlobalData.initAttTableMap();
-
+					GlobalData.addAttBTreeIndex("complaints", "id");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				test();
-
+				// test();
 			}
 		});
 	}
+
 
 	protected static void test() {
 		JSONArray table_a = GlobalData.tableJSonArray.get("A");
@@ -60,8 +60,8 @@ public class Home extends JFrame {
 		}
 
 		try {
-			GlobalData.addAttBTreeIndex("A", "m");
-			GlobalData.addAttBTreeIndex("B", "x");
+			// GlobalData.addAttBTreeIndex("A", "m");
+			// GlobalData.addAttBTreeIndex("B", "x");
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -181,6 +181,7 @@ public class Home extends JFrame {
 				try {
 					GlobalData.updateTableFile();
 					GlobalData.addTableJSonArray("complaints");
+					GlobalData.addAttTableMap("complaints");
 					GlobalData.addAttBTreeIndex("complaints", "id");
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block

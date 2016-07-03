@@ -380,12 +380,22 @@ public class Update {
 			// if only single where clause then fetch records using B-tree
 			if(conditionOp == null){
 
+				
+				
 				// get the json objects from  B-tree
 				WhereClause whereClause = this.whereConditions.get(0);			    
+				
+				System.out.println("Before btree");
+				System.out.println("att:"+whereClause.attribute1);
+
 				BPlusTreeIndexing  bplusTree = GlobalData.AttBTreeIndex.get(whereClause.attribute1);	
 				String operation = whereClause.operation + "";
-				JSONArray jsonArray = bplusTree.qBptree(whereClause.attribute1,operation, whereClause.attribute2);
+				JSONArray jsonArray = bplusTree.qBptree(whereClause.attribute1,operation, Long.valueOf(whereClause.attribute2));
 
+				System.out.println("After btree"+Long.valueOf(whereClause.attribute2)+"att:"+whereClause.attribute1);
+				
+				System.out.println(jsonArray.toJSONString());
+				
 				updateJSONArray(jsonArray);
 				
 			}
@@ -577,6 +587,8 @@ public class Update {
 			
 		// update records in file
 		///JSONParser parser = new JSONParser();
+		
+		System.out.println("saving data to file");
 
 		FileReader f1;
 		try {
