@@ -55,7 +55,7 @@ public class ProjectionRecords {
 			// populate records in the table
 			frame.setTitle(tableName);
 			populateMainJson(tableName ,cond);
-			oderMainJson(tableName,OB);
+			oderMainJson(OB);
 			populateRecords(SelectedAttributes);
 
 			// display all the records of this table
@@ -230,26 +230,9 @@ public class ProjectionRecords {
 					while(itr.hasNext())
 					{
 						JSONObject json1 = (JSONObject) itr.next();
-						switch(w.operation)
+						if(att2 == Integer.parseInt((String)json1.get(att1)))
 						{
-							case '=':
-							if(att2 == Integer.parseInt((String)json1.get(att1)))
-							{
-								headers.add(json1);
-							}
-							break;
-							case '>':
-							if(att2 < Integer.parseInt((String)json1.get(att1)))
-							{
-								headers.add(json1);
-							}
-							break;
-							case '<':
-								if(att2 > Integer.parseInt((String)json1.get(att1)))
-								{
-									headers.add(json1);
-								}
-							break;
+							headers.add(json1);
 						}
 					}
 					break;
@@ -273,26 +256,9 @@ public class ProjectionRecords {
 					while(itr1.hasNext())
 					{
 						JSONObject json1 = (JSONObject) itr1.next();
-						switch(w.operation)
-						{
-						case '=':
 						if(att21 == Float.parseFloat((String)json1.get(att1)))
 						{
 							headers.add(json1);
-						}
-						break;
-						case '>':
-							if(att21 < Float.parseFloat((String)json1.get(att1)))
-							{
-								headers.add(json1);
-							}
-							break;
-						case '<':
-							if(att21 > Float.parseFloat((String)json1.get(att1)))
-							{
-								headers.add(json1);
-							}
-							break;
 						}
 					}
 					break;
@@ -316,26 +282,9 @@ public class ProjectionRecords {
 					while(itr11.hasNext())
 					{
 						JSONObject json1 = (JSONObject) itr11.next();
-						switch(w.operation)
-						{
-						case '=':
 						if(att22.equalsIgnoreCase((String)json1.get(att1)))
 						{
 							headers.add(json1);
-						}
-						break;
-						case '<':
-							if(att22.compareTo((String)json1.get(att1))==1)
-							{
-								headers.add(json1);
-							}
-							break;
-						case '>':
-							if(att22.compareTo((String)json1.get(att1))==-1)
-							{
-								headers.add(json1);
-							}
-							break;
 						}
 					}
 					break;
@@ -388,26 +337,9 @@ public class ProjectionRecords {
 					while(itr.hasNext())
 					{
 						JSONObject json1 = (JSONObject) itr.next();
-						switch(w.operation)
+						if(att2 == Integer.parseInt((String)json1.get(att1)))
 						{
-							case '=':
-							if(att2 == Integer.parseInt((String)json1.get(att1)))
-							{
-								condJ.add(json1);
-							}
-							break;
-							case '>':
-							if(att2 < Integer.parseInt((String)json1.get(att1)))
-							{
-								condJ.add(json1);
-							}
-							break;
-							case '<':
-								if(att2 > Integer.parseInt((String)json1.get(att1)))
-								{
-									condJ.add(json1);
-								}
-							break;
+							condJ.add(json1);
 						}
 					}
 					break;
@@ -431,26 +363,9 @@ public class ProjectionRecords {
 					while(itr1.hasNext())
 					{
 						JSONObject json1 = (JSONObject) itr1.next();
-						switch(w.operation)
-						{
-						case '=':
 						if(att21 == Float.parseFloat((String)json1.get(att1)))
 						{
 							condJ.add(json1);
-						}
-						break;
-						case '>':
-							if(att21 < Float.parseFloat((String)json1.get(att1)))
-							{
-								condJ.add(json1);
-							}
-							break;
-						case '<':
-							if(att21 > Float.parseFloat((String)json1.get(att1)))
-							{
-								condJ.add(json1);
-							}
-							break;
 						}
 					}
 					break;
@@ -474,26 +389,9 @@ public class ProjectionRecords {
 					while(itr11.hasNext())
 					{
 						JSONObject json1 = (JSONObject) itr11.next();
-						switch(w.operation)
-						{
-						case '=':
 						if(att22.equalsIgnoreCase((String)json1.get(att1)))
 						{
 							condJ.add(json1);
-						}
-						break;
-						case '<':
-							if(att22.compareTo((String)json1.get(att1))==1)
-							{
-								condJ.add(json1);
-							}
-							break;
-						case '>':
-							if(att22.compareTo((String)json1.get(att1))==-1)
-							{
-								condJ.add(json1);
-							}
-							break;
 						}
 					}
 					break;
@@ -543,48 +441,34 @@ public class ProjectionRecords {
 		        public int compare(JSONObject a, JSONObject b) 
 		        {		            
 
-					String type = GlobalUtil.getDataType(tableName, key);
-					try{
+					String type = GlobalUtil.getDataType(tableName, att1);
 					switch(type)
 					{
 					case "INT":
 						int att1 = Integer.parseInt((String)a.get(key));
 						int att2 = Integer.parseInt((String)b.get(key));
-						if(att1>att2)
-						{
-							if(OB.order)
-							{return 1;}
-							return -1;
-						}
-						if(OB.order)
-						{return -1;}
-						return 1;
 						//return statement
+						break;
 					case "FLOAT":
 						float att21 = Float.parseFloat((String)a.get(key));
 						float att22 = Float.parseFloat((String)b.get(key));
-						if(att21>att22)
-						{
-							if(OB.order)
-							{return 1;}
-							return -1;
-						}
-						if(OB.order)
-						{return -1;}
-						return 1;
+						break;
 					case "VARCHAR":
 						String att31 = (String)a.get(key);
 						String att32 = (String)b.get(key);
-						if(OB.order)
-						{return att31.compareTo(att32);}
-						return -att31.compareTo(att32);
+						att31.compareTo(att32);
+						break;
 					}
-			
+				
+
+		            try {
+		                valA = (String) a.get(key);
+		                valB = (String) b.get(key);
 		            } 
 		            catch (Exception e) {
 		                //do something
 		            }
-					return 0;
+
 		            
 		            //if you want to change the sort order, simply use the following:
 		            //return -valA.compareTo(valB);
@@ -594,7 +478,6 @@ public class ProjectionRecords {
 		    for (int i = 0; i < headers.size(); i++) {
 		        sortedJsonArray.add(jsonValues.get(i));
 		    }
-		    headers = sortedJsonArray;
 		}
 	}
 

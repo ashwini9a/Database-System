@@ -68,7 +68,7 @@ public class QValidation {
 			return;
 		}
 		i++;
-		while(i< words.length && (!(words[i].equals("where")) || (words[i].equals("order")) ))
+		while(i< words.length && !(words[i].equals("where")))
 		{
 			tables.add(words[i]);
 			i++;
@@ -928,15 +928,7 @@ public class QValidation {
 		String qtable;
 		if(ind2 < 0)
 		{
-			ind2 = query.indexOf("order by");
-			if(ind2<0)
-			{
-				qtable = query.substring(ind1+4);
-			}
-			else
-			{
-				qtable = query.substring(ind1+4, ind2);
-			}
+			qtable = query.substring(ind1+4);
 		}
 		else
 		{

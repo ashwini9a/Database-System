@@ -68,7 +68,7 @@ public class QValidation {
 			return;
 		}
 		i++;
-		while(i< words.length && (!(words[i].equals("where")) || (words[i].equals("order")) ))
+		while(i< words.length && !(words[i].equals("where")))
 		{
 			tables.add(words[i]);
 			i++;
