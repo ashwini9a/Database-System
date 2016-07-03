@@ -248,9 +248,8 @@ public class Insert {
 
 			for(String value : columnValues){
 				
-				//System.out.println("value: "+value);
-				
-				if(!validateColVal(value)){
+				//System.out.println("value: "+value);				
+				if(!validateColVal(value.trim())){
 					flag = false;
 					break;
 				}
@@ -262,7 +261,7 @@ public class Insert {
 				return;	    				
 			}else{
 				for(String name : columnValues){		    				
-					values.add(name);  				
+					values.add(name.trim());  				
 				}
 			}
 
@@ -518,7 +517,7 @@ public class Insert {
 
 
 	private boolean validateColVal(String name){
-
+		
 		if(!name.startsWith("'") || !name.endsWith("'"))
 			return false;
 
