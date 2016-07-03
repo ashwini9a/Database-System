@@ -102,12 +102,12 @@ public class Home extends JFrame {
 		JTextArea textArea = new JTextArea();
 		textArea.setBounds(135, 30, 631, 174);
 
-		textArea.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+		textArea.setFont(new Font("Times New Roman", Font.PLAIN, 15));
 
 		getContentPane().add(textArea);
 		JButton btnCreate = new JButton("Create Table");
-		btnCreate.setBounds(400, 232, 150, 31);
-		btnCreate.setFont(new Font("Times New Roman", Font.BOLD, 18));
+		btnCreate.setBounds(449, 232, 138, 31);
+		btnCreate.setFont(new Font("Times New Roman", Font.BOLD, 11));
 		btnCreate.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -125,7 +125,7 @@ public class Home extends JFrame {
 		});
 		getContentPane().add(btnCreate);
 		JButton btnOk = new JButton("OK");
-		btnOk.setBounds(559, 232, 75, 31);
+		btnOk.setBounds(597, 232, 75, 31);
 		btnOk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -137,20 +137,21 @@ public class Home extends JFrame {
 				}
 			}
 		});
-		btnOk.setFont(new Font("Times New Roman", Font.BOLD, 18));
+		btnOk.setFont(new Font("Times New Roman", Font.BOLD, 12));
 		getContentPane().add(btnOk);
 
 		JButton btnClear = new JButton("Clear");
-		btnClear.setBounds(644, 232, 84, 31);
+		btnClear.setBounds(682, 232, 84, 31);
 		btnClear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				textArea.setText("");
 			}
 		});
-		btnClear.setFont(new Font("Times New Roman", Font.BOLD, 18));
+		btnClear.setFont(new Font("Times New Roman", Font.BOLD, 12));
 		getContentPane().add(btnClear);
 
 		JButton btnLoadComplaintdb = new JButton("Load complaint.db");
+		btnLoadComplaintdb.setFont(new Font("Times New Roman", Font.BOLD, 12));
 
 		btnLoadComplaintdb.addMouseListener(new MouseAdapter() {
 			@Override
@@ -170,7 +171,7 @@ public class Home extends JFrame {
 			}
 		});
 
-		btnLoadComplaintdb.setBounds(122, 234, 150, 29);
+		btnLoadComplaintdb.setBounds(289, 233, 150, 29);
 		getContentPane().add(btnLoadComplaintdb);
 		contentPane = new JPanel(new GridLayout(5, 5));
 
