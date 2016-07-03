@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -33,7 +35,19 @@ public class GlobalUtil {
 
 	}
 
+	public static JSONObject concat2jobj(JSONObject jobj1, JSONObject jobj2) {
+		JSONObject jobj_new = new JSONObject();
+		Set<String> keys1 = jobj1.keySet();
+		for (String key : keys1) {
+			jobj_new.put(key, jobj1.get(key));
+		}
+		Set<String> keys2 = jobj2.keySet();
+		for (String key : keys2) {
+			jobj_new.put(key, jobj2.get(key));
+		}
 
+		return jobj_new;
+	}
 	public static boolean validateColumnNames(List<String> columnNamesList, String tableName){
 
 		FileReader f1;

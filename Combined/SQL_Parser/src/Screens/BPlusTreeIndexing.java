@@ -48,7 +48,7 @@ public class BPlusTreeIndexing extends BTree {
 	}
 
 	@SuppressWarnings("unchecked")
-	public JSONArray qBptree(String att1, String op, Long value) {
+	public static JSONArray qBptree(String att1, String op, Long value) {
 		JSONArray result = new JSONArray();
 		BPlusTreeIndexing tree = GlobalData.AttBTreeIndex.get(att1);
 		if (op == "=") {
@@ -80,23 +80,36 @@ public class BPlusTreeIndexing extends BTree {
 	}
 
 	// variant
-	public JSONArray qBptree(Long value, String op, String att1) {
+	public static JSONArray qBptree(Long value, String op, String att1) {
 		return qBptree(att1, op, value);
 	}
 
-	public JSONArray qBptree(String att1, String op, String att2) {
+	public static JSONArray qBptree(String table1, String att1, String op, String table2, String att2) {
 		JSONArray result = new JSONArray();
 		BPlusTreeIndexing tree1 = GlobalData.AttBTreeIndex.get(att1);
 		BPlusTreeIndexing tree2 = GlobalData.AttBTreeIndex.get(att2);
-		if (tree1.getTotalKeyNumbers() <= tree2.getTotalKeyNumbers()) {
-			
-		} else {
-
+		JSONArray jsa1 = GlobalData.tableJSonArray.get(table1);
+		JSONArray jsa2 = GlobalData.tableJSonArray.get(table2);
+		if (op == "=") {
+			if (jsa1.size() <= jsa2.size()) {
+				for (int i = 0; i < jsa1.size(); i++) {
+					JSONObject temp1 = (JSONObject) jsa1.get(i);
+					JSONObject temp2 = (JSONObject) tree2.search(Long.valueOf((String) temp1.get(att1)));
+					if (temp2 != null)
+						result.add(GlobalUtil.concat2jobj(temp1, temp2));
+				}
+			} else {
+				for (int i = 0; i < jsa2.size(); i++) {
+					JSONObject temp2 = (JSONObject) jsa2.get(i);
+					JSONObject temp1 = (JSONObject) tree1.search(Long.valueOf((String) temp2.get(att2)));
+					if (temp1 != null)
+						result.add(GlobalUtil.concat2jobj(temp1, temp2));
+				}
+			}
 		}
-
+		
 		return result;
 	}
-
 	public void SaveBTree(JSONArray headers, BTree tree, String tableName, String att) {
 		try {
 
