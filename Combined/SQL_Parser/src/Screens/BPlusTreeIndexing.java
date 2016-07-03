@@ -63,22 +63,22 @@ public class BPlusTreeIndexing extends BTree {
 			return tree.SearchFrom(op, value);
 		}
 
-//		if (op.equals(">=")) {
-//			if (tree.search(value) != null)
-//				result.add(tree.search(value));
-//
-//			JSONArray range = tree.SearchFrom(">", value);
-//			for (int i = 0; i < range.size(); i++)
-//				result.add(range.get(i));
-//		}
-//		if (op.equals("<=")) {
-//			if (tree.search(value) != null)
-//				result.add(tree.search(value));
-//
-//			JSONArray range = tree.SearchFrom("<", value);
-//			for (int i = 0; i < range.size(); i++)
-//				result.add(range.get(i));
-//		}
+		// if (op.equals(">=")) {
+		// if (tree.search(value) != null)
+		// result.add(tree.search(value));
+		//
+		// JSONArray range = tree.SearchFrom(">", value);
+		// for (int i = 0; i < range.size(); i++)
+		// result.add(range.get(i));
+		// }
+		// if (op.equals("<=")) {
+		// if (tree.search(value) != null)
+		// result.add(tree.search(value));
+		//
+		// JSONArray range = tree.SearchFrom("<", value);
+		// for (int i = 0; i < range.size(); i++)
+		// result.add(range.get(i));
+		// }
 
 		return result;
 	}
@@ -94,21 +94,39 @@ public class BPlusTreeIndexing extends BTree {
 		BPlusTreeIndexing tree2 = GlobalData.AttBTreeIndex.get(att2);
 		JSONArray jsa1 = GlobalData.tableJSonArray.get(table1);
 		JSONArray jsa2 = GlobalData.tableJSonArray.get(table2);
-		if (op.equals("=")) {
-			if (jsa1.size() <= jsa2.size()) {
-				for (int i = 0; i < jsa1.size(); i++) {
-					JSONObject temp1 = (JSONObject) jsa1.get(i);
-					JSONObject temp2 = (JSONObject) tree2.search(Long.valueOf((String) temp1.get(att1)));
-					if (temp2 != null)
-						result.add(GlobalUtil.concat2jobj(temp1, temp2));
+		if (tree1 != null && tree2 != null) {
+			if (op.equals("=")) {
+				if (jsa1.size() <= jsa2.size()) {
+					for (int i = 0; i < jsa1.size(); i++) {
+						JSONObject temp1 = (JSONObject) jsa1.get(i);
+						JSONObject temp2 = (JSONObject) tree2.search(Long.valueOf((String) temp1.get(att1)));
+						if (temp2 != null)
+							result.add(GlobalUtil.concat2jobj(temp1, temp2));
+					}
+				} else {
+					for (int i = 0; i < jsa2.size(); i++) {
+						JSONObject temp2 = (JSONObject) jsa2.get(i);
+						JSONObject temp1 = (JSONObject) tree1.search(Long.valueOf((String) temp2.get(att2)));
+						if (temp1 != null)
+							result.add(GlobalUtil.concat2jobj(temp1, temp2));
+					}
 				}
-			} else {
-				for (int i = 0; i < jsa2.size(); i++) {
-					JSONObject temp2 = (JSONObject) jsa2.get(i);
-					JSONObject temp1 = (JSONObject) tree1.search(Long.valueOf((String) temp2.get(att2)));
-					if (temp1 != null)
-						result.add(GlobalUtil.concat2jobj(temp1, temp2));
-				}
+			}
+		}
+		if (tree1 != null) {
+			for (int i = 0; i < jsa2.size(); i++) {
+				JSONObject temp2 = (JSONObject) jsa2.get(i);
+				JSONObject temp1 = (JSONObject) tree1.search(Long.valueOf((String) temp2.get(att2)));
+				if (temp1 != null)
+					result.add(GlobalUtil.concat2jobj(temp1, temp2));
+			}
+		}
+		if (tree2 != null) {
+			for (int i = 0; i < jsa1.size(); i++) {
+				JSONObject temp1 = (JSONObject) jsa1.get(i);
+				JSONObject temp2 = (JSONObject) tree2.search(Long.valueOf((String) temp1.get(att1)));
+				if (temp2 != null)
+					result.add(GlobalUtil.concat2jobj(temp1, temp2));
 			}
 		}
 
