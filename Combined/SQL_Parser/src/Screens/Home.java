@@ -69,6 +69,18 @@ public class Home extends JFrame {
 		t.printbtree();
 		JSONObject currJson = (JSONObject) t.search((long) 1);
 		System.out.println("Test tree retrival: " + currJson.get("o"));
+		
+		System.out.println("Range test:");
+		JSONArray range = t.qBptree("m", ">=", (long) 1);
+		for (int i = 0; i < range.size(); i++) {
+			System.out.println(range.get(i).toString());
+		}
+		
+		range = t.qBptree("m", ">", (long) 5);
+		for (int i = 0; i < range.size(); i++) {
+			System.out.println(range.get(i).toString());
+		}
+		
 	}
 
 	/**
