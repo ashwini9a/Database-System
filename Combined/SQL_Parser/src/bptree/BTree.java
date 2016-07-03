@@ -103,7 +103,7 @@ public class BTree<TKey extends Comparable<TKey>, TValue> {
 
 	public JSONArray SearchFrom(String op, TKey value) {
 		JSONArray result = new JSONArray();
-		if (op == ">") {
+		if (op.equals(">")) {
 			BTreeLeafNode<TKey, TValue> leafnode = this.findLeafNodeShouldContainKey(value);
 			int index = -1;
 			for (int i = 0; i < leafnode.keyCount; i++) {
@@ -130,7 +130,7 @@ public class BTree<TKey extends Comparable<TKey>, TValue> {
 
 		}
 
-		if (op == "<") {
+		if (op .equals("<") ) {
 			BTreeLeafNode<TKey, TValue> leafnode = this.findLeafNodeShouldContainKey(value);
 			int index = -1;
 			for (int i = leafnode.keyCount - 1; i > -1; i--) {

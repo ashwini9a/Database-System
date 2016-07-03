@@ -37,15 +37,16 @@ public class Home extends JFrame {
 
 					// newly added
 					GlobalData.initTableJSonArray();
-
+					GlobalData.initAttTableMap();
+					GlobalData.addAttBTreeIndex("complaints", "id");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				test();
-
+				// test();
 			}
 		});
 	}
+
 
 	protected static void test() {
 		JSONArray table_a = GlobalData.tableJSonArray.get("A");
@@ -59,29 +60,47 @@ public class Home extends JFrame {
 		}
 
 		try {
-			GlobalData.addAttBTreeIndex("A", "m");
+			// GlobalData.addAttBTreeIndex("A", "m");
+			// GlobalData.addAttBTreeIndex("B", "x");
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		JSONParser parser = new JSONParser();
-		BPlusTreeIndexing t = (BPlusTreeIndexing) GlobalData.AttBTreeIndex.get("m");
-		t.printbtree();
-		JSONObject currJson = (JSONObject) t.search((long) 1);
+		BPlusTreeIndexing t1 = (BPlusTreeIndexing) GlobalData.AttBTreeIndex.get("m");
+		BPlusTreeIndexing t2 = (BPlusTreeIndexing) GlobalData.AttBTreeIndex.get("x");
+
+		t1.printbtree();
+		JSONObject currJson = (JSONObject) t1.search((long) 1);
 		System.out.println("Test tree retrival: " + currJson.get("o"));
 
 		System.out.println("Range test:");
-		JSONArray range = t.qBptree("m", ">=", (long) 1);
+		JSONArray range = t1.qBptree("m", ">=", (long) 1);
 		for (int i = 0; i < range.size(); i++) {
 			System.out.println(range.get(i).toString());
 		}
-		System.out.println("key number:" + t.getTotalKeyNumbers());
+		System.out.println("key number:" + t1.getTotalKeyNumbers());
 		System.out.println("tuple number:" + table_a.size());
 
-		range = t.qBptree("m", ">", (long) 5);
+		range = t1.qBptree("m", ">", (long) 5);
 		for (int i = 0; i < range.size(); i++) {
 			System.out.println(range.get(i).toString());
 		}
+
+		JSONObject testjobj = GlobalUtil.concat2jobj((JSONObject) GlobalData.tableJSonArray.get("A").get(2),
+				(JSONObject) GlobalData.tableJSonArray.get("B").get(2));
+		System.out.println("concat test:" + GlobalData.tableJSonArray.get("A").get(2));
+		System.out.println("concat test:" + testjobj.toString());
+
+		JSONArray jointest = BPlusTreeIndexing.qBptree("A", "m", "=", "B", "x");
+		for (int i = 0; i < jointest.size(); i++) {
+			System.out.println(jointest.get(i).toString());
+		}
+		System.out.println("concat test:" + GlobalData.AttTableMap.get("x"));
+
+		System.out.println("concat test:" + GlobalData.AttTableMap.get("m"));
+		System.out.println("type test:" + GlobalUtil.GetAttType("m"));
 
 	}
 
@@ -162,6 +181,7 @@ public class Home extends JFrame {
 				try {
 					GlobalData.updateTableFile();
 					GlobalData.addTableJSonArray("complaints");
+					GlobalData.addAttTableMap("complaints");
 					GlobalData.addAttBTreeIndex("complaints", "id");
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
