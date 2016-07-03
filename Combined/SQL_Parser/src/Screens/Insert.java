@@ -16,9 +16,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-
-//[\w+]*[,\w+]*
-
 public class Insert {
 
 	private String tableName;
@@ -81,9 +78,7 @@ public class Insert {
 		}
 
 		// if reached here , means into and values are present;
-
 		// check if at correct position
-
 		if(!tokens[1].equalsIgnoreCase("INTO")){
 
 			JOptionPane.showMessageDialog(null, "Invalid location of INTO clause", "Error", JOptionPane.ERROR_MESSAGE);
@@ -167,14 +162,22 @@ public class Insert {
 				if("".equals(columnNames)){
 					JOptionPane.showMessageDialog(null, "Invalid Syntax: Column Names missing", "Error", JOptionPane.ERROR_MESSAGE);
 					return;
+				}else if(columnNames.startsWith(",") || columnNames.endsWith(",")){
+					
+					JOptionPane.showMessageDialog(null, "Invalid Syntax : Comma at the beginning/end of col names", "Error", JOptionPane.ERROR_MESSAGE);
+					return;
+					
 				}else{
+				
 					String [] colNames = columnNames.split(",");
 					this.columns = new ArrayList<String>();
 					for(String name : colNames){		    				
-						columns.add(name);  				
+						columns.add(name.trim());  				
 					}
 				}
 			}
+			
+			System.out.println("SQL col names: "+this.columns);
 			
 			// check if values is present in correct location:
 			
@@ -244,11 +247,14 @@ public class Insert {
 			boolean flag = true;
 
 			for(String value : columnValues){
-				System.out.println("value: "+value);
+				
+				//System.out.println("value: "+value);
+				
 				if(!validateColVal(value)){
 					flag = false;
 					break;
-				}	    				
+				}
+				
 			}
 
 			if(!flag){	    				
@@ -332,6 +338,9 @@ public class Insert {
 			
 			HashMap<String,String> columnMap = GlobalUtil.fetchColumnDataType(this.tableName);
 			
+			// get the tablecolumnMap
+			HashMap<String,String> tableColumnMap = GlobalUtil.getTableColumnNameMap(this.columns, tableName);
+			
 			for(String name : this.columns){
 
 				String val = this.values.get(i);   				 
@@ -341,8 +350,10 @@ public class Insert {
 					JOptionPane.showMessageDialog(null, "Invalid DataType: Mismatch between dataType and Value", "Error", JOptionPane.ERROR_MESSAGE);
 					return false;
 				}else{	
-					//remove single quotes from string					 
-					newJson.put(name, val.substring(1, val.length()-1));
+					//remove single quotes from string	
+					
+					String colName = tableColumnMap.get(name);
+					newJson.put(colName, val.substring(1, val.length()-1));
 				}		 
 
 				i++;
