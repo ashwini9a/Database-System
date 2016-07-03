@@ -18,7 +18,34 @@ public class GlobalData {
 	static HashMap<String, String> tablePrimaryKeyMap;
 	static HashMap<String, JSONArray> tableJSonArray= new HashMap<String, JSONArray>();
 	static HashMap<String, BPlusTreeIndexing> AttBTreeIndex = new HashMap<String, BPlusTreeIndexing>();
+	static HashMap<String, String> AttTableMap = new HashMap<String, String>();
 
+	public static void addAttTableMap(String tableName) throws Exception {
+		JSONParser parser = new JSONParser();
+		try {
+			Object obj = parser.parse(new FileReader("Data/Metadata/" + tableName + ".json"));
+			JSONObject json = (JSONObject) obj;
+			JSONArray headers = (JSONArray) json.get("headers");
+
+			for (int i = 0; i < headers.size(); i++) {
+				JSONObject curr = (JSONObject) headers.get(i);
+				AttTableMap.put((String) curr.get("Column Name"), tableName);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void initAttTableMap() throws Exception {
+		for (String tableName : GlobalData.allTables) {
+			addAttTableMap(tableName);
+		}
+	}
+	
 	public static void initTableJSonArray() throws Exception {
 		for (String tableName : GlobalData.allTables) {
 			tableJSonArray.put(tableName, readJSonFile(tableName));

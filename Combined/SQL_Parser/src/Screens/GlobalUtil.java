@@ -1,11 +1,14 @@
 package Screens;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -13,18 +16,16 @@ import org.json.simple.parser.ParseException;
 
 public class GlobalUtil {
 
-	public static boolean validateTableName(String name){
+	public static boolean validateTableName(String name) {
 
 		boolean tableExists = false;
 
-		//check if tableName exists
-		Iterator< String> itr = GlobalData.allTables.iterator();
-				
-		while(itr.hasNext())
-		{
-			if(name.equalsIgnoreCase(itr.next()))
-			{
-				tableExists=true;
+		// check if tableName exists
+		Iterator<String> itr = GlobalData.allTables.iterator();
+
+		while (itr.hasNext()) {
+			if (name.equalsIgnoreCase(itr.next())) {
+				tableExists = true;
 			}
 		}
 
@@ -32,16 +33,53 @@ public class GlobalUtil {
 
 	}
 
+	public static String GetAttType(String name) {
+		String tablename = GlobalData.AttTableMap.get(name);
+		String datatype = null;
+		JSONParser parser = new JSONParser();
+		try {
+			Object obj = parser.parse(new FileReader("Data/Metadata/" + tablename + ".json"));
+			JSONObject json = (JSONObject) obj;
+			JSONArray headers = (JSONArray) json.get("headers");
 
-	public static boolean validateColumnNames(List<String> columnNamesList, String tableName){
+			for (int i = 0; i < headers.size(); i++) {
+				JSONObject curr = (JSONObject) headers.get(i);
+				String temp = (String) curr.get("Column Name");
+				if (temp.equals(name)) {
+					return ((String) curr.get("Data Type"));
+				}
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return datatype;
+	}
+
+	public static JSONObject concat2jobj(JSONObject jobj1, JSONObject jobj2) {
+		JSONObject jobj_new = new JSONObject();
+		Set<String> keys1 = jobj1.keySet();
+		for (String key : keys1) {
+			jobj_new.put(key, jobj1.get(key));
+		}
+		Set<String> keys2 = jobj2.keySet();
+		for (String key : keys2) {
+			jobj_new.put(key, jobj2.get(key));
+		}
+
+		return jobj_new;
+	}
+
+	public static boolean validateColumnNames(List<String> columnNamesList, String tableName) {
 
 		FileReader f1;
-		Iterator< String> itr = GlobalData.allTables.iterator();
-		while(itr.hasNext())
-		{
-			String tnm= itr.next();
-			if(tableName.equalsIgnoreCase(tnm))
-			{
+		Iterator<String> itr = GlobalData.allTables.iterator();
+		while (itr.hasNext()) {
+			String tnm = itr.next();
+			if (tableName.equalsIgnoreCase(tnm)) {
 				tableName = tnm;
 				break;
 			}
@@ -51,41 +89,40 @@ public class GlobalUtil {
 		ArrayList<String> columnNames = new ArrayList<String>();
 		boolean isValidColName = true;
 
-
 		try {
 
-			f1 = new FileReader("Data/MetaData/" +tableName+ ".json");
+			f1 = new FileReader("Data/MetaData/" + tableName + ".json");
 			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray) json.get("headers");
 
-			for(int i = 0 ; i < headers.size(); i++){
+			for (int i = 0; i < headers.size(); i++) {
 
 				Object temp = parser.parse(headers.get(i).toString());
-				JSONObject temp1 = (JSONObject) temp;			
+				JSONObject temp1 = (JSONObject) temp;
 
 				String columnName = (String) temp1.get("Column Name");
 				columnNames.add(columnName);
 			}
 
-			//check if each column in the sql exists in the columnList
-			for(String colName : columnNamesList){		
+			// check if each column in the sql exists in the columnList
+			for (String colName : columnNamesList) {
 				boolean found = false;
-				for(String tableCol : columnNames){	
-					
-					if(tableCol.equalsIgnoreCase(colName)){						
+				for (String tableCol : columnNames) {
+
+					if (tableCol.equalsIgnoreCase(colName)) {
 						found = true;
 						break;
 					}
 				}
-				
-				if(!found){					
+
+				if (!found) {
 					isValidColName = false;
-					break;					
-				}else 
-					continue;		
+					break;
+				} else
+					continue;
 			}
-			
+
 		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -95,25 +132,22 @@ public class GlobalUtil {
 
 	}
 
-	
-	
 	/**
 	 * To get column Names from table mapping with column names in insert query
+	 * 
 	 * @param conditions
 	 * @param tableName
 	 * @return
 	 */
-	public static HashMap<String,String> getTableColumnMap(List<WhereClause> conditions, String tableName){
-		
-		HashMap<String,String> tableNameMap = new HashMap<String,String>();
-		
+	public static HashMap<String, String> getTableColumnMap(List<WhereClause> conditions, String tableName) {
+
+		HashMap<String, String> tableNameMap = new HashMap<String, String>();
+
 		FileReader f1;
-		Iterator< String> itr = GlobalData.allTables.iterator();
-		while(itr.hasNext())
-		{
-			String tnm= itr.next();
-			if(tableName.equalsIgnoreCase(tnm))
-			{
+		Iterator<String> itr = GlobalData.allTables.iterator();
+		while (itr.hasNext()) {
+			String tnm = itr.next();
+			if (tableName.equalsIgnoreCase(tnm)) {
 				tableName = tnm;
 				break;
 			}
@@ -123,63 +157,59 @@ public class GlobalUtil {
 		ArrayList<String> columnNames = new ArrayList<String>();
 		boolean isValidColName = true;
 
-
 		try {
 
-			f1 = new FileReader("Data/MetaData/" +tableName+ ".json");
+			f1 = new FileReader("Data/MetaData/" + tableName + ".json");
 			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray) json.get("headers");
 
-			for(int i = 0 ; i < headers.size(); i++){
+			for (int i = 0; i < headers.size(); i++) {
 
 				Object temp = parser.parse(headers.get(i).toString());
-				JSONObject temp1 = (JSONObject) temp;			
+				JSONObject temp1 = (JSONObject) temp;
 
 				String columnName = (String) temp1.get("Column Name");
 				columnNames.add(columnName);
 			}
 
-			//check if each column in the sql exists in the columnList
-			for(WhereClause where : conditions){		
-				boolean found = false;				
+			// check if each column in the sql exists in the columnList
+			for (WhereClause where : conditions) {
+				boolean found = false;
 				String colName = where.attribute1;
-				for(String tableCol : columnNames){
+				for (String tableCol : columnNames) {
 
-					if(tableCol.equalsIgnoreCase(colName)){
+					if (tableCol.equalsIgnoreCase(colName)) {
 						found = true;
 						tableNameMap.put(colName, tableCol);
 						break;
-					}	  
+					}
 				}
-				
-				if(!found){					
+
+				if (!found) {
 					isValidColName = false;
-					break;					
-				}else 
-					continue;		
+					break;
+				} else
+					continue;
 			}
-			
+
 		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return tableNameMap;
 	}
-	
-	
-	public static HashMap<String,String> getTableColumnNameMap(List<String> conditions, String tableName){
-		
-		HashMap<String,String> tableNameMap = new HashMap<String,String>();
-		
+
+	public static HashMap<String, String> getTableColumnNameMap(List<String> conditions, String tableName) {
+
+		HashMap<String, String> tableNameMap = new HashMap<String, String>();
+
 		FileReader f1;
-		Iterator< String> itr = GlobalData.allTables.iterator();
-		while(itr.hasNext())
-		{
-			String tnm= itr.next();
-			if(tableName.equalsIgnoreCase(tnm))
-			{
+		Iterator<String> itr = GlobalData.allTables.iterator();
+		while (itr.hasNext()) {
+			String tnm = itr.next();
+			if (tableName.equalsIgnoreCase(tnm)) {
 				tableName = tnm;
 				break;
 			}
@@ -189,62 +219,57 @@ public class GlobalUtil {
 		ArrayList<String> columnNames = new ArrayList<String>();
 		boolean isValidColName = true;
 
-
 		try {
 
-			f1 = new FileReader("Data/MetaData/" +tableName+ ".json");
+			f1 = new FileReader("Data/MetaData/" + tableName + ".json");
 			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray) json.get("headers");
 
-			for(int i = 0 ; i < headers.size(); i++){
+			for (int i = 0; i < headers.size(); i++) {
 
 				Object temp = parser.parse(headers.get(i).toString());
-				JSONObject temp1 = (JSONObject) temp;			
+				JSONObject temp1 = (JSONObject) temp;
 
 				String columnName = (String) temp1.get("Column Name");
 				columnNames.add(columnName);
 			}
 
-			//check if each column in the sql exists in the columnList
-			for(String sqlName : conditions){		
-				boolean found = false;				
-				
-				for(String tableCol : columnNames){
+			// check if each column in the sql exists in the columnList
+			for (String sqlName : conditions) {
+				boolean found = false;
 
-					if(tableCol.equalsIgnoreCase(sqlName)){
+				for (String tableCol : columnNames) {
+
+					if (tableCol.equalsIgnoreCase(sqlName)) {
 						found = true;
 						tableNameMap.put(sqlName, tableCol);
 						break;
-					}	  
+					}
 				}
-				
-				if(!found){					
+
+				if (!found) {
 					isValidColName = false;
-					break;					
-				}else 
-					continue;		
+					break;
+				} else
+					continue;
 			}
-			
+
 		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return tableNameMap;
 	}
-	
 
-
-	public static boolean validateColumnNames(String colnm, String tableName){
+	public static boolean validateColumnNames(String colnm, String tableName) {
 
 		FileReader f1;
-		Iterator< String> itr = GlobalData.allTables.iterator();
-		while(itr.hasNext())
-		{
-			String tnm= itr.next();
-			if(tableName.equalsIgnoreCase(tnm))
-			{
+		Iterator<String> itr = GlobalData.allTables.iterator();
+		while (itr.hasNext()) {
+			String tnm = itr.next();
+			if (tableName.equalsIgnoreCase(tnm)) {
 				tableName = tnm;
 				break;
 			}
@@ -252,39 +277,36 @@ public class GlobalUtil {
 		JSONParser parser = new JSONParser();
 		ArrayList<String> columnNames = new ArrayList<String>();
 
-
 		try {
 
-			f1 = new FileReader("Data/MetaData/" +tableName+ ".json");
+			f1 = new FileReader("Data/MetaData/" + tableName + ".json");
 			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray) json.get("headers");
 
-			for(int i = 0 ; i < headers.size(); i++){
+			for (int i = 0; i < headers.size(); i++) {
 
 				Object temp = parser.parse(headers.get(i).toString());
-				JSONObject temp1 = (JSONObject) temp;			
+				JSONObject temp1 = (JSONObject) temp;
 
 				String columnName = (String) temp1.get("Column Name");
 				columnNames.add(columnName);
 
 			}
-			
-			//check if each in the sql exists in the columnList								
-//			if(!columnNames.contains(colnm)){
-//
-//				return false;
-//
-//			}
-			Iterator<String> itr1= columnNames.iterator();
-			while(itr1.hasNext())
-			{
-				if(itr1.next().equalsIgnoreCase(colnm))
-				{
+
+			// check if each in the sql exists in the columnList
+			// if(!columnNames.contains(colnm)){
+			//
+			// return false;
+			//
+			// }
+			Iterator<String> itr1 = columnNames.iterator();
+			while (itr1.hasNext()) {
+				if (itr1.next().equalsIgnoreCase(colnm)) {
 					return true;
 				}
 			}
-			
+
 			return false;
 		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
@@ -293,292 +315,264 @@ public class GlobalUtil {
 		}
 	}
 
-	public static HashMap<String,String> fetchColumnNames(String tableName){
-		
+	public static HashMap<String, String> fetchColumnNames(String tableName) {
+
 		FileReader f1;
-		Iterator< String> itr = GlobalData.allTables.iterator();
-		
-		while(itr.hasNext())
-		{
-			String tnm= itr.next();
-			if(tableName.equalsIgnoreCase(tnm))
-			{
+		Iterator<String> itr = GlobalData.allTables.iterator();
+
+		while (itr.hasNext()) {
+			String tnm = itr.next();
+			if (tableName.equalsIgnoreCase(tnm)) {
 				tableName = tnm;
 				break;
 			}
 		}
 		JSONParser parser = new JSONParser();
-		HashMap<String,String> columnDetailMap = new HashMap<String,String>();
+		HashMap<String, String> columnDetailMap = new HashMap<String, String>();
 
 		try {
 
-			f1 = new FileReader("Data/MetaData/" +tableName+ ".json");
+			f1 = new FileReader("Data/MetaData/" + tableName + ".json");
 			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray) json.get("headers");
 
-			for(int i = 0 ; i < headers.size(); i++){
+			for (int i = 0; i < headers.size(); i++) {
 
 				Object temp = parser.parse(headers.get(i).toString());
-				JSONObject temp1 = (JSONObject) temp;			
+				JSONObject temp1 = (JSONObject) temp;
 
 				String columnName = (String) temp1.get("Column Name");
-				String dataType = (String)temp1.get("Data Type");
-				
-				//System.out.println("Table primary key: "+GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase()));
-				
-				if(!columnName.toLowerCase().equalsIgnoreCase(GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase())))
-				     columnDetailMap.put(columnName, dataType);
+				String dataType = (String) temp1.get("Data Type");
+
+				// System.out.println("Table primary key:
+				// "+GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase()));
+
+				if (!columnName.toLowerCase()
+						.equalsIgnoreCase(GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase())))
+					columnDetailMap.put(columnName, dataType);
 
 			}
-			
-		  f1.close();	
-	      //check if each in the sql exists in the columnList
+
+			f1.close();
+			// check if each in the sql exists in the columnList
 		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}				
+		}
 		return columnDetailMap;
 
 	}
 
-	public static String getDataType(String tableName, String att)
-	{
+	public static String getDataType(String tableName, String att) {
 		FileReader f1;
 		String dataType = null;
-		Iterator< String> itr = GlobalData.allTables.iterator();
-		while(itr.hasNext())
-		{
-			String tnm= itr.next();
-			if(tableName.equalsIgnoreCase(tnm))
-			{
+		Iterator<String> itr = GlobalData.allTables.iterator();
+		while (itr.hasNext()) {
+			String tnm = itr.next();
+			if (tableName.equalsIgnoreCase(tnm)) {
 				tableName = tnm;
 				break;
 			}
 		}
 		JSONParser parser = new JSONParser();
-		HashMap<String,String> columnDetailMap = new HashMap<String,String>();
-
+		HashMap<String, String> columnDetailMap = new HashMap<String, String>();
 
 		try {
 
-			f1 = new FileReader("Data/MetaData/" +tableName+ ".json");
+			f1 = new FileReader("Data/MetaData/" + tableName + ".json");
 			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray) json.get("headers");
 
-			for(int i = 0 ; i < headers.size(); i++){
+			for (int i = 0; i < headers.size(); i++) {
 
 				Object temp = parser.parse(headers.get(i).toString());
-				JSONObject temp1 = (JSONObject) temp;			
+				JSONObject temp1 = (JSONObject) temp;
 
-				if(att.equalsIgnoreCase(((String) temp1.get("Column Name"))))
-				{
-					dataType = (String)temp1.get("Data Type");
+				if (att.equalsIgnoreCase(((String) temp1.get("Column Name")))) {
+					dataType = (String) temp1.get("Data Type");
 					break;
 				}
-		
+
 			}
-			
+
 			f1.close();
-			
-			//check if each in the sql exists in the columnList
+
+			// check if each in the sql exists in the columnList
 		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}				
+		}
 		return dataType;
 
 	}
 
+	public static boolean validateDataType(String dataType, String val) {
 
-	public static boolean validateDataType(String dataType, String val){
-
-		switch(dataType)
-		{
+		switch (dataType) {
 		case "INT":
-			try{
+			try {
 				int value = Integer.parseInt(val);
-			}
-			catch(Exception e)
-			{
+			} catch (Exception e) {
 				return false;
 			}
 			break;
 		case "VARCHAR":
 			break;
 		case "FLOAT":
-			try{
+			try {
 				float value = Float.parseFloat(val);
-			}
-			catch(Exception e)
-			{
+			} catch (Exception e) {
 				return false;
 			}
 			break;
 		}
-		return true;	
+		return true;
 	}
 
-    public static HashMap<String,String> fetchColumnDataType(String tableName){
-    	
-    	FileReader f1;
-		Iterator< String> itr = GlobalData.allTables.iterator();
-		while(itr.hasNext())
-		{
-			String tnm= itr.next();
-			if(tableName.equalsIgnoreCase(tnm))
-			{
+	public static HashMap<String, String> fetchColumnDataType(String tableName) {
+
+		FileReader f1;
+		Iterator<String> itr = GlobalData.allTables.iterator();
+		while (itr.hasNext()) {
+			String tnm = itr.next();
+			if (tableName.equalsIgnoreCase(tnm)) {
 				tableName = tnm;
 				break;
 			}
 		}
-		
+
 		JSONParser parser = new JSONParser();
-		HashMap<String,String> columnDetailMap = new HashMap<String,String>();
+		HashMap<String, String> columnDetailMap = new HashMap<String, String>();
 
 		try {
 
-			f1 = new FileReader("Data/MetaData/" +tableName+ ".json");
+			f1 = new FileReader("Data/MetaData/" + tableName + ".json");
 			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray) json.get("headers");
 
-			for(int i = 0 ; i < headers.size(); i++){
+			for (int i = 0; i < headers.size(); i++) {
 
 				Object temp = parser.parse(headers.get(i).toString());
-				JSONObject temp1 = (JSONObject) temp;			
+				JSONObject temp1 = (JSONObject) temp;
 
 				String columnName = (String) temp1.get("Column Name");
-				String dataType = (String)temp1.get("Data Type");
+				String dataType = (String) temp1.get("Data Type");
 
-				if(!columnName.toLowerCase().equalsIgnoreCase(GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase())))
-				     columnDetailMap.put(columnName.toLowerCase(),dataType);
+				if (!columnName.toLowerCase()
+						.equalsIgnoreCase(GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase())))
+					columnDetailMap.put(columnName.toLowerCase(), dataType);
 			}
-		
+
 			f1.close();
-	    
-		}catch (IOException | ParseException e) {
+
+		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return columnDetailMap;
-    		
-    }
-    
-    
-    public static ArrayList<String> fetchOnlyColumnNames(String tableName){
-    	
-    	
-    	FileReader f1;
-		Iterator< String> itr = GlobalData.allTables.iterator();
-		while(itr.hasNext())
-		{
-			String tnm= itr.next();
-			if(tableName.equalsIgnoreCase(tnm))
-			{
+
+	}
+
+	public static ArrayList<String> fetchOnlyColumnNames(String tableName) {
+
+		FileReader f1;
+		Iterator<String> itr = GlobalData.allTables.iterator();
+		while (itr.hasNext()) {
+			String tnm = itr.next();
+			if (tableName.equalsIgnoreCase(tnm)) {
 				tableName = tnm;
 				break;
 			}
 		}
-		
+
 		JSONParser parser = new JSONParser();
-		
+
 		ArrayList<String> columnNames = new ArrayList<String>();
-		
+
 		try {
 
-			f1 = new FileReader("Data/MetaData/" +tableName+ ".json");
+			f1 = new FileReader("Data/MetaData/" + tableName + ".json");
 			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray) json.get("headers");
 
-			
-			for(int i = 0 ; i < headers.size(); i++){
+			for (int i = 0; i < headers.size(); i++) {
 
 				Object temp = parser.parse(headers.get(i).toString());
-				JSONObject temp1 = (JSONObject) temp;			
+				JSONObject temp1 = (JSONObject) temp;
 
 				String columnName = (String) temp1.get("Column Name");
-				String dataType = (String)temp1.get("Data Type");
+				String dataType = (String) temp1.get("Data Type");
 
-				if(!columnName.toLowerCase().equalsIgnoreCase(GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase())))
+				if (!columnName.toLowerCase()
+						.equalsIgnoreCase(GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase())))
 					columnNames.add(columnName);
 			}
-		
+
 			f1.close();
-	    
-		}catch (IOException | ParseException e) {
+
+		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return columnNames;
-    		
-       	
-    }
-    
-    
-    public String getTableColumnName(String tableName, String attrName){
-    	
-    	FileReader f1;
-		Iterator< String> itr = GlobalData.allTables.iterator();
-		while(itr.hasNext())
-		{
-			String tnm= itr.next();
-			if(tableName.equalsIgnoreCase(tnm))
-			{
+
+	}
+
+	public String getTableColumnName(String tableName, String attrName) {
+
+		FileReader f1;
+		Iterator<String> itr = GlobalData.allTables.iterator();
+		while (itr.hasNext()) {
+			String tnm = itr.next();
+			if (tableName.equalsIgnoreCase(tnm)) {
 				tableName = tnm;
 				break;
 			}
 		}
-		
+
 		JSONParser parser = new JSONParser();
-		
+
 		ArrayList<String> columnNames = new ArrayList<String>();
-		
+
 		try {
 
-			f1 = new FileReader("Data/MetaData/" +tableName+ ".json");
+			f1 = new FileReader("Data/MetaData/" + tableName + ".json");
 			Object obj = parser.parse(f1);
 			JSONObject json = (JSONObject) obj;
 			JSONArray headers = (JSONArray) json.get("headers");
 
-          
-			
-			for(int i = 0 ; i < headers.size(); i++){
+			for (int i = 0; i < headers.size(); i++) {
 
 				Object temp = parser.parse(headers.get(i).toString());
-				JSONObject temp1 = (JSONObject) temp;			
+				JSONObject temp1 = (JSONObject) temp;
 
 				String columnName = (String) temp1.get("Column Name");
 				columnNames.add(columnName);
 			}
 
-			//check if each column in the sql exists in the columnList
-			for(String name : columnNames){						
-				//boolean found = false;			
-					if(attrName.equalsIgnoreCase(name)){
-						return name;
-					}	  
+			// check if each column in the sql exists in the columnList
+			for (String name : columnNames) {
+				// boolean found = false;
+				if (attrName.equalsIgnoreCase(name)) {
+					return name;
 				}
-				
-			
-		f1.close();
-	    
-		}catch (IOException | ParseException e) {
+			}
+
+			f1.close();
+
+		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return null;
-    		
-    	
-    	
-    	
-    }
-    
-    
-	
+
+	}
+
 }

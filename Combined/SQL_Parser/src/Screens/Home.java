@@ -37,6 +37,7 @@ public class Home extends JFrame {
 
 					// newly added
 					GlobalData.initTableJSonArray();
+					GlobalData.initAttTableMap();
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -91,11 +92,15 @@ public class Home extends JFrame {
 				(JSONObject) GlobalData.tableJSonArray.get("B").get(2));
 		System.out.println("concat test:" + GlobalData.tableJSonArray.get("A").get(2));
 		System.out.println("concat test:" + testjobj.toString());
-		
+
 		JSONArray jointest = BPlusTreeIndexing.qBptree("A", "m", "=", "B", "x");
 		for (int i = 0; i < jointest.size(); i++) {
 			System.out.println(jointest.get(i).toString());
 		}
+		System.out.println("concat test:" + GlobalData.AttTableMap.get("x"));
+
+		System.out.println("concat test:" + GlobalData.AttTableMap.get("m"));
+		System.out.println("type test:" + GlobalUtil.GetAttType("m"));
 
 	}
 

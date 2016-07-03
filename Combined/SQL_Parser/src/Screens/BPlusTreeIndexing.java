@@ -27,19 +27,21 @@ public class BPlusTreeIndexing extends BTree {
 
 	public BPlusTreeIndexing(String table_name, String att) {
 		JSONArray headers = GlobalData.tableJSonArray.get(table_name);
-		try {
-			for (int i = 0; i < headers.size(); i++) {
-				JSONObject currJson;
-				currJson = (JSONObject) parser.parse(headers.get(i).toString());
+		String type = GlobalUtil.GetAttType(att);
+		for (int i = 0; i < headers.size(); i++) {
+			JSONObject currJson;
+			currJson = (JSONObject) headers.get(i);
+			if (type.equals("INT")) {
 				long key = Long.valueOf((String) currJson.get(att));
 				this.insert(key, headers.get(i));
-				;
+			} else if (type.equals("FLOAT")) {
+				float key = (float) currJson.get(att);
+				this.insert(key, headers.get(i));
+			} else {
+				String key = (String) currJson.get(att);
+				this.insert(key, headers.get(i));
 			}
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-
 	}
 
 	public BTree GetBPlusTreeIndexing(JSONArray headers, String table_name, String att) {

@@ -243,7 +243,13 @@ public class CreateTable extends JFrame {
 						}
 						// save the tableName in globalList
 						GlobalData.allTables.add(tableName);
-
+						try {
+							GlobalData.addAttTableMap(tableName);
+						} catch (Exception e2) {
+							// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
+						
 						try {
 							GlobalData.updateTableFile();
 						} catch (Exception e1) {
