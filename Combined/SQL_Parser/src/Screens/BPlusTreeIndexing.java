@@ -99,14 +99,14 @@ public class BPlusTreeIndexing extends BTree {
 				if (jsa1.size() <= jsa2.size()) {
 					for (int i = 0; i < jsa1.size(); i++) {
 						JSONObject temp1 = (JSONObject) jsa1.get(i);
-						JSONObject temp2 = (JSONObject) tree2.search(Long.valueOf((String) temp1.get(att1)));
+						JSONObject temp2 = (JSONObject) tree2.search((long) temp1.get(att1));
 						if (temp2 != null)
 							result.add(GlobalUtil.concat2jobj(temp1, temp2));
 					}
 				} else {
 					for (int i = 0; i < jsa2.size(); i++) {
 						JSONObject temp2 = (JSONObject) jsa2.get(i);
-						JSONObject temp1 = (JSONObject) tree1.search(Long.valueOf((String) temp2.get(att2)));
+						JSONObject temp1 = (JSONObject) tree1.search((long) temp2.get(att2));
 						if (temp1 != null)
 							result.add(GlobalUtil.concat2jobj(temp1, temp2));
 					}
@@ -116,7 +116,7 @@ public class BPlusTreeIndexing extends BTree {
 		if (tree1 != null) {
 			for (int i = 0; i < jsa2.size(); i++) {
 				JSONObject temp2 = (JSONObject) jsa2.get(i);
-				JSONObject temp1 = (JSONObject) tree1.search(Long.valueOf((String) temp2.get(att2)));
+				JSONObject temp1 = (JSONObject) tree1.search((long) temp2.get(att2));
 				if (temp1 != null)
 					result.add(GlobalUtil.concat2jobj(temp1, temp2));
 			}
@@ -124,7 +124,7 @@ public class BPlusTreeIndexing extends BTree {
 		if (tree2 != null) {
 			for (int i = 0; i < jsa1.size(); i++) {
 				JSONObject temp1 = (JSONObject) jsa1.get(i);
-				JSONObject temp2 = (JSONObject) tree2.search(Long.valueOf((String) temp1.get(att1)));
+				JSONObject temp2 = (JSONObject) tree2.search((long) temp1.get(att1));
 				if (temp2 != null)
 					result.add(GlobalUtil.concat2jobj(temp1, temp2));
 			}
