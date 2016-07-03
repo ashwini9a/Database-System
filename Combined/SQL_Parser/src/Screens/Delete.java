@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import javax.swing.JOptionPane;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -23,7 +25,7 @@ public class Delete {
 	boolean conditionFlag = false;
 	HashMap<String,String> conditions = new HashMap<String,String>();
 	String conditionOp;
-
+	boolean tablePrimaryKeyInWhere = false;
     HashMap<String,String> tableColumnMap;
 
 	public boolean parse(String sql) {
@@ -217,7 +219,9 @@ public class Delete {
 				  
 				  System.out.println("colName:"+colName);
 				  System.out.println("colVal:"+colVal);
-				 
+				  
+				  if(colName.equalsIgnoreCase(GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase())))
+					   this.tablePrimaryKeyInWhere = true;
 				  
 				  //conditions.put(colName.trim(), colVal.trim());
 				  WhereClause where = new WhereClause();
@@ -264,72 +268,97 @@ public class Delete {
 	public void deleteRecords(){
 		
 		//System.out.println("inside delete record");
-		JSONParser parser = new JSONParser();
+		
 
-		try {
+		if(tablePrimaryKeyInWhere){
 
-			FileReader f1 = new FileReader("Data/Records/" + this.tableName + ".json");
-			Object obj = parser.parse(f1);
-			JSONObject json = (JSONObject) obj;
-			JSONArray headers = (JSONArray) json.get("Records");
+			// use b-tree to fetch Json objects
+			// if only single where clause then fetch records using B-tree
+			if(conditionOp == null){
 
-			for (int i = 0; i < headers.size(); i++) {
+				// get the json objects from  B-tree
+				WhereClause whereClause = this.whereConditions.get(0);			    
+				BPlusTreeIndexing  bplusTree = GlobalData.AttBTreeIndex.get(whereClause.attribute1);	
+				String operation = whereClause.operation + "";
+				JSONArray jsonArray = bplusTree.qBptree(whereClause.attribute1,operation, whereClause.attribute2);
 
-				JSONObject temp = (JSONObject) parser.parse(headers.get(i).toString());
+				if(jsonArray.size() != 0){			
+			  		boolean result = deleteInJson(jsonArray);
+			  		JOptionPane.showMessageDialog(null, "Records deleted Successfully", "Message", JOptionPane.INFORMATION_MESSAGE);
+				}	
 				
-			    if("And".equalsIgnoreCase(conditionOp)){
-			    	
-			    	System.out.println("conditionOp: "+this.conditionOp);			    	
-			    	boolean result = allConditionsMatch(temp);
-			    	
-			    	if(result){
-			    		// change here
-			    		headers.remove(i);
-			    	}	
-			    	
-			    }else if("Or".equalsIgnoreCase(conditionOp)){
-			    	
-			    	System.out.println("conditionOp: "+this.conditionOp);			    	
-			    	boolean result = eitherConditionsMatch(temp);
-			    	
-			    	if(result){		
-			    		// change here
-			    		headers.remove(i);
-			    	}
-			    	
-			    }else{			    	
-			    	// there is only one condition in the where clause			    	
-			    	boolean result = checkIfConditionMatch(temp);
-			    	if(result){
-			    		// change here
-			    		headers.remove(i);
-			    	}
-			    }	
 			}
+			
+		}else{
+		  
+			JSONParser parser = new JSONParser();
+			
+			try {
 
-			// write the file back to disk
-			json.put("Records", headers);
-			//System.out.println(json.toJSONString());
+				FileReader f1 = new FileReader("Data/Records/" + this.tableName + ".json");
+				Object obj = parser.parse(f1);
+				JSONObject json = (JSONObject) obj;
+				JSONArray headers = (JSONArray) json.get("Records");
 
-			File file = new File("Data/Records/" + tableName + ".json");
-			FileWriter fw = null;
-			BufferedWriter bw = null;
-			fw = new FileWriter(file.getAbsoluteFile());
-			bw = new BufferedWriter(fw);
+				for (int i = 0; i < headers.size(); i++) {
 
-			bw.write(json.toJSONString());
-			bw.flush();
-			fw.close();
-			bw.close();			
-			f1.close();
+					JSONObject temp = (JSONObject) parser.parse(headers.get(i).toString());
 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}		
+					if("And".equalsIgnoreCase(conditionOp)){
+
+						System.out.println("conditionOp: "+this.conditionOp);			    	
+						boolean result = allConditionsMatch(temp);
+
+						if(result){
+							// change here
+							headers.remove(i);
+						}	
+
+					}else if("Or".equalsIgnoreCase(conditionOp)){
+
+						System.out.println("conditionOp: "+this.conditionOp);			    	
+						boolean result = eitherConditionsMatch(temp);
+
+						if(result){		
+							// change here
+							headers.remove(i);
+						}
+
+					}else{			    	
+						// there is only one condition in the where clause			    	
+						boolean result = checkIfConditionMatch(temp);
+						if(result){
+							// change here
+							headers.remove(i);
+						}
+					}	
+				}
+
+				// write the file back to disk
+				json.put("Records", headers);
+				//System.out.println(json.toJSONString());
+
+				File file = new File("Data/Records/" + tableName + ".json");
+				FileWriter fw = null;
+				BufferedWriter bw = null;
+				fw = new FileWriter(file.getAbsoluteFile());
+				bw = new BufferedWriter(fw);
+
+				bw.write(json.toJSONString());
+				bw.flush();
+				fw.close();
+				bw.close();			
+				f1.close();
+
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}		
+
+		}
 
 	}
 
@@ -586,5 +615,49 @@ public class Delete {
 			
 	}
 	
+	
+	public boolean deleteInJson(JSONArray jsonArray){
+		
+		int size = jsonArray.size();
+		
+		for(int i=0; i < size; i++){			
+			JSONObject temp = (JSONObject) jsonArray.get(i);			
+			jsonArray.remove(i);
+		}
+			
+		// delete records in file
+		
+		try {
+			
+			//f1 = new FileReader("Data/Records/" + this.tableName + ".json");
+			//Object obj = parser.parse(f1);
+			JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
+			
+			JSONObject newJson = new JSONObject();
+			newJson.put("Records", maintable);
+			
+			File file = new File("Data/Records/" + this.tableName + ".json");
+			FileWriter fw = null;
+			BufferedWriter bw = null;
+
+			fw = new FileWriter(file.getAbsoluteFile());
+			bw = new BufferedWriter(fw);
+
+			bw.write(newJson.toJSONString());
+			bw.flush();
+			bw.close();
+			fw.close();
+			
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 	
+			
+		return true;
+	}
 		
 }

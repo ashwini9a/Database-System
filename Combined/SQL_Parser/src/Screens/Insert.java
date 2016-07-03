@@ -329,7 +329,20 @@ public class Insert {
 
 			// get last primaryKey value from json record
 			long lastKeyId = getLastPrimaryKey(this.tableName);	
-			newJson.put(GlobalData.tablePrimaryKeyMap.get(this.tableName), lastKeyId+1);
+			String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName);
+			newJson.put(primaryKey, lastKeyId+1);
+			
+			//update the b-tree:
+			
+			
+			BPlusTreeIndexing btree = GlobalData.AttBTreeIndex.get(primaryKey);
+			
+			if(btree!=null){
+				JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
+				maintable.add(newJson);
+				btree.insert(lastKeyId+1, maintable.size()-1);
+			}
+			
 			
 		}else{
 
@@ -360,9 +373,20 @@ public class Insert {
 
 			// add data for primary key
 			// get last primaryKey value from json record
-			long lastKeyId = getLastPrimaryKey(this.tableName);		
-			newJson.put(GlobalData.tablePrimaryKeyMap.get(this.tableName), lastKeyId+1);
-
+			long lastKeyId = getLastPrimaryKey(this.tableName);	
+			String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName);
+			newJson.put(primaryKey, lastKeyId+1);
+			
+			//update the b-tree:
+		
+		
+			BPlusTreeIndexing btree = GlobalData.AttBTreeIndex.get(primaryKey);
+			
+			if(btree!=null){
+				JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
+				maintable.add(newJson);
+				btree.insert(lastKeyId+1, maintable.get(maintable.size()-1));
+			}
 		}
 
 		// save the json in the table.json file.

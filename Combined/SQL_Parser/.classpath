@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="D:/Buffalo/DB/Project/Other_files/json-simple-1.1.jar"/>
-	<classpathentry kind="lib" path="D:/Buffalo/DB/Project/Other_files/sqlite-jdbc-3.8.11.2.jar"/>
+	<classpathentry kind="lib" path="/Users/qingyingwu/git/Database-System/Combined/SQL_Parser/Other_Files/json-simple-1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/qingyingwu/git/Database-System/Combined/SQL_Parser/Other_Files/sqlite-jdbc-3.8.11.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
