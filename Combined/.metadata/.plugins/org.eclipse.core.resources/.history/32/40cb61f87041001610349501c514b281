@@ -376,9 +376,7 @@ public class ProjectionRecords {
 			}
 			if(GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase()).equalsIgnoreCase(att1) || GlobalData.tablePrimaryKeyMap.get(tbnm2.toLowerCase()).equalsIgnoreCase(att1))
 			{
-				// btree code //*************timer************
-				String op =""+w.operation;
-				headers = BPlusTreeIndexing.qBptree(att1,op,Long.parseLong(w.attribute2));
+				// btree code 
 			}
 			else
 			{
@@ -537,8 +535,6 @@ public class ProjectionRecords {
 					if(GlobalData.tablePrimaryKeyMap.get(tbnm2.toLowerCase()).equalsIgnoreCase(att2o))
 					{
 						//btree
-						String op=""+w.operation;
-						headers = BPlusTreeIndexing.qBptree(tbnm1,att1,op,tbnm2,att2o);
 					}
 					else
 					{
@@ -553,8 +549,7 @@ public class ProjectionRecords {
 				{
 					if(GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase()).equalsIgnoreCase(att2o))
 					{
-						String op=""+w.operation;
-						headers = BPlusTreeIndexing.qBptree(tbnm2,att1,op,tbnm1,att2o);
+						//btree
 					}
 					else
 					{
@@ -594,9 +589,7 @@ public class ProjectionRecords {
 			}
 			if(GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase()).equalsIgnoreCase(att1) || GlobalData.tablePrimaryKeyMap.get(tbnm2.toLowerCase()).equalsIgnoreCase(att1))
 			{
-				// btree code
-				String op =""+w.operation;
-				condJ = BPlusTreeIndexing.qBptree(att1,op,Long.parseLong(w.attribute2));
+				// btree code 
 			}
 			else
 			{
@@ -754,8 +747,7 @@ public class ProjectionRecords {
 				{
 					if(GlobalData.tablePrimaryKeyMap.get(tbnm2.toLowerCase()).equalsIgnoreCase(att2o))
 					{
-						String op=""+w.operation;
-						condJ = BPlusTreeIndexing.qBptree(tbnm1,att1,op,tbnm2,att2o);
+						//btree
 					}
 					else
 					{
@@ -770,8 +762,7 @@ public class ProjectionRecords {
 				{
 					if(GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase()).equalsIgnoreCase(att2o))
 					{
-						String op=""+w.operation;
-						headers = BPlusTreeIndexing.qBptree(tbnm2,att1,op,tbnm2,att2o);
+						//btree
 					}
 					else
 					{
@@ -883,9 +874,7 @@ public class ProjectionRecords {
 		{
 			if(GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase()).equalsIgnoreCase(att1))
 			{
-				// btree code **************timer*********
-				String op =""+w.operation;
-				headers = BPlusTreeIndexing.qBptree(att1,op,Long.parseLong(w.attribute2));
+				// btree code 
 			}
 			else
 			{
@@ -1043,9 +1032,7 @@ public class ProjectionRecords {
 		{
 			if(GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase()).equalsIgnoreCase(att1))
 			{
-				// btree code *****************timer*************
-				String op =""+w.operation;
-				condJ = BPlusTreeIndexing.qBptree(att1,op,Long.parseLong(w.attribute2));
+				// btree code 
 			}
 			else
 			{
