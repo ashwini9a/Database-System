@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -21,8 +19,7 @@ public class GlobalUtil {
 
 		//check if tableName exists
 		Iterator< String> itr = GlobalData.allTables.iterator();
-		
-		
+				
 		while(itr.hasNext())
 		{
 			if(name.equalsIgnoreCase(itr.next()))
@@ -35,19 +32,7 @@ public class GlobalUtil {
 
 	}
 
-	public static JSONObject concat2jobj(JSONObject jobj1, JSONObject jobj2) {
-		JSONObject jobj_new = new JSONObject();
-		Set<String> keys1 = jobj1.keySet();
-		for (String key : keys1) {
-			jobj_new.put(key, jobj1.get(key));
-		}
-		Set<String> keys2 = jobj2.keySet();
-		for (String key : keys2) {
-			jobj_new.put(key, jobj2.get(key));
-		}
 
-		return jobj_new;
-	}
 	public static boolean validateColumnNames(List<String> columnNamesList, String tableName){
 
 		FileReader f1;
@@ -86,12 +71,12 @@ public class GlobalUtil {
 			//check if each column in the sql exists in the columnList
 			for(String colName : columnNamesList){		
 				boolean found = false;
-				for(String tableCol : columnNames){
-
-					if(tableCol.equalsIgnoreCase(colName)){
+				for(String tableCol : columnNames){	
+					
+					if(tableCol.equalsIgnoreCase(colName)){						
 						found = true;
 						break;
-					}	  
+					}
 				}
 				
 				if(!found){					
@@ -283,7 +268,8 @@ public class GlobalUtil {
 				String columnName = (String) temp1.get("Column Name");
 				columnNames.add(columnName);
 
-			}    	
+			}
+			
 			//check if each in the sql exists in the columnList								
 //			if(!columnNames.contains(colnm)){
 //
@@ -298,19 +284,13 @@ public class GlobalUtil {
 					return true;
 				}
 			}
+			
 			return false;
-
-
-
-
 		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		}
-
-
-
 	}
 
 	public static HashMap<String,String> fetchColumnNames(String tableName){
@@ -537,6 +517,66 @@ public class GlobalUtil {
 		return columnNames;
     		
        	
+    }
+    
+    
+    public String getTableColumnName(String tableName, String attrName){
+    	
+    	FileReader f1;
+		Iterator< String> itr = GlobalData.allTables.iterator();
+		while(itr.hasNext())
+		{
+			String tnm= itr.next();
+			if(tableName.equalsIgnoreCase(tnm))
+			{
+				tableName = tnm;
+				break;
+			}
+		}
+		
+		JSONParser parser = new JSONParser();
+		
+		ArrayList<String> columnNames = new ArrayList<String>();
+		
+		try {
+
+			f1 = new FileReader("Data/MetaData/" +tableName+ ".json");
+			Object obj = parser.parse(f1);
+			JSONObject json = (JSONObject) obj;
+			JSONArray headers = (JSONArray) json.get("headers");
+
+          
+			
+			for(int i = 0 ; i < headers.size(); i++){
+
+				Object temp = parser.parse(headers.get(i).toString());
+				JSONObject temp1 = (JSONObject) temp;			
+
+				String columnName = (String) temp1.get("Column Name");
+				columnNames.add(columnName);
+			}
+
+			//check if each column in the sql exists in the columnList
+			for(String name : columnNames){						
+				//boolean found = false;			
+					if(attrName.equalsIgnoreCase(name)){
+						return name;
+					}	  
+				}
+				
+			
+		f1.close();
+	    
+		}catch (IOException | ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+    		
+    	
+    	
+    	
     }
     
     
