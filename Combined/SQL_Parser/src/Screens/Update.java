@@ -553,6 +553,7 @@ public class Update {
 			e.printStackTrace();
 		}
 	}
+		
 
 	return true;
 }
@@ -590,7 +591,8 @@ public class Update {
 		
 		System.out.println("saving data to file");
 
-		FileReader f1;
+		//FileReader f1;
+		
 		try {
 			
 			//f1 = new FileReader("Data/Records/" + this.tableName + ".json");
@@ -604,6 +606,11 @@ public class Update {
 			newJson.put("Records", maintable);
 			
 			File file = new File("Data/Records/" + this.tableName + ".json");
+			
+			if(file.exists()){
+				file.delete();
+			}
+			
 			FileWriter fw = null;
 			BufferedWriter bw = null;
 
@@ -613,6 +620,9 @@ public class Update {
 			bw.write(newJson.toJSONString());
 			bw.flush();
 			bw.close();
+			fw.close();
+			
+			System.out.println("data saved");
 			
 			
 		} catch (FileNotFoundException e) {
