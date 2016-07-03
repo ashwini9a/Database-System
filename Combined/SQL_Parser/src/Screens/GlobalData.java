@@ -17,7 +17,7 @@ public class GlobalData {
 	static List<String> allTables;
 	static HashMap<String, String> tablePrimaryKeyMap;
 	static HashMap<String, JSONArray> tableJSonArray= new HashMap<String, JSONArray>();
-	static HashMap<String, BTree> AttBTreeIndex = new HashMap<String, BTree>();
+	static HashMap<String, BPlusTreeIndexing> AttBTreeIndex = new HashMap<String, BPlusTreeIndexing>();
 
 	public static void initTableJSonArray() throws Exception {
 		for (String tableName : GlobalData.allTables) {

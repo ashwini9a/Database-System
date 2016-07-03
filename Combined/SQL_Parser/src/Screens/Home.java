@@ -34,8 +34,8 @@ public class Home extends JFrame {
 					frame.setVisible(true);
 					GlobalData.initTableArray();
 					GlobalData.initprimaryKey();
-					
-					//newly added
+
+					// newly added
 					GlobalData.initTableJSonArray();
 
 				} catch (Exception e) {
@@ -69,6 +69,20 @@ public class Home extends JFrame {
 		t.printbtree();
 		JSONObject currJson = (JSONObject) t.search((long) 1);
 		System.out.println("Test tree retrival: " + currJson.get("o"));
+
+		System.out.println("Range test:");
+		JSONArray range = t.qBptree("m", ">=", (long) 1);
+		for (int i = 0; i < range.size(); i++) {
+			System.out.println(range.get(i).toString());
+		}
+		System.out.println("key number:" + t.getTotalKeyNumbers());
+		System.out.println("tuple number:" + table_a.size());
+
+		range = t.qBptree("m", ">", (long) 5);
+		for (int i = 0; i < range.size(); i++) {
+			System.out.println(range.get(i).toString());
+		}
+
 	}
 
 	/**
