@@ -32,9 +32,19 @@ public class ProjectionRecords {
 	/**
 	 * Launch the application.
 	 */
-	public void projectRecords(ArrayList tables,ArrayList alias,boolean cond_flag)
+	public void projectRecords(ArrayList tables,ArrayList alias,boolean cond)
 	{
-		
+		try {
+			// populate records in the table
+			frame.setTitle("Joined Tables");
+			populateMainJson(tables,alias,cond);
+			populateRecords();
+
+			// display all the records of this table
+
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	public void projectRecords(ArrayList tables,ArrayList alias,ArrayList<String> SelectedAttributes,boolean cond)
 	{
@@ -51,15 +61,41 @@ public class ProjectionRecords {
 		}
 		
 	}
-	public void projectRecords(ArrayList tables,ArrayList alias,boolean cond_flag,OrderBy OB)
+	public void projectRecords(ArrayList tables,ArrayList alias,boolean cond,OrderBy OB)
 	{
-		
+		try {
+			// populate records in the table
+			frame.setTitle("Joined Tables");
+			populateMainJson(tables,alias,cond);
+			oderMainJson(tables,alias,OB);
+			populateRecords();
+
+			// display all the records of this table
+
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-	public void projectRecords(ArrayList tables,ArrayList alias,ArrayList<String> SelectedAttributes,boolean cond_flag,OrderBy OB)
+	public void projectRecords(ArrayList tables,ArrayList alias,ArrayList<String> SelectedAttributes,boolean cond,OrderBy OB)
 	{
-		
+		try {
+			// populate records in the table
+			frame.setTitle("Joined Tables");
+			populateMainJson(tables,alias,cond);
+			oderMainJson(tables,alias,OB);
+			populateRecords(SelectedAttributes);
+
+			// display all the records of this table
+
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
+	private void oderMainJson(ArrayList tables, ArrayList alias, OrderBy oB) {
+		
+		
+	}
 	public void projectRecords(String tableName, ArrayList<String> SelectedAttributes, boolean cond) 
 	{
 			try {
@@ -91,7 +127,7 @@ public class ProjectionRecords {
 		}
 	}
 
-	public static void projectRecords(String tableName, boolean cond) {
+	public void projectRecords(String tableName, boolean cond) {
 		//EventQueue.invokeLater(new Runnable() {
 			//public void run() {
 		try {
@@ -158,11 +194,12 @@ public class ProjectionRecords {
 				}
 				else
 				{
+					JSONArray temp = new JSONArray();
 					try {
 						FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
 						Object obj = parser.parse(f1);
 						JSONObject json = (JSONObject) obj;
-						headers = (JSONArray) json.get("Records");
+						temp = (JSONArray) json.get("Records");
 						System.out.println(headers.toString());
 						f1.close();
 						cnt++;
@@ -171,6 +208,35 @@ public class ProjectionRecords {
 					{
 					
 					}
+					JSONArray newJ =new JSONArray();
+					Iterator<JSONObject> titr = temp.iterator();
+					while(titr.hasNext())
+					{
+						JSONObject ob =titr.next();
+						Iterator<JSONObject> hitr =headers.iterator();
+						while(hitr.hasNext())
+						{
+							JSONObject tob = hitr.next();
+							JSONObject tobn =new JSONObject();
+							Iterator<String> kitr = ob.keySet().iterator();
+							System.out.print(ob.toString());
+							while(kitr.hasNext())
+							{
+								String key = kitr.next();
+								tobn.put(key, ob.get(key));
+							}
+							Iterator<String> kitr2 = tob.keySet().iterator();
+							
+							while(kitr2.hasNext())
+							{
+								String key = kitr2.next();
+								tobn.put(key, tob.get(key));
+							}
+							newJ.add(tobn);
+							System.out.println(tob.toString());
+						}
+					}
+					headers=newJ;
 					
 				}
 				
@@ -178,10 +244,538 @@ public class ProjectionRecords {
 			
 		}
 		else {
-			//applyConditionsOnMainJson(tableName);
+			applyConditionsOnMainJson(tables,alias);
 		}
 	}
+	public static void applyConditionsOnMainJson(ArrayList tables,ArrayList alias)
+	{
+		if(tables.size()==2)
+		{
+			String tbnm1 = null , tbnm2 = null;
+			Iterator< String> itr = GlobalData.allTables.iterator();
+			while(itr.hasNext())
+			{
+				String tnm= itr.next();
+				if(((String)tables.get(0)).equalsIgnoreCase(tnm))
+				{
+					tbnm1 = tnm;
+				}
+				if(((String)tables.get(1)).equalsIgnoreCase(tnm))
+				{
+					tbnm2 = tnm;
+				}
+			}
+
+			boolean and=false, or=false;
+			//System.out.println(QValidation.conditionArray.toString());
+			Iterator<WhereClause> itr1= QValidation.conditionArray.iterator();
+			while(itr1.hasNext())
+			{
+				WhereClause w = itr1.next();
+				if(w.bool) // its a AND/OR
+				{
+					if(w.boolOP)
+					{
+						and =true;
+						or=false;
+					}
+					else
+					{
+						and =false;
+						or=true;
+					}
+				}
+				else		//its a condition
+				{
+					if(and)
+					{
+						JSONArray andJ = getJSONCond(tbnm1,tbnm2,w);
+						JSONArray andArray =new JSONArray();
+						String key = (String)GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase());
+						and=false;
+						Iterator<JSONObject> andJitr = andJ.iterator();
+						while(andJitr.hasNext())
+						{
+							JSONObject temp1 = andJitr.next();
+							Iterator<JSONObject> hitr = headers.iterator();
+							while(hitr.hasNext())
+							{
+								JSONObject temp2 = (JSONObject)hitr.next();
+								if(((String)temp2.get(key)).equalsIgnoreCase((String)temp1.get(key)))
+								{
+									andArray.add(temp2);							
+								}
+							}
+						}
+						headers = andArray;
+					}
+					else if(or)
+					{
+						JSONArray orJ = getJSONCond(tbnm1,tbnm2,w);
+						or=false;
+						boolean pre =false;
+						JSONArray andArray =new JSONArray();
+						String key = (String)GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase());
+						and=false;
+						Iterator<JSONObject> andJitr = orJ.iterator();
+						while(andJitr.hasNext())
+						{
+							JSONObject temp1 = andJitr.next();
+							Iterator<JSONObject> hitr = headers.iterator();
+							while(hitr.hasNext())
+							{
+								JSONObject temp2 = (JSONObject)hitr.next();
+								if(((String)temp2.get(key)).equalsIgnoreCase((String)temp1.get(key)))
+								{
+									pre=true;
+									break;
+								}
+							}
+							if(!pre)
+							{
+								headers.add(temp1);
+								pre=false;
+							}
+						}
+					}
+					else
+					{
+						loadJsonCond(tbnm1,tbnm2,w);
+					}
+				}
+			}
+		
+		}
+		
+	}
+	private static void loadJsonCond(String tbnm1, String tbnm2, WhereClause w) 
+	{
+		String att1,att2o;
+		headers = new JSONArray();
+		if(w.attribute1.contains("."))
+		{
+			String[] atts = w.attribute1.split("\\.");
+			att1 = atts[1];
+		}
+		else
+		{
+			att1 = w.attribute1;
+		}
+		if(w.attribute2value)
+		{
+			String type,tb;
+			if(GlobalUtil.validateColumnNames(att1,tbnm1))
+			{
+				type = GlobalUtil.getDataType(tbnm1, att1);
+				tb=tbnm1;
+			}
+			else
+			{
+				type = GlobalUtil.getDataType(tbnm2, att1);
+				tb=tbnm2;
+			}
+			if(GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase()).equalsIgnoreCase(att1) || GlobalData.tablePrimaryKeyMap.get(tbnm2.toLowerCase()).equalsIgnoreCase(att1))
+			{
+				// btree code 
+			}
+			else
+			{
+				
+				
+				switch(type)
+				{
+				case "INT":
+					int att2 = Integer.parseInt(w.attribute2);
+					JSONParser parser = new JSONParser();
+					JSONArray tempArray =new JSONArray();
+					try {
+						FileReader f1= new FileReader("Data/Records/" + tb + ".json");
+						Object obj = parser.parse(f1);
+						JSONObject json = (JSONObject) obj;
+						tempArray = (JSONArray) json.get("Records");
+						System.out.println(headers.toString());
+						f1.close();
+					}
+					catch(Exception E)
+					{
+					
+					}
+					Iterator<JSONObject> itr = tempArray.iterator();
+					while(itr.hasNext())
+					{
+						JSONObject json1 = (JSONObject) itr.next();
+						switch(w.operation)
+						{
+							case '=':
+							if(att2 == Integer.parseInt((String)json1.get(att1)))
+							{
+								headers.add(json1);
+							}
+							break;
+							case '>':
+							if(att2 < Integer.parseInt((String)json1.get(att1)))
+							{
+								headers.add(json1);
+							}
+							break;
+							case '<':
+								if(att2 > Integer.parseInt((String)json1.get(att1)))
+								{
+									headers.add(json1);
+								}
+							break;
+						}
+					}
+					break;
+				case "FLOAT":
+					float att21 = Float.parseFloat(w.attribute2);
+					JSONParser parser1 = new JSONParser();
+					JSONArray tempArray1 =new JSONArray();
+					try {
+						FileReader f1= new FileReader("Data/Records/" + tb + ".json");
+						Object obj = parser1.parse(f1);
+						JSONObject json = (JSONObject) obj;
+						tempArray1 = (JSONArray) json.get("Records");
+						System.out.println(headers.toString());
+						f1.close();
+					}
+					catch(Exception E)
+					{
+					
+					}
+					Iterator<JSONObject> itr1 = tempArray1.iterator();
+					while(itr1.hasNext())
+					{
+						JSONObject json1 = (JSONObject) itr1.next();
+						switch(w.operation)
+						{
+						case '=':
+						if(att21 == Float.parseFloat((String)json1.get(att1)))
+						{
+							headers.add(json1);
+						}
+						break;
+						case '>':
+							if(att21 < Float.parseFloat((String)json1.get(att1)))
+							{
+								headers.add(json1);
+							}
+							break;
+						case '<':
+							if(att21 > Float.parseFloat((String)json1.get(att1)))
+							{
+								headers.add(json1);
+							}
+							break;
+						}
+					}
+					break;
+				case "VARCHAR":
+					String att22 = w.attribute2;
+					JSONParser parser11 = new JSONParser();
+					JSONArray tempArray11 =new JSONArray();
+					try {
+						FileReader f1= new FileReader("Data/Records/" + tb + ".json");
+						Object obj = parser11.parse(f1);
+						JSONObject json = (JSONObject) obj;
+						tempArray11 = (JSONArray) json.get("Records");
+						System.out.println(headers.toString());
+						f1.close();
+					}
+					catch(Exception E)
+					{
+					
+					}
+					Iterator<JSONObject> itr11 = tempArray11.iterator();
+					while(itr11.hasNext())
+					{
+						JSONObject json1 = (JSONObject) itr11.next();
+						switch(w.operation)
+						{
+						case '=':
+						if(att22.equalsIgnoreCase((String)json1.get(att1)))
+						{
+							headers.add(json1);
+						}
+						break;
+						case '<':
+							if(att22.compareTo((String)json1.get(att1))==1)
+							{
+								headers.add(json1);
+							}
+							break;
+						case '>':
+							if(att22.compareTo((String)json1.get(att1))==-1)
+							{
+								headers.add(json1);
+							}
+							break;
+						}
+					}
+					break;
+				}
+			}
+		}
+		else
+		{
+			
+			if(w.attribute2.contains("."))
+			{
+				String[] atts = w.attribute2.split("\\.");
+				att2o = atts[1];
+			}
+			else
+			{
+				att2o = w.attribute2;
+			}
+			if(GlobalUtil.validateColumnNames(att1,tbnm1))
+			{
+				if(GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase()).equalsIgnoreCase(att1))
+				{
+					if(GlobalData.tablePrimaryKeyMap.get(tbnm2.toLowerCase()).equalsIgnoreCase(att2o))
+					{
+						//btree
+					}
+					else
+					{
+						//btree
+					}
+				}
+				
+			}
+			else
+			{
+				if(GlobalData.tablePrimaryKeyMap.get(tbnm2.toLowerCase()).equalsIgnoreCase(att1))
+				{
+					if(GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase()).equalsIgnoreCase(att2o))
+					{
+						//btree
+					}
+					else
+					{
+						//btree
+					}
+				}
+			}
+		}
 	
+		
+	}
+	private static JSONArray getJSONCond(String tbnm1, String tbnm2, WhereClause w) {
+		JSONArray condJ =new JSONArray();
+		String att1,att2o;
+		headers = new JSONArray();
+		if(w.attribute1.contains("."))
+		{
+			String[] atts = w.attribute1.split("\\.");
+			att1 = atts[1];
+		}
+		else
+		{
+			att1 = w.attribute1;
+		}
+		if(w.attribute2value)
+		{
+			String type,tb;
+			if(GlobalUtil.validateColumnNames(att1,tbnm1))
+			{
+				type = GlobalUtil.getDataType(tbnm1, att1);
+				tb=tbnm1;
+			}
+			else
+			{
+				type = GlobalUtil.getDataType(tbnm2, att1);
+				tb=tbnm2;
+			}
+			if(GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase()).equalsIgnoreCase(att1) || GlobalData.tablePrimaryKeyMap.get(tbnm2.toLowerCase()).equalsIgnoreCase(att1))
+			{
+				// btree code 
+			}
+			else
+			{
+				
+				
+				switch(type)
+				{
+				case "INT":
+					int att2 = Integer.parseInt(w.attribute2);
+					JSONParser parser = new JSONParser();
+					JSONArray tempArray =new JSONArray();
+					try {
+						FileReader f1= new FileReader("Data/Records/" + tb + ".json");
+						Object obj = parser.parse(f1);
+						JSONObject json = (JSONObject) obj;
+						tempArray = (JSONArray) json.get("Records");
+						System.out.println(headers.toString());
+						f1.close();
+					}
+					catch(Exception E)
+					{
+					
+					}
+					Iterator<JSONObject> itr = tempArray.iterator();
+					while(itr.hasNext())
+					{
+						JSONObject json1 = (JSONObject) itr.next();
+						switch(w.operation)
+						{
+							case '=':
+							if(att2 == Integer.parseInt((String)json1.get(att1)))
+							{
+								condJ.add(json1);
+							}
+							break;
+							case '>':
+							if(att2 < Integer.parseInt((String)json1.get(att1)))
+							{
+								condJ.add(json1);
+							}
+							break;
+							case '<':
+								if(att2 > Integer.parseInt((String)json1.get(att1)))
+								{
+									condJ.add(json1);
+								}
+							break;
+						}
+					}
+					break;
+				case "FLOAT":
+					float att21 = Float.parseFloat(w.attribute2);
+					JSONParser parser1 = new JSONParser();
+					JSONArray tempArray1 =new JSONArray();
+					try {
+						FileReader f1= new FileReader("Data/Records/" + tb + ".json");
+						Object obj = parser1.parse(f1);
+						JSONObject json = (JSONObject) obj;
+						tempArray1 = (JSONArray) json.get("Records");
+						System.out.println(headers.toString());
+						f1.close();
+					}
+					catch(Exception E)
+					{
+					
+					}
+					Iterator<JSONObject> itr1 = tempArray1.iterator();
+					while(itr1.hasNext())
+					{
+						JSONObject json1 = (JSONObject) itr1.next();
+						switch(w.operation)
+						{
+						case '=':
+						if(att21 == Float.parseFloat((String)json1.get(att1)))
+						{
+							condJ.add(json1);
+						}
+						break;
+						case '>':
+							if(att21 < Float.parseFloat((String)json1.get(att1)))
+							{
+								condJ.add(json1);
+							}
+							break;
+						case '<':
+							if(att21 > Float.parseFloat((String)json1.get(att1)))
+							{
+								condJ.add(json1);
+							}
+							break;
+						}
+					}
+					break;
+				case "VARCHAR":
+					String att22 = w.attribute2;
+					JSONParser parser11 = new JSONParser();
+					JSONArray tempArray11 =new JSONArray();
+					try {
+						FileReader f1= new FileReader("Data/Records/" + tb + ".json");
+						Object obj = parser11.parse(f1);
+						JSONObject json = (JSONObject) obj;
+						tempArray11 = (JSONArray) json.get("Records");
+						System.out.println(headers.toString());
+						f1.close();
+					}
+					catch(Exception E)
+					{
+					
+					}
+					Iterator<JSONObject> itr11 = tempArray11.iterator();
+					while(itr11.hasNext())
+					{
+						JSONObject json1 = (JSONObject) itr11.next();
+						switch(w.operation)
+						{
+						case '=':
+						if(att22.equalsIgnoreCase((String)json1.get(att1)))
+						{
+							condJ.add(json1);
+						}
+						break;
+						case '<':
+							if(att22.compareTo((String)json1.get(att1))==1)
+							{
+								condJ.add(json1);
+							}
+							break;
+						case '>':
+							if(att22.compareTo((String)json1.get(att1))==-1)
+							{
+								condJ.add(json1);
+							}
+							break;
+						}
+					}
+					break;
+				}
+			}
+		}
+		else
+		{
+			
+			if(w.attribute2.contains("."))
+			{
+				String[] atts = w.attribute2.split("\\.");
+				att2o = atts[1];
+			}
+			else
+			{
+				att2o = w.attribute2;
+			}
+			if(GlobalUtil.validateColumnNames(att1,tbnm1))
+			{
+				if(GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase()).equalsIgnoreCase(att1))
+				{
+					if(GlobalData.tablePrimaryKeyMap.get(tbnm2.toLowerCase()).equalsIgnoreCase(att2o))
+					{
+						//btree
+					}
+					else
+					{
+						//btree
+					}
+				}
+				
+			}
+			else
+			{
+				if(GlobalData.tablePrimaryKeyMap.get(tbnm2.toLowerCase()).equalsIgnoreCase(att1))
+				{
+					if(GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase()).equalsIgnoreCase(att2o))
+					{
+						//btree
+					}
+					else
+					{
+						//btree
+					}
+				}
+			}
+			
+		}
+	
+	return condJ;	
+	
+	}
 	public static void applyConditionsOnMainJson(String tableName)
 	{
 		boolean and=false, or=false;
@@ -580,7 +1174,7 @@ public class ProjectionRecords {
 	
 		return condJ;
 	}
-	public static void projectRecords(String tableName, OrderBy OB, boolean cond) {
+	public void projectRecords(String tableName, OrderBy OB, boolean cond) {
 		//EventQueue.invokeLater(new Runnable() {
 			//public void run() {
 		try {
@@ -702,7 +1296,7 @@ public class ProjectionRecords {
 				String[] columnNames = new String[SelectedAttributes.size()];
 				SelectedAttributes.toArray(columnNames);
 				
-				getDataTypes(frame.getTitle());
+//				getDataTypes(frame.getTitle());
 				
 				table = new JTable();
 				table.setModel(new DefaultTableModel(new Object[][] {}, columnNames) {
@@ -713,22 +1307,22 @@ public class ProjectionRecords {
 						return false;
 					}
 					
-					public Class<?> getColumnClass(int columnIndex){
-		    			
-						String columnName = getColumnName(columnIndex);
-						
-						String dataType  = columnDataType.get(columnName);
-						
-						if("VARCHAR".equals(dataType))
-							 return String.class;
-						else if("INT".equals(dataType))
-							 return Integer.class;
-						else if("FLOAT".equals(dataType))
-							 return BigDecimal.class;
-
-						return String.class;
-
-					}   
+//					public Class<?> getColumnClass(int columnIndex){
+//		    			
+//						String columnName = getColumnName(columnIndex);
+//						
+//						String dataType  = columnDataType.get(columnName);
+//						
+//						if("VARCHAR".equals(dataType))
+//							 return String.class;
+//						else if("INT".equals(dataType))
+//							 return Integer.class;
+//						else if("FLOAT".equals(dataType))
+//							 return BigDecimal.class;
+//
+//						return String.class;
+//
+//					}   
 
 				});
 
@@ -744,13 +1338,16 @@ public class ProjectionRecords {
 					int index = 0;
 					for (String key : columnNames){	
 						
-						String dataType = columnDataType.get(key);
-						if("INT".equals(dataType))
-							data[index] = Integer.parseInt((String)currJson.get(key));
-						else if("FLOAT".equals(dataType))
-							data[index] = new BigDecimal((String)currJson.get(key));
-						else 
-							data[index] = (String)currJson.get(key);
+						Object o = currJson.get(key);
+						if(o instanceof String)
+						{
+							data[index]=(String)o;
+						}
+						else
+						{
+							data[index]=(Long) o;
+						}
+						
 						
 						index++;
 					}
@@ -792,7 +1389,7 @@ public class ProjectionRecords {
 				Set<String> keys = currJson.keySet();
 				String[] columnNames = keys.toArray(new String[keys.size()]);
 				
-				getDataTypes(frame.getTitle());
+				//getDataTypes(frame.getTitle());
 				
 				//for (int i = 0; i < columnNames.length; i++)
 					//   System.out.println(i+"th:" + columnNames[i]);
@@ -806,7 +1403,7 @@ public class ProjectionRecords {
 						return false;
 					}
 					
-					public Class<?> getColumnClass(int columnIndex){
+					/*public Class<?> getColumnClass(int columnIndex){
 		    			
 						String columnName = getColumnName(columnIndex);
 						
@@ -823,6 +1420,8 @@ public class ProjectionRecords {
 
 					}   
 					
+				}*/
+				
 				});
 
 				DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
@@ -834,14 +1433,24 @@ public class ProjectionRecords {
 					Object[] data = new Object[columnNames.length];
 					int index = 0;
 					for (String key : keys) {
+						Object o = currJson.get(key);
+						if(o instanceof String)
+						{
+							data[index]=(String)o;
+						}
+						else
+						{
+							data[index]=(Long) o;
+						}
 						
-						String dataType = columnDataType.get(key);
-						if("INT".equals(dataType))
-							data[index] = Integer.parseInt((String)currJson.get(key));
-						else if("FLOAT".equals(dataType))
-							data[index] = new BigDecimal((String)currJson.get(key));
-						else 
-							data[index] = (String)currJson.get(key);
+						
+				//		String dataType = columnDataType.get(key);
+					//	if("INT".equals(dataType))
+							//data[index] = Integer.parseInt((String)currJson.get(key));
+						//else if("FLOAT".equals(dataType))
+							//data[index] = new BigDecimal((String)currJson.get(key));
+						//else 
+							//data[index] = (String)currJson.get(key);
 						
 						index++;
 						
