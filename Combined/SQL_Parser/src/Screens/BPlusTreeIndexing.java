@@ -31,7 +31,8 @@ public class BPlusTreeIndexing extends BTree {
 			for (int i = 0; i < headers.size(); i++) {
 				JSONObject currJson;
 				currJson = (JSONObject) parser.parse(headers.get(i).toString());
-				this.insert((Comparable) currJson.get(att), headers.get(i));
+				long key = Long.valueOf((String) currJson.get(att));
+				this.insert(key, headers.get(i));
 				;
 			}
 		} catch (ParseException e) {

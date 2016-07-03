@@ -7,6 +7,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.GridLayout;
 import javax.swing.JTextArea;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import javax.swing.JButton;
 import java.awt.Font;
 import java.awt.event.ActionListener;
@@ -29,11 +34,41 @@ public class Home extends JFrame {
 					frame.setVisible(true);
 					GlobalData.initTableArray();
 					GlobalData.initprimaryKey();
+					
+					//newly added
+					GlobalData.initTableJSonArray();
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				test();
+
 			}
 		});
+	}
+
+	protected static void test() {
+		JSONArray table_a = GlobalData.tableJSonArray.get("A");
+		for (int i = 0; i < table_a.size(); i++) {
+			System.out.println(table_a.get(i).toString());
+		}
+
+		JSONArray table_b = GlobalData.tableJSonArray.get("B");
+		for (int i = 0; i < table_b.size(); i++) {
+			System.out.println(table_b.get(i).toString());
+		}
+
+		try {
+			GlobalData.addAttBTreeIndex("A", "m");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		JSONParser parser = new JSONParser();
+		BPlusTreeIndexing t = (BPlusTreeIndexing) GlobalData.AttBTreeIndex.get("m");
+		t.printbtree();
+		JSONObject currJson = (JSONObject) t.search((long) 1);
+		System.out.println("Test tree retrival: " + currJson.get("o"));
 	}
 
 	/**
@@ -54,7 +89,6 @@ public class Home extends JFrame {
 		textArea.setBounds(135, 30, 631, 174);
 
 		textArea.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-		
 
 		getContentPane().add(textArea);
 		JButton btnCreate = new JButton("Create Table");

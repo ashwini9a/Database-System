@@ -169,6 +169,72 @@ public class GlobalUtil {
 		return tableNameMap;
 	}
 	
+	
+	public static HashMap<String,String> getTableColumnNameMap(List<String> conditions, String tableName){
+		
+		HashMap<String,String> tableNameMap = new HashMap<String,String>();
+		
+		FileReader f1;
+		Iterator< String> itr = GlobalData.allTables.iterator();
+		while(itr.hasNext())
+		{
+			String tnm= itr.next();
+			if(tableName.equalsIgnoreCase(tnm))
+			{
+				tableName = tnm;
+				break;
+			}
+		}
+
+		JSONParser parser = new JSONParser();
+		ArrayList<String> columnNames = new ArrayList<String>();
+		boolean isValidColName = true;
+
+
+		try {
+
+			f1 = new FileReader("Data/MetaData/" +tableName+ ".json");
+			Object obj = parser.parse(f1);
+			JSONObject json = (JSONObject) obj;
+			JSONArray headers = (JSONArray) json.get("headers");
+
+			for(int i = 0 ; i < headers.size(); i++){
+
+				Object temp = parser.parse(headers.get(i).toString());
+				JSONObject temp1 = (JSONObject) temp;			
+
+				String columnName = (String) temp1.get("Column Name");
+				columnNames.add(columnName);
+			}
+
+			//check if each column in the sql exists in the columnList
+			for(String sqlName : conditions){		
+				boolean found = false;				
+				
+				for(String tableCol : columnNames){
+
+					if(tableCol.equalsIgnoreCase(sqlName)){
+						found = true;
+						tableNameMap.put(sqlName, tableCol);
+						break;
+					}	  
+				}
+				
+				if(!found){					
+					isValidColName = false;
+					break;					
+				}else 
+					continue;		
+			}
+			
+		} catch (IOException | ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return tableNameMap;
+	}
+	
 
 
 	public static boolean validateColumnNames(String colnm, String tableName){

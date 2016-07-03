@@ -20,7 +20,6 @@ public class GlobalData {
 	static HashMap<String, BTree> AttBTreeIndex = new HashMap<String, BTree>();
 
 	public static void initTableJSonArray() throws Exception {
-		tableJSonArray = new HashMap<String, JSONArray>();
 		for (String tableName : GlobalData.allTables) {
 			tableJSonArray.put(tableName, readJSonFile(tableName));
 		}
