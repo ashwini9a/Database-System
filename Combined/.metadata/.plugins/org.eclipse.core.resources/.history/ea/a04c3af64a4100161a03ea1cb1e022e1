@@ -135,50 +135,21 @@ public class ProjectionRecords {
 	{
 		if(!cond){
 			JSONParser parser = new JSONParser();
-			int cnt=0;
-			Iterator<String> itr = tables.iterator();
-			while(itr.hasNext())
-			{
-				String tableName = itr.next();
-				if(cnt==0)
-				{
-					try {
-						FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
-						Object obj = parser.parse(f1);
-						JSONObject json = (JSONObject) obj;
-						headers = (JSONArray) json.get("Records");
-						System.out.println(headers.toString());
-						f1.close();
-						cnt++;
-					}
-					catch(Exception E)
-					{
-					
-					}
-				}
-				else
-				{
-					try {
-						FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
-						Object obj = parser.parse(f1);
-						JSONObject json = (JSONObject) obj;
-						headers = (JSONArray) json.get("Records");
-						System.out.println(headers.toString());
-						f1.close();
-						cnt++;
-					}
-					catch(Exception E)
-					{
-					
-					}
-					
-				}
-				
+			try {
+				FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
+				Object obj = parser.parse(f1);
+				JSONObject json = (JSONObject) obj;
+				headers = (JSONArray) json.get("Records");
+				System.out.println(headers.toString());
+				f1.close();
 			}
+			catch(Exception E)
+			{
 			
+			}
 		}
 		else {
-			//applyConditionsOnMainJson(tableName);
+			applyConditionsOnMainJson(tableName);
 		}
 	}
 	

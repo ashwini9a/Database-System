@@ -271,12 +271,20 @@ public class GlobalUtil {
 
 			}    	
 			//check if each in the sql exists in the columnList								
-			if(!columnNames.contains(colnm)){
-
-				return false;
-
+//			if(!columnNames.contains(colnm)){
+//
+//				return false;
+//
+//			}
+			Iterator<String> itr1= columnNames.iterator();
+			while(itr1.hasNext())
+			{
+				if(itr1.next().equalsIgnoreCase(colnm))
+				{
+					return true;
+				}
 			}
-			return true;
+			return false;
 
 
 

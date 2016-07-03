@@ -135,7 +135,7 @@ public class ProjectionRecords {
 	{
 		if(!cond){
 			JSONParser parser = new JSONParser();
-			int cnt=0;
+			int cnt=0
 			Iterator<String> itr = tables.iterator();
 			while(itr.hasNext())
 			{
@@ -178,7 +178,7 @@ public class ProjectionRecords {
 			
 		}
 		else {
-			//applyConditionsOnMainJson(tableName);
+			applyConditionsOnMainJson(tableName);
 		}
 	}
 	

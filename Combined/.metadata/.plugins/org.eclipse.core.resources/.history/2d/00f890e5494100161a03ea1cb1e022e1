@@ -37,16 +37,7 @@ public class Select {
 		}
 		else
 		{
-			if(projection.size()==1 && projection.get(0).equals("*"))
-			{
-				ProjectionRecords display = new ProjectionRecords();
-				display.projectRecords(tables,alias,cond_flag,OB);
-			}
-			else
-			{
-				ProjectionRecords display = new ProjectionRecords();
-				display.projectRecords(tables,alias, projection,cond_flag,OB);
-			}
+			
 		}
 	}
 	public static void displaySelection(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,boolean cond_flag)

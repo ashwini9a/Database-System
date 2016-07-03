@@ -36,33 +36,15 @@ public class ProjectionRecords {
 	{
 		
 	}
-	public void projectRecords(ArrayList tables,ArrayList alias,ArrayList<String> SelectedAttributes,boolean cond)
-	{
-		try {
-			// populate records in the table
-			frame.setTitle("Joined Tables");
-			populateMainJson(tables,alias,cond);
-			populateRecords(SelectedAttributes);
-
-			// display all the records of this table
-
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
-	public void projectRecords(ArrayList tables,ArrayList alias,boolean cond_flag,OrderBy OB)
-	{
-		
-	}
-	public void projectRecords(ArrayList tables,ArrayList alias,ArrayList<String> SelectedAttributes,boolean cond_flag,OrderBy OB)
+	public void projectRecords(ArrayList tables,ArrayList alias,ArrayList<String> SelectedAttributes,boolean cond_flag)
 	{
 		
 	}
 	
-	public void projectRecords(String tableName, ArrayList<String> SelectedAttributes, boolean cond) 
-	{
-			try {
+	public void projectRecords(String tableName, ArrayList<String> SelectedAttributes, boolean cond) {
+		
+
+		try {
 			// populate records in the table
 			frame.setTitle(tableName);
 			populateMainJson(tableName,cond);
@@ -131,57 +113,6 @@ public class ProjectionRecords {
 			applyConditionsOnMainJson(tableName);
 		}
 	}
-	public static void populateMainJson(ArrayList tables,ArrayList alias,boolean cond)
-	{
-		if(!cond){
-			JSONParser parser = new JSONParser();
-			int cnt=0;
-			Iterator<String> itr = tables.iterator();
-			while(itr.hasNext())
-			{
-				String tableName = itr.next();
-				if(cnt==0)
-				{
-					try {
-						FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
-						Object obj = parser.parse(f1);
-						JSONObject json = (JSONObject) obj;
-						headers = (JSONArray) json.get("Records");
-						System.out.println(headers.toString());
-						f1.close();
-						cnt++;
-					}
-					catch(Exception E)
-					{
-					
-					}
-				}
-				else
-				{
-					try {
-						FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
-						Object obj = parser.parse(f1);
-						JSONObject json = (JSONObject) obj;
-						headers = (JSONArray) json.get("Records");
-						System.out.println(headers.toString());
-						f1.close();
-						cnt++;
-					}
-					catch(Exception E)
-					{
-					
-					}
-					
-				}
-				
-			}
-			
-		}
-		else {
-			//applyConditionsOnMainJson(tableName);
-		}
-	}
-	
 	public static void applyConditionsOnMainJson(String tableName)
 	{
 		boolean and=false, or=false;
