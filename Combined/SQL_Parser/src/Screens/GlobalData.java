@@ -64,7 +64,7 @@ public class GlobalData {
 
 	public static JSONArray readJSonFile(String tablename) {
 		JSONParser parser = new JSONParser();
-		JSONArray headers = null;
+		JSONArray headers = new JSONArray();
 		try {
 			Object obj = parser.parse(new FileReader("Data/Records/" + tablename + ".json"));
 			JSONObject json = (JSONObject) obj;

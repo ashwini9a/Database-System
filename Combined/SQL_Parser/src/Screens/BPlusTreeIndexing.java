@@ -26,8 +26,9 @@ public class BPlusTreeIndexing extends BTree {
 	JSONParser parser = new JSONParser();
 
 	public BPlusTreeIndexing(String table_name, String att) {
-		JSONArray headers = GlobalData.tableJSonArray.get(table_name);
 		String type = GlobalUtil.GetAttType(att);
+
+		JSONArray headers = GlobalData.tableJSonArray.get(table_name);
 		for (int i = 0; i < headers.size(); i++) {
 			JSONObject currJson;
 			currJson = (JSONObject) headers.get(i);
@@ -42,6 +43,7 @@ public class BPlusTreeIndexing extends BTree {
 				this.insert(key, headers.get(i));
 			}
 		}
+
 	}
 
 	public BTree GetBPlusTreeIndexing(JSONArray headers, String table_name, String att) {
@@ -53,7 +55,7 @@ public class BPlusTreeIndexing extends BTree {
 	public static JSONArray qBptree(String att1, String op, Long value) {
 		JSONArray result = new JSONArray();
 		BPlusTreeIndexing tree = GlobalData.AttBTreeIndex.get(att1);
-		//tree.printbtree();
+		// tree.printbtree();
 		if (op.equals("=")) {
 			if (tree.search(value) != null)
 				result.add(tree.search(value));

@@ -182,13 +182,11 @@ public class CreateTable extends JFrame {
 						}
 
 						String records = "{\"headers\":[";
-						String primkey = "";
 						for (int i = 0; i < rowCount; i++) {
 							JSONObject json = new JSONObject();
 							for (int j = 0; j < colCount; j++) {
 								if (j == 0 && i == rowIndex) {
 									json.put(table.getColumnName(j), Boolean.TRUE);
-									primkey = table.getColumnName(j);
 								}
 								else {
 									if (j == 0) {
@@ -247,19 +245,20 @@ public class CreateTable extends JFrame {
 						GlobalData.allTables.add(tableName);
 
 						try {
-							GlobalData.addAttTableMap(tableName);
-							GlobalData.addAttBTreeIndex(tableName, primkey);
-						} catch (Exception e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						}
-
-						try {
 							GlobalData.updateTableFile();
 						} catch (Exception e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
+						try {
+							GlobalData.addAttTableMap(tableName);
+							GlobalData.addTableJSonArray(tableName);
+							GlobalData.addAttBTreeIndex(tableName, GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase()));
+						} catch (Exception e2) {
+							// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
+						
 						JOptionPane.showMessageDialog(null, "Table created successfully", "Success",
 								JOptionPane.INFORMATION_MESSAGE);
 						dispose();
