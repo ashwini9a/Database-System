@@ -45,6 +45,23 @@ public class GlobalData {
 			addAttTableMap(tableName);
 		}
 	}
+	public static String getTableName(String name) {
+
+		boolean tableExists = false;
+
+		// check if tableName exists
+		Iterator<String> itr = GlobalData.allTables.iterator();
+		String tnm=null;
+		while (itr.hasNext()) {
+			tnm = itr.next();
+			if (name.equalsIgnoreCase(tnm)) {
+				break;
+			}
+		}
+
+		return tnm;
+
+	}
 
 	public static void initAttBTreeIndex() throws Exception {
 		for (String tableName : GlobalData.allTables) {

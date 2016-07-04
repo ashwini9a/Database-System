@@ -335,7 +335,10 @@ public class Insert {
 			BPlusTreeIndexing btree = GlobalData.AttBTreeIndex.get(primaryKey);
 			
 			if(btree!=null){
-				JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
+				System.out.println(this.tableName);
+				String tnm = GlobalData.getTableName(this.tableName);
+				JSONArray maintable = GlobalData.tableJSonArray.get(tnm);
+				System.out.println(maintable.size());
 				maintable.add(newJson);
 				btree.insert(lastKeyId+1, maintable.size()-1);
 			}
@@ -379,7 +382,8 @@ public class Insert {
 			BPlusTreeIndexing btree = GlobalData.AttBTreeIndex.get(primaryKey);
 			
 			if(btree!=null){
-				JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
+				String tnm = GlobalData.getTableName(this.tableName);
+				JSONArray maintable = GlobalData.tableJSonArray.get(tnm);
 				maintable.add(newJson);
 				btree.insert(lastKeyId+1, maintable.get(maintable.size()-1));
 			}
@@ -418,7 +422,8 @@ public class Insert {
 				for(int i = 0; i < size ; i++){
 
 					JSONObject temp = (JSONObject) headers.get(i);					
-					// get the last primary key value				
+					// get the last primary key value		
+					System.out.println();
 					long keyValue =  (Long)temp.get(GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase()));				
 					//lastKeyId = size;		
 					keyData.add(keyValue);			

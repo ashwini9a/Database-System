@@ -165,12 +165,10 @@ public class ProjectionRecords {
 		if(!cond){
 			JSONParser parser = new JSONParser();
 			try {
-				FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
-				Object obj = parser.parse(f1);
-				JSONObject json = (JSONObject) obj;
-				headers = (JSONArray) json.get("Records");
+				
+				headers = GlobalData.tableJSonArray.get(tableName);
 				System.out.println(headers.toString());
-				f1.close();
+				
 			}
 			catch(Exception E)
 			{
@@ -193,12 +191,10 @@ public class ProjectionRecords {
 				if(cnt==0)
 				{
 					try {
-						FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
-						Object obj = parser.parse(f1);
-						JSONObject json = (JSONObject) obj;
-						headers = (JSONArray) json.get("Records");
+						
+						headers = GlobalData.tableJSonArray.get(tableName);
 						System.out.println(headers.toString());
-						f1.close();
+						
 						cnt++;
 					}
 					catch(Exception E)
@@ -210,12 +206,10 @@ public class ProjectionRecords {
 				{
 					JSONArray temp = new JSONArray();
 					try {
-						FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
-						Object obj = parser.parse(f1);
-						JSONObject json = (JSONObject) obj;
-						temp = (JSONArray) json.get("Records");
+						
+						temp = GlobalData.tableJSonArray.get(tableName);
 						System.out.println(headers.toString());
-						f1.close();
+						
 						cnt++;
 					}
 					catch(Exception E)
@@ -405,12 +399,10 @@ public class ProjectionRecords {
 				JSONParser parser = new JSONParser();
 				JSONArray tempArray1 =new JSONArray();
 				try {
-					FileReader f1= new FileReader("Data/Records/" + tbnm1 + ".json");
-					Object obj = parser.parse(f1);
-					JSONObject json = (JSONObject) obj;
-					tempArray1 = (JSONArray) json.get("Records");
+					
+					tempArray1 = GlobalData.tableJSonArray.get(tbnm1);
 					System.out.println(headers.toString());
-					f1.close();
+					
 				}
 				catch(Exception E)
 				{
@@ -418,12 +410,10 @@ public class ProjectionRecords {
 				}
 				JSONArray tempArray2 =new JSONArray();
 				try {
-					FileReader f1= new FileReader("Data/Records/" + tbnm2 + ".json");
-					Object obj = parser.parse(f1);
-					JSONObject json = (JSONObject) obj;
-					tempArray2 = (JSONArray) json.get("Records");
+					
+					tempArray2 = GlobalData.tableJSonArray.get(tbnm2);
 					System.out.println(headers.toString());
-					f1.close();
+					
 				}
 				catch(Exception E)
 				{
@@ -566,12 +556,10 @@ public class ProjectionRecords {
 						JSONParser parser = new JSONParser();
 						JSONArray tempArray1 =new JSONArray();
 						try {
-							FileReader f1= new FileReader("Data/Records/" + tbnm1 + ".json");
-							Object obj = parser.parse(f1);
-							JSONObject json = (JSONObject) obj;
-							tempArray1 = (JSONArray) json.get("Records");
+							
+							tempArray1 = GlobalData.tableJSonArray.get(tbnm1);
 							System.out.println(headers.toString());
-							f1.close();
+							
 						}
 						catch(Exception E)
 						{
@@ -579,12 +567,10 @@ public class ProjectionRecords {
 						}
 						JSONArray tempArray2 =new JSONArray();
 						try {
-							FileReader f1= new FileReader("Data/Records/" + tbnm2 + ".json");
-							Object obj = parser.parse(f1);
-							JSONObject json = (JSONObject) obj;
-							tempArray2 = (JSONArray) json.get("Records");
+							
+							tempArray2 = GlobalData.tableJSonArray.get(tbnm2);
 							System.out.println(headers.toString());
-							f1.close();
+							
 						}
 						catch(Exception E)
 						{
@@ -720,12 +706,10 @@ public class ProjectionRecords {
 						JSONParser parser = new JSONParser();
 						JSONArray tempArray1 =new JSONArray();
 						try {
-							FileReader f1= new FileReader("Data/Records/" + tbnm1 + ".json");
-							Object obj = parser.parse(f1);
-							JSONObject json = (JSONObject) obj;
-							tempArray1 = (JSONArray) json.get("Records");
+							
+							tempArray1 = GlobalData.tableJSonArray.get(tbnm1);
 							System.out.println(headers.toString());
-							f1.close();
+							
 						}
 						catch(Exception E)
 						{
@@ -733,12 +717,10 @@ public class ProjectionRecords {
 						}
 						JSONArray tempArray2 =new JSONArray();
 						try {
-							FileReader f1= new FileReader("Data/Records/" + tbnm2 + ".json");
-							Object obj = parser.parse(f1);
-							JSONObject json = (JSONObject) obj;
-							tempArray2 = (JSONArray) json.get("Records");
+							
+							tempArray2 = GlobalData.tableJSonArray.get(tbnm2);
 							System.out.println(headers.toString());
-							f1.close();
+							
 						}
 						catch(Exception E)
 						{
@@ -886,12 +868,10 @@ public class ProjectionRecords {
 				JSONParser parser = new JSONParser();
 				JSONArray tempArray1 =new JSONArray();
 				try {
-					FileReader f1= new FileReader("Data/Records/" + tbnm1 + ".json");
-					Object obj = parser.parse(f1);
-					JSONObject json = (JSONObject) obj;
-					tempArray1 = (JSONArray) json.get("Records");
+					
+					tempArray1 = GlobalData.tableJSonArray.get(tbnm1);
 					System.out.println(headers.toString());
-					f1.close();
+					
 				}
 				catch(Exception E)
 				{
@@ -899,12 +879,10 @@ public class ProjectionRecords {
 				}
 				JSONArray tempArray2 =new JSONArray();
 				try {
-					FileReader f1= new FileReader("Data/Records/" + tbnm2 + ".json");
-					Object obj = parser.parse(f1);
-					JSONObject json = (JSONObject) obj;
-					tempArray2 = (JSONArray) json.get("Records");
+					
+					tempArray2 = GlobalData.tableJSonArray.get(tbnm2);
 					System.out.println(headers.toString());
-					f1.close();
+					
 				}
 				catch(Exception E)
 				{
@@ -1047,12 +1025,10 @@ public class ProjectionRecords {
 						JSONParser parser = new JSONParser();
 						JSONArray tempArray1 =new JSONArray();
 						try {
-							FileReader f1= new FileReader("Data/Records/" + tbnm1 + ".json");
-							Object obj = parser.parse(f1);
-							JSONObject json = (JSONObject) obj;
-							tempArray1 = (JSONArray) json.get("Records");
+							
+							tempArray1 = GlobalData.tableJSonArray.get(tbnm1);
 							System.out.println(headers.toString());
-							f1.close();
+							
 						}
 						catch(Exception E)
 						{
@@ -1060,12 +1036,10 @@ public class ProjectionRecords {
 						}
 						JSONArray tempArray2 =new JSONArray();
 						try {
-							FileReader f1= new FileReader("Data/Records/" + tbnm2 + ".json");
-							Object obj = parser.parse(f1);
-							JSONObject json = (JSONObject) obj;
-							tempArray2 = (JSONArray) json.get("Records");
+							
+							tempArray2 = GlobalData.tableJSonArray.get(tbnm2);
 							System.out.println(headers.toString());
-							f1.close();
+							
 						}
 						catch(Exception E)
 						{
@@ -1200,12 +1174,10 @@ public class ProjectionRecords {
 						JSONParser parser = new JSONParser();
 						JSONArray tempArray1 =new JSONArray();
 						try {
-							FileReader f1= new FileReader("Data/Records/" + tbnm1 + ".json");
-							Object obj = parser.parse(f1);
-							JSONObject json = (JSONObject) obj;
-							tempArray1 = (JSONArray) json.get("Records");
+							
+							tempArray1 = GlobalData.tableJSonArray.get(tbnm1);
 							System.out.println(headers.toString());
-							f1.close();
+							
 						}
 						catch(Exception E)
 						{
@@ -1213,12 +1185,10 @@ public class ProjectionRecords {
 						}
 						JSONArray tempArray2 =new JSONArray();
 						try {
-							FileReader f1= new FileReader("Data/Records/" + tbnm2 + ".json");
-							Object obj = parser.parse(f1);
-							JSONObject json = (JSONObject) obj;
-							tempArray2 = (JSONArray) json.get("Records");
+							
+							tempArray2 = GlobalData.tableJSonArray.get(tbnm2);
 							System.out.println(headers.toString());
-							f1.close();
+							
 						}
 						catch(Exception E)
 						{
@@ -1440,12 +1410,10 @@ public class ProjectionRecords {
 					JSONParser parser = new JSONParser();
 					JSONArray tempArray =new JSONArray();
 					try {
-						FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
-						Object obj = parser.parse(f1);
-						JSONObject json = (JSONObject) obj;
-						tempArray = (JSONArray) json.get("Records");
+						
+						tempArray = GlobalData.tableJSonArray.get(tableName);
 						System.out.println(headers.toString());
-						f1.close();
+						
 					}
 					catch(Exception E)
 					{
@@ -1483,12 +1451,10 @@ public class ProjectionRecords {
 					JSONParser parser1 = new JSONParser();
 					JSONArray tempArray1 =new JSONArray();
 					try {
-						FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
-						Object obj = parser1.parse(f1);
-						JSONObject json = (JSONObject) obj;
-						tempArray1 = (JSONArray) json.get("Records");
+						
+						tempArray1 = GlobalData.tableJSonArray.get(tableName);
 						System.out.println(headers.toString());
-						f1.close();
+						
 					}
 					catch(Exception E)
 					{
@@ -1599,12 +1565,9 @@ public class ProjectionRecords {
 					JSONParser parser = new JSONParser();
 					JSONArray tempArray =new JSONArray();
 					try {
-						FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
-						Object obj = parser.parse(f1);
-						JSONObject json = (JSONObject) obj;
-						tempArray = (JSONArray) json.get("Records");
-						System.out.println(condJ.toString());
-						f1.close();
+						
+						tempArray = GlobalData.tableJSonArray.get(tableName);
+						
 					}
 					catch(Exception E)
 					{
@@ -1642,12 +1605,10 @@ public class ProjectionRecords {
 					JSONParser parser1 = new JSONParser();
 					JSONArray tempArray1 =new JSONArray();
 					try {
-						FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
-						Object obj = parser1.parse(f1);
-						JSONObject json = (JSONObject) obj;
-						tempArray1 = (JSONArray) json.get("Records");
+						
+						tempArray1 = GlobalData.tableJSonArray.get(tableName);
 						System.out.println(condJ.toString());
-						f1.close();
+						
 					}
 					catch(Exception E)
 					{
@@ -1685,12 +1646,10 @@ public class ProjectionRecords {
 					JSONParser parser11 = new JSONParser();
 					JSONArray tempArray11 =new JSONArray();
 					try {
-						FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
-						Object obj = parser11.parse(f1);
-						JSONObject json = (JSONObject) obj;
-						tempArray11 = (JSONArray) json.get("Records");
+						
+						tempArray11 = GlobalData.tableJSonArray.get(tableName);
 						System.out.println(condJ.toString());
-						f1.close();
+						
 					}
 					catch(Exception E)
 					{
@@ -2017,8 +1976,10 @@ public class ProjectionRecords {
 				table.setFillsViewportHeight(true);
 				table.setAutoCreateRowSorter(true);
 				JScrollPane scrollPane = new JScrollPane(table);
+				//JScrollPane scrollPane = new JScrollPane(table,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 				scrollPane.setBounds(50, 50, 1500, 600);
 				scrollPane.setViewportView(table);
+				//table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 				scrollPane.setPreferredSize(new Dimension(468, 100));
 				frame.getContentPane().add(scrollPane);
 
@@ -2055,10 +2016,8 @@ public class ProjectionRecords {
 		 columnDataType = new HashMap<String,String>();
 		 		 
 			try {
-				FileReader f1= new FileReader("Data/MetaData/" + tableName + ".json");
-				Object obj = parser.parse(f1);
-				JSONObject json = (JSONObject) obj;
-				JSONArray headers = (JSONArray) json.get("headers");
+				
+				JSONArray headers = GlobalData.tableJSonArray.get(tableName);
 			
 		    	for(int i = 0 ; i < headers.size(); i++){
 		    		
@@ -2072,10 +2031,7 @@ public class ProjectionRecords {
 						    	       	
 		    	}
 		    	
-			} catch (FileNotFoundException e){
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
+			
 			} catch (ParseException e){
 				e.printStackTrace();
 			}	
