@@ -1525,12 +1525,11 @@ public class ProjectionRecords {
 					JSONParser parser11 = new JSONParser();
 					JSONArray tempArray11 =new JSONArray();
 					try {
-						FileReader f1= new FileReader("Data/Records/" + tableName + ".json");
-						Object obj = parser11.parse(f1);
-						JSONObject json = (JSONObject) obj;
-						tempArray11 = (JSONArray) json.get("Records");
-						System.out.println(headers.toString());
-						f1.close();
+						
+						tempArray11 = GlobalData.tableJSonArray.get(tableName);
+						System.out.println(tempArray11.get(0).toString());
+						//System.out.println(headers.toString());
+						
 					}
 					catch(Exception E)
 					{
