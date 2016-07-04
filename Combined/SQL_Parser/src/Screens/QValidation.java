@@ -1,7 +1,3 @@
-
-
-
-
 package Screens;
 
 import java.util.ArrayList;
@@ -34,7 +30,7 @@ public class QValidation {
 			selectValidation(words,query.toLowerCase()+" ");
 			break;
 		case "update":
-			updateValidation(words,query.toLowerCase());
+			updateValidation(query);
 			break;
 		case "insert":
 			insertValidation(query);
@@ -1079,11 +1075,16 @@ public class QValidation {
 	
 
 	
-	public static void updateValidation(String[] words, String statement)
+	public static void updateValidation(String statement)
 	{
 		
 		Update update = new Update();
-		boolean result = update.parse(words, statement);
+		boolean result = update.parse(statement);
+		
+		if(result){			
+			 JOptionPane.showMessageDialog(null, "Records updated successfully", "Message", JOptionPane.INFORMATION_MESSAGE);
+			 return;
+		}
 		
 	}
 	
