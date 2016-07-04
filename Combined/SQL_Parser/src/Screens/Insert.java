@@ -169,7 +169,7 @@ public class Insert {
 					
 				}else{
 				
-					String [] colNames = columnNames.split(",");
+					String [] colNames = columnNames.split(",\\s*");
 					this.columns = new ArrayList<String>();
 					for(String name : colNames){		    				
 						columns.add(name.trim());  				
