@@ -53,7 +53,7 @@ public class BPlusTreeIndexing extends BTree {
 	public static JSONArray qBptree(String att1, String op, Long value) {
 		JSONArray result = new JSONArray();
 		BPlusTreeIndexing tree = GlobalData.AttBTreeIndex.get(att1);
-		tree.printbtree();
+		//tree.printbtree();
 		if (op.equals("=")) {
 			if (tree.search(value) != null)
 				result.add(tree.search(value));

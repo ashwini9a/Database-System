@@ -152,7 +152,7 @@ public class Delete {
 		/// if everything is good, delete records
 		tableColumnMap = GlobalUtil.getTableColumnMap(this.whereConditions, tableName);
 
-		deleteRecords();
+		//deleteRecords();
 
 		return true;
 
@@ -305,8 +305,9 @@ public class Delete {
 						
 						// remove from btree
 						bplusTree.delete(keyValue);
-						
-						System.out.println("Id:"+keyValue+": removed from btree: "+bplusTree.search(keyValue)==null);
+						//System.out.println(bplusTree.search(keyValue).toString());
+
+						System.out.println("Id:"+keyValue+": removed from btree: "+bplusTree.search(keyValue));
 						System.out.println("Id:"+(keyValue +1)+":  " + bplusTree.search(keyValue+1)==null);
 
 
@@ -346,8 +347,12 @@ public class Delete {
 					} 	
 
 					//boolean result = deleteInJson(jsonArray);
-					JOptionPane.showMessageDialog(null, "Records deleted Successfully", "Message", JOptionPane.INFORMATION_MESSAGE);
-				}	
+					//JOptionPane.showMessageDialog(null, "Records deleted Successfully", "Message", JOptionPane.INFORMATION_MESSAGE);
+				}else{
+					
+					JOptionPane.showMessageDialog(null, "No Records to Delete", "Message", JOptionPane.INFORMATION_MESSAGE);
+					
+				}
 				
 			}
 			
