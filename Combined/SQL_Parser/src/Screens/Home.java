@@ -192,6 +192,20 @@ public class Home extends JFrame {
 
 		btnLoadComplaintdb.setBounds(289, 233, 150, 29);
 		getContentPane().add(btnLoadComplaintdb);
+		
+		JButton btnNewButton = new JButton("List Index");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ListBtree frame = new ListBtree();
+					frame.setVisible(true);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnNewButton.setBounds(97, 234, 117, 29);
+		getContentPane().add(btnNewButton);
 		contentPane = new JPanel(new GridLayout(5, 5));
 
 	}

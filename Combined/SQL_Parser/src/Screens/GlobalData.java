@@ -16,7 +16,7 @@ public class GlobalData {
 
 	static List<String> allTables;
 	static HashMap<String, String> tablePrimaryKeyMap;
-	static HashMap<String, JSONArray> tableJSonArray= new HashMap<String, JSONArray>();
+	static HashMap<String, JSONArray> tableJSonArray = new HashMap<String, JSONArray>();
 	static HashMap<String, BPlusTreeIndexing> AttBTreeIndex = new HashMap<String, BPlusTreeIndexing>();
 	static HashMap<String, String> AttTableMap = new HashMap<String, String>();
 
@@ -45,13 +45,13 @@ public class GlobalData {
 			addAttTableMap(tableName);
 		}
 	}
-	
+
 	public static void initAttBTreeIndex() throws Exception {
 		for (String tableName : GlobalData.allTables) {
-			GlobalData.addAttBTreeIndex(tableName, GlobalData.tablePrimaryKeyMap.get(tableName).toLowerCase());
+			GlobalData.addAttBTreeIndex(tableName, GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase()));
 		}
 	}
-	
+
 	public static void initTableJSonArray() throws Exception {
 		for (String tableName : GlobalData.allTables) {
 			tableJSonArray.put(tableName, readJSonFile(tableName));
