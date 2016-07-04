@@ -38,8 +38,7 @@ public class Home extends JFrame {
 					// newly added
 					GlobalData.initTableJSonArray();
 					GlobalData.initAttTableMap();
-					if (GlobalData.allTables.contains("complaints"))
-						GlobalData.addAttBTreeIndex("complaints", "id");
+					GlobalData.initAttBTreeIndex();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

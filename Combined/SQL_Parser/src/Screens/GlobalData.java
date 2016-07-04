@@ -46,6 +46,12 @@ public class GlobalData {
 		}
 	}
 	
+	public static void initAttBTreeIndex() throws Exception {
+		for (String tableName : GlobalData.allTables) {
+			GlobalData.addAttBTreeIndex(tableName, GlobalData.tablePrimaryKeyMap.get(tableName).toLowerCase());
+		}
+	}
+	
 	public static void initTableJSonArray() throws Exception {
 		for (String tableName : GlobalData.allTables) {
 			tableJSonArray.put(tableName, readJSonFile(tableName));

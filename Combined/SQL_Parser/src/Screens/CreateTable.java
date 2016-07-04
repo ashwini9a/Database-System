@@ -126,13 +126,13 @@ public class CreateTable extends JFrame {
 				int rowIndex = getSelectedRadioButton();
 				System.out.println("Row selected: " + rowIndex);
 
-				if ("".equals(tableName)){
+				if ("".equals(tableName)) {
 					JOptionPane.showMessageDialog(null, "Please enter Table Name", "Error", JOptionPane.ERROR_MESSAGE);
-				} else if (GlobalData.allTables.contains(tableName)){
+				} else if (GlobalData.allTables.contains(tableName)) {
 					JOptionPane.showMessageDialog(null, "Table Name already Exists", "Error",
 							JOptionPane.ERROR_MESSAGE);
 				} else {
-					
+
 					if (rowIndex == -1) {
 						JOptionPane.showMessageDialog(null, "Please select atleaset one column as Key", "Error",
 								JOptionPane.ERROR_MESSAGE);
@@ -182,12 +182,14 @@ public class CreateTable extends JFrame {
 						}
 
 						String records = "{\"headers\":[";
-
+						String primkey = "";
 						for (int i = 0; i < rowCount; i++) {
 							JSONObject json = new JSONObject();
 							for (int j = 0; j < colCount; j++) {
-								if (j == 0 && i == rowIndex)
+								if (j == 0 && i == rowIndex) {
 									json.put(table.getColumnName(j), Boolean.TRUE);
+									primkey = table.getColumnName(j);
+								}
 								else {
 									if (j == 0) {
 										json.put(table.getColumnName(j), Boolean.FALSE);
@@ -243,13 +245,15 @@ public class CreateTable extends JFrame {
 						}
 						// save the tableName in globalList
 						GlobalData.allTables.add(tableName);
+
 						try {
 							GlobalData.addAttTableMap(tableName);
+							GlobalData.addAttBTreeIndex(tableName, primkey);
 						} catch (Exception e2) {
 							// TODO Auto-generated catch block
 							e2.printStackTrace();
 						}
-						
+
 						try {
 							GlobalData.updateTableFile();
 						} catch (Exception e1) {
