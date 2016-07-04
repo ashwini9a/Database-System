@@ -337,9 +337,9 @@ public class Update {
 
 				//System.out.println("condition:"+condition);
 
-				if(condition.equals("and"))
+				if(condition.equalsIgnoreCase("and"))
 					this.conditionOp = "and";
-				else if(condition.equals("or"))
+				else if(condition.equalsIgnoreCase("or"))
 					this.conditionOp = "or";		
 				else{	  
 					return false;
@@ -434,7 +434,43 @@ public class Update {
 							}								
 						}
 					}
+					
+					try {
 
+						JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
+
+
+						JSONObject newJson = new JSONObject();
+						newJson.put("Records", maintable);
+
+						File file = new File("Data/Records/" + this.tableName + ".json");
+
+						if(file.exists()){
+							file.delete();
+						}
+
+						FileWriter fw = null;
+						BufferedWriter bw = null;
+
+						fw = new FileWriter(file.getAbsoluteFile());
+						bw = new BufferedWriter(fw);
+
+						bw.write(newJson.toJSONString());
+						bw.flush();
+						bw.close();
+						fw.close();
+
+						System.out.println("data saved");
+
+
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} 	
+					
 				}
 
 			}else if(this.conditionsPresent && "Or".equalsIgnoreCase(conditionOp)){
@@ -977,6 +1013,8 @@ public class Update {
 		String operation = whereClause.operation + "";
 		JSONArray jsonArray = bplusTree.qBptree(whereClause.attribute1,operation, Long.valueOf(whereClause.attribute2));
 
+		System.out.println(jsonArray.toJSONString());
+		
 		return jsonArray;   
 
 	}
