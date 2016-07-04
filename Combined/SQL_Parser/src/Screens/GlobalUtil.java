@@ -524,7 +524,7 @@ public class GlobalUtil {
 
 	}
 
-	public String getTableColumnName(String tableName, String attrName) {
+	public static String getTableColumnName(String tableName, String attrName) {
 
 		FileReader f1;
 		Iterator<String> itr = GlobalData.allTables.iterator();

@@ -197,6 +197,7 @@ public class QValidation {
 					JOptionPane.showMessageDialog(null, "Invalid projection attribute name", "Error", JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
+				att = GlobalUtil.getTableColumnName(tnm,att2[1]);
 			}
 			else
 			{
@@ -204,8 +205,10 @@ public class QValidation {
 				Iterator<String> itr2 = tables.iterator();
 				while(itr2.hasNext())
 				{
-					if(GlobalUtil.validateColumnNames(att,itr2.next()))
+					String tb =itr2.next();
+					if(GlobalUtil.validateColumnNames(att,tb))
 					{
+						att = GlobalUtil.getTableColumnName(tb, att);
 						valid=true;
 					}
 				}
@@ -251,6 +254,7 @@ public class QValidation {
 							JOptionPane.showMessageDialog(null, "Invalid condition attribute name", "Error", JOptionPane.ERROR_MESSAGE);
 							return false;
 						}
+						att = GlobalUtil.getTableColumnName(tnm,att2[1]);
 						String dataType = GlobalUtil.getDataType(tnm,att2[1]);
 						if((dataType.equals("INT") || dataType.equals("FLOAT")) && w.attribute2.contains("\'"))
 						{
@@ -293,6 +297,7 @@ public class QValidation {
 							tnm=itr2.next();
 							if(GlobalUtil.validateColumnNames(att,tnm))
 							{
+								att = GlobalUtil.getTableColumnName(tnm, att);
 								valid=true;
 								break;
 							}
@@ -361,6 +366,7 @@ public class QValidation {
 							JOptionPane.showMessageDialog(null, "Invalid condition attribute name", "Error", JOptionPane.ERROR_MESSAGE);
 							return false;
 						}
+						att1 = GlobalUtil.getTableColumnName(tnm, att2[1]);
 					}
 					else
 					{
@@ -368,8 +374,10 @@ public class QValidation {
 						Iterator<String> itr2 = tables.iterator();
 						while(itr2.hasNext())
 						{
-							if(GlobalUtil.validateColumnNames(att1,itr2.next()))
+							String tb =itr2.next();
+							if(GlobalUtil.validateColumnNames(att1,tb))
 							{
+								att1 = GlobalUtil.getTableColumnName(tb, att1);
 								valid=true;
 							}
 						}
@@ -413,6 +421,7 @@ public class QValidation {
 					JOptionPane.showMessageDialog(null, "Invalid order attribute name", "Error", JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
+				att = GlobalUtil.getTableColumnName(tnm,att2[1]);
 			}
 			else
 			{
@@ -420,9 +429,12 @@ public class QValidation {
 				Iterator<String> itr2 = tables.iterator();
 				while(itr2.hasNext())
 				{
-					if(GlobalUtil.validateColumnNames(att,itr2.next()))
+					String tb= itr2.next();
+					if(GlobalUtil.validateColumnNames(att,tb))
 					{
+						att = GlobalUtil.getTableColumnName(tb, att);
 						valid=true;
+						break;
 					}
 				}
 				if(!valid)
@@ -438,7 +450,6 @@ public class QValidation {
 	}
 	private static boolean columnValidation(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,boolean cond)
 	{
-
 		Iterator<String> itr = tables.iterator();
 		while(itr.hasNext())
 		{
@@ -461,7 +472,7 @@ public class QValidation {
 			{
 				String[] att2 = att.trim().split("\\.");
 				String tnm;
-				if(att2.length!=2)
+				if(att2.length> 2 || att2[0].isEmpty() || att2[1].isEmpty())
 				{
 					JOptionPane.showMessageDialog(null, "Invalid projection attribute name", "Error", JOptionPane.ERROR_MESSAGE);
 					return false;
@@ -482,6 +493,7 @@ public class QValidation {
 					JOptionPane.showMessageDialog(null, "Invalid projection attribute name", "Error", JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
+				att = GlobalUtil.getTableColumnName(tnm,att2[1]);
 			}
 			else
 			{
@@ -489,8 +501,10 @@ public class QValidation {
 				Iterator<String> itr2 = tables.iterator();
 				while(itr2.hasNext())
 				{
-					if(GlobalUtil.validateColumnNames(att,itr2.next()))
+					String tb =itr2.next();
+					if(GlobalUtil.validateColumnNames(att,tb))
 					{
+						att = GlobalUtil.getTableColumnName(tb, att);
 						valid=true;
 					}
 				}
@@ -536,6 +550,7 @@ public class QValidation {
 							JOptionPane.showMessageDialog(null, "Invalid condition attribute name", "Error", JOptionPane.ERROR_MESSAGE);
 							return false;
 						}
+						att = GlobalUtil.getTableColumnName(tnm,att2[1]);
 						String dataType = GlobalUtil.getDataType(tnm,att2[1]);
 						if((dataType.equals("INT") || dataType.equals("FLOAT")) && w.attribute2.contains("\'"))
 						{
@@ -578,6 +593,7 @@ public class QValidation {
 							tnm=itr2.next();
 							if(GlobalUtil.validateColumnNames(att,tnm))
 							{
+								att = GlobalUtil.getTableColumnName(tnm, att);
 								valid=true;
 								break;
 							}
@@ -646,6 +662,7 @@ public class QValidation {
 							JOptionPane.showMessageDialog(null, "Invalid condition attribute name", "Error", JOptionPane.ERROR_MESSAGE);
 							return false;
 						}
+						att1 = GlobalUtil.getTableColumnName(tnm, att2[1]);
 					}
 					else
 					{
@@ -653,8 +670,10 @@ public class QValidation {
 						Iterator<String> itr2 = tables.iterator();
 						while(itr2.hasNext())
 						{
-							if(GlobalUtil.validateColumnNames(att1,itr2.next()))
+							String tb =itr2.next();
+							if(GlobalUtil.validateColumnNames(att1,tb))
 							{
+								att1 = GlobalUtil.getTableColumnName(tb, att1);
 								valid=true;
 							}
 						}
@@ -671,7 +690,6 @@ public class QValidation {
 		}
 		System.out.println("Valid");
 		return true;
-	
 	}
 	private static boolean orderValidation(OrderBy OB, String query)
 	{

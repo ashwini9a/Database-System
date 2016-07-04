@@ -447,13 +447,13 @@ public class ProjectionRecords {
 							}
 							break;
 							case '>':
-							if(att2 < (long)json1.get(att1))
+							if(att2 < Integer.parseInt((String)json1.get(att1)))
 							{
 								headers.add(json1);
 							}
 							break;
 							case '<':
-								if(att2 > (long)json1.get(att1))
+								if(att2 > Integer.parseInt((String)json1.get(att1)))
 								{
 									headers.add(json1);
 								}
@@ -601,19 +601,19 @@ public class ProjectionRecords {
 								switch(w.operation)
 								{
 									case '=':
-									if((long)json1.get(att2) == (long)json1.get(att1))
+									if(Integer.parseInt((String)json1.get(att2)) == Integer.parseInt((String)json1.get(att1)))
 									{
 										headers.add(json1);
 									}
 									break;
 									case '>':
-									if((long)json1.get(att2) < (long)json1.get(att1))
+									if(Integer.parseInt((String)json1.get(att2)) < Integer.parseInt((String)json1.get(att1)))
 									{
 										headers.add(json1);
 									}
 									break;
 									case '<':
-										if((long)json1.get(att2) > (long)json1.get(att1))
+										if(Integer.parseInt((String)json1.get(att2)) > Integer.parseInt((String)json1.get(att1)))
 										{
 											headers.add(json1);
 										}
@@ -755,19 +755,19 @@ public class ProjectionRecords {
 								switch(w.operation)
 								{
 									case '=':
-									if((long)json1.get(att2) == (long)json1.get(att1))
+									if(Integer.parseInt((String)json1.get(att2)) == Integer.parseInt((String)json1.get(att1)))
 									{
 										headers.add(json1);
 									}
 									break;
 									case '>':
-									if((long)json1.get(att2) < (long)json1.get(att1))
+									if(Integer.parseInt((String)json1.get(att2)) < Integer.parseInt((String)json1.get(att1)))
 									{
 										headers.add(json1);
 									}
 									break;
 									case '<':
-										if((long)json1.get(att2) > (long)json1.get(att1))
+										if(Integer.parseInt((String)json1.get(att2)) > Integer.parseInt((String)json1.get(att1)))
 										{
 											headers.add(json1);
 										}
@@ -921,19 +921,19 @@ public class ProjectionRecords {
 						switch(w.operation)
 						{
 							case '=':
-							if(att2 == (long)json1.get(att1))
+							if(att2 == Integer.parseInt((String)json1.get(att1)))
 							{
 								condJ.add(json1);
 							}
 							break;
 							case '>':
-							if(att2 < (long)json1.get(att1))
+							if(att2 < Integer.parseInt((String)json1.get(att1)))
 							{
 								condJ.add(json1);
 							}
 							break;
 							case '<':
-								if(att2 > (long)json1.get(att1))
+								if(att2 > Integer.parseInt((String)json1.get(att1)))
 								{
 									condJ.add(json1);
 								}
@@ -1082,19 +1082,19 @@ public class ProjectionRecords {
 								switch(w.operation)
 								{
 									case '=':
-									if((long)json1.get(att2) == (long)json1.get(att1))
+									if(Integer.parseInt((String)json1.get(att2)) == Integer.parseInt((String)json1.get(att1)))
 									{
 										condJ.add(json1);
 									}
 									break;
 									case '>':
-									if((long)json1.get(att2) < (long)json1.get(att1))
+									if(Integer.parseInt((String)json1.get(att2)) < Integer.parseInt((String)json1.get(att1)))
 									{
 										condJ.add(json1);
 									}
 									break;
 									case '<':
-										if((long)json1.get(att2) > (long)json1.get(att1))
+										if(Integer.parseInt((String)json1.get(att2)) > Integer.parseInt((String)json1.get(att1)))
 										{
 											condJ.add(json1);
 										}
@@ -1235,19 +1235,19 @@ public class ProjectionRecords {
 								switch(w.operation)
 								{
 									case '=':
-									if((long)json1.get(att2) == (long)json1.get(att1))
+									if(Integer.parseInt((String)json1.get(att2)) == Integer.parseInt((String)json1.get(att1)))
 									{
 										condJ.add(json1);
 									}
 									break;
 									case '>':
-									if((long)json1.get(att2) < (long)json1.get(att1))
+									if(Integer.parseInt((String)json1.get(att2)) < Integer.parseInt((String)json1.get(att1)))
 									{
 										condJ.add(json1);
 									}
 									break;
 									case '<':
-										if((long)json1.get(att2) > (long)json1.get(att1))
+										if(Integer.parseInt((String)json1.get(att2)) > Integer.parseInt((String)json1.get(att1)))
 										{
 											condJ.add(json1);
 										}
@@ -1435,7 +1435,7 @@ public class ProjectionRecords {
 				switch(type)
 				{
 				case "INT":
-					long att2 = Long.parseLong(w.attribute2);
+					int att2 = Integer.parseInt(w.attribute2);
 					JSONParser parser = new JSONParser();
 					JSONArray tempArray =new JSONArray();
 					try {
@@ -1457,19 +1457,19 @@ public class ProjectionRecords {
 						switch(w.operation)
 						{
 							case '=':
-							if(att2 == (long)json1.get(att1))
+							if(att2 == Integer.parseInt((String)json1.get(att1)))
 							{
 								headers.add(json1);
 							}
 							break;
 							case '>':
-							if(att2 < (long)json1.get(att1))
+							if(att2 < Integer.parseInt((String)json1.get(att1)))
 							{
 								headers.add(json1);
 							}
 							break;
 							case '<':
-								if(att2 > (long)json1.get(att1))
+								if(att2 > Integer.parseInt((String)json1.get(att1)))
 								{
 									headers.add(json1);
 								}
@@ -1595,7 +1595,7 @@ public class ProjectionRecords {
 				switch(type)
 				{
 				case "INT":
-					long att2 = Long.parseLong(w.attribute2);
+					int att2 = Integer.parseInt(w.attribute2);
 					JSONParser parser = new JSONParser();
 					JSONArray tempArray =new JSONArray();
 					try {
@@ -1617,19 +1617,19 @@ public class ProjectionRecords {
 						switch(w.operation)
 						{
 							case '=':
-							if(att2 == (long)json1.get(att1))
+							if(att2 == Integer.parseInt((String)json1.get(att1)))
 							{
 								condJ.add(json1);
 							}
 							break;
 							case '>':
-							if(att2 < (long)json1.get(att1))
+							if(att2 < Integer.parseInt((String)json1.get(att1)))
 							{
 								condJ.add(json1);
 							}
 							break;
 							case '<':
-								if(att2 > (long)json1.get(att1))
+								if(att2 > Integer.parseInt((String)json1.get(att1)))
 								{
 									condJ.add(json1);
 								}
@@ -1774,8 +1774,8 @@ public class ProjectionRecords {
 					switch(type)
 					{
 					case "INT":
-						long att1 = (long)a.get(key);
-						long att2 = (long)b.get(key);
+						int att1 = Integer.parseInt((String)a.get(key));
+						int att2 = Integer.parseInt((String)b.get(key));
 						if(att1>att2)
 						{
 							if(OB.order)
