@@ -9,9 +9,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
 import javax.swing.JOptionPane;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -378,7 +377,48 @@ public class Delete {
 					// delete from file
 					deleteRecordsFromFile(maintable);
 				}				
-			}			
+			}else if("OR".equalsIgnoreCase(this.conditionOp)){
+				
+				System.out.println("inside or");
+                 				
+				JSONArray jsonArray = getJSONObjectsBasedOnPrimaryKey(primaryKey);
+
+				JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
+				
+			    JSONArray jsonforOR = new JSONArray();
+				
+				for(int i = 0; i < maintable.size(); i++){
+				
+				     JSONObject jsonObject = (JSONObject)maintable.get(i);
+					  
+				     boolean match = eitherConditionsMatchExceptPrimaryKey(jsonObject,primaryKey);
+				     
+				     if(match){				    	 
+				    	 jsonforOR.add(jsonObject);				    	 
+				     }
+				}
+				
+				// delete from maintable
+				JSONArray finalJSON = mergeTwoJsonArrays(jsonforOR,jsonArray,primaryKey);
+				
+				for(int j = 0 ; j < finalJSON.size(); j++){
+					
+					JSONObject temp = (JSONObject) finalJSON.get(j);
+					int index =  maintable.indexOf(temp);
+				
+					long keyValue = (Long)temp.get(primaryKey);
+
+					maintable.remove(index);							
+					// remove from btree
+					bplusTree.delete(keyValue);
+				
+				}
+				
+				// delete from file
+				
+				deleteRecordsFromFile(maintable);
+							
+			}
 		}else{
 		  
 			JSONParser parser = new JSONParser();
@@ -904,6 +944,121 @@ public class Delete {
 		 System.out.println("Records deleted");
 	 
 	 }
+
 	 
+	 public boolean eitherConditionsMatchExceptPrimaryKey(JSONObject temp, String primaryKey){
+		 
+		    //iterate through each condition and check
+			boolean match = false;
+
+			for (WhereClause whereClause : this.whereConditions) {
+
+				String colName = whereClause.attribute1;
+				
+				if(colName.equalsIgnoreCase(primaryKey))
+					  continue;
+				
+				String colVal = whereClause.attribute2;
+
+				// get table columnName
+				String tableColName = tableColumnMap.get(colName);
+
+				Object value = temp.get(tableColName);
+				char operator = whereClause.operation;
+
+				if (value != null && !(value instanceof String)) {
+
+					if (operator == '>') {
+
+						System.out.println("Inside > ");
+						// System.out.println("Table value: "+value.toString());
+
+						BigDecimal searchVal = new BigDecimal(colVal);
+						BigDecimal actualVal = new BigDecimal(value.toString());
+
+						if (actualVal.compareTo(searchVal) > 0) {
+							match = true;
+							break;
+						}
+
+					} else if (operator == '<') {
+
+						System.out.println("Inside < ");
+
+						BigDecimal searchVal = new BigDecimal(colVal);
+						BigDecimal actualVal = new BigDecimal(value.toString());
+
+						if (actualVal.compareTo(searchVal) < 0) {
+							match = true;
+							break;
+						}
+					} else if (operator == '=') {
+
+						System.out.println("Inside =");
+
+						System.out.println("col val: " + colVal);
+
+						BigDecimal searchVal = new BigDecimal(colVal);
+						BigDecimal actualVal = new BigDecimal(value.toString());
+
+						if (searchVal.compareTo(actualVal) == 0) {
+							match = true;
+							break;
+						}
+					}
+				} else {
+
+					if (value != null && colVal != null) {
+
+						colVal = colVal.substring(1, colVal.length() - 1);
+
+						System.out.println("after substring: " + colVal);
+
+						if (colVal.equalsIgnoreCase(value.toString())) {
+
+							System.out.println(colVal + " matches " + value);
+							match = true;
+							break;
+
+						}
+					}
+				}
+			}
+
+			return match;
+		 		 
+	 }
+	 
+	 public JSONArray mergeTwoJsonArrays(JSONArray arr1, JSONArray arr2, String primaryKey){
+		 
+		 JSONArray headers = new JSONArray();
+		 
+		 Iterator<JSONObject> itr1 = arr1.iterator();
+		 boolean pre =false;
+		  
+			while(itr1.hasNext())
+			{
+				JSONObject temp1 = itr1.next();
+				
+				Iterator<JSONObject> itr2 = arr2.iterator();
+				
+				while(itr2.hasNext())
+				{
+					JSONObject temp2 = (JSONObject)itr2.next();
+					if(temp1.get(primaryKey) == temp2.get(primaryKey))
+					{
+						pre=true;
+						break;
+					}
+				}
+				if(!pre)
+				{
+					headers.add(temp1);
+					pre=false;
+				}
+			} 
+		 
+			return headers;
+	 }
 	 
 }
