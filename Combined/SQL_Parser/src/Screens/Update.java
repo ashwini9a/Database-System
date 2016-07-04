@@ -32,8 +32,10 @@ public class Update {
 	boolean tablePrimaryKeyInWhere = false;
 
 
-	public boolean parse(String[] tokens, String sql) {
+	public boolean parse(String sql) {
 
+		String[] tokens = sql.split("\\s+");
+		
 		int setIndex = (sql.indexOf("SET") != -1) ? sql.indexOf("SET") : sql.indexOf("set");	
 
 		boolean whereClausePresent = false;
@@ -158,12 +160,6 @@ public class Update {
 
 		/*// if syntax is fine, check for semantics
 
-		if(!GlobalUtil.validateTableName(this.tableName)){
-			JOptionPane.showMessageDialog(null, "Invalid Syntax: No such table exists", "Error", JOptionPane.ERROR_MESSAGE);
-			return false;
-
-		}*/
-
 		/* 
 		 * validate whereClause colName exists or not
 		 */
@@ -246,10 +242,10 @@ public class Update {
 
 			// validate that colVal is inside quotes
 
-			if(!validateColVal(colVal))
+			if(!validateColVal(colVal.trim()))
 				return false;
 
-			this.columnDataMap.put(colName, colVal);
+			this.columnDataMap.put(colName, colVal.trim());
 
 		}
 
@@ -374,7 +370,7 @@ public class Update {
 
 	public boolean updateRecordInDb(){
 
-		if(tablePrimaryKeyInWhere){
+/*		if(tablePrimaryKeyInWhere){
 
 			// use b-tree to fetch Json objects
 			// if only single where clause then fetch records using B-tree
@@ -403,7 +399,7 @@ public class Update {
 
 		}
 
-	else{
+	else{*/
 
 		JSONParser parser = new JSONParser();
 
@@ -536,7 +532,7 @@ public class Update {
 
 			f1.close();
 
-			System.out.println(json1.toJSONString());
+			//System.out.println(json1.toJSONString());
 
 			File file = new File("Data/Records/" + this.tableName + ".json");
 			FileWriter fw = null;
@@ -552,17 +548,16 @@ public class Update {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
+	//}
 		
 
 	return true;
 }
 
 
-     private void updateJSONArray(JSONArray jsonArray){
-    	 
-    	 
-		// TODO Auto-generated method stub
+    private void updateJSONArray(JSONArray jsonArray){
+ 	 
+   		// TODO Auto-generated method stub
 		int size = jsonArray.size();
 		
 		for(int i=0; i < size; i++){
