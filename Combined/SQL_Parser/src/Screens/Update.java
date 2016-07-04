@@ -483,11 +483,11 @@ public class Update {
 
 				JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
 				// update the jsonArray
-				int jsonArraySize = 0;
+				//int jsonArraySize = 0;
 
 				if(jsonArray.size() != 0) {
 
-					for(int i = 0 ; i < jsonArraySize ; i++){
+					for(int i = 0 ; i < jsonArray.size() ; i++){
 
 						JSONObject jsonObject = (JSONObject)jsonArray.get(i);
 

@@ -487,9 +487,7 @@ public class Delete {
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}		
-
 		}
-
 	}
 
 	public boolean eitherConditionsMatch(JSONObject temp) {
@@ -554,7 +552,7 @@ public class Delete {
 
 					colVal = colVal.substring(1, colVal.length() - 1);
 
-					System.out.println("after substring: " + colVal);
+					//System.out.println("after substring: " + colVal);
 
 					if (colVal.equalsIgnoreCase(value.toString())) {
 
@@ -1033,11 +1031,18 @@ public class Delete {
 		 
 		 JSONArray headers = new JSONArray();
 		 
+		 for(int i = 0; i < arr2.size(); i++){
+			 
+			 JSONObject temp1 = (JSONObject)arr2.get(i);
+			 headers.add(temp1);
+			 
+		 }
+		 
 		 Iterator<JSONObject> itr1 = arr1.iterator();
-		 boolean pre =false;
-		  
+		 
 			while(itr1.hasNext())
 			{
+				boolean pre =false;
 				JSONObject temp1 = itr1.next();
 				
 				Iterator<JSONObject> itr2 = arr2.iterator();
