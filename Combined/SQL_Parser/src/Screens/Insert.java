@@ -333,8 +333,7 @@ public class Insert {
 			newJson.put(primaryKey, lastKeyId+1);
 			
 			//update the b-tree:
-			
-			
+					
 			BPlusTreeIndexing btree = GlobalData.AttBTreeIndex.get(primaryKey);
 			
 			if(btree!=null){
@@ -435,7 +434,7 @@ public class Insert {
 				    }
 				});
 				
-				System.out.println("KeyData: "+keyData);
+				//System.out.println("KeyData: "+keyData);
 
 				// fetch the max value
 				
