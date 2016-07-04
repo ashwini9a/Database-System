@@ -43,7 +43,23 @@ public class BPlusTreeIndexing extends BTree {
 				this.insert(key, headers.get(i));
 			}
 		}
+	}
 
+	public BPlusTreeIndexing(String type, String att, JSONArray headers) {
+		for (int i = 0; i < headers.size(); i++) {
+			JSONObject currJson;
+			currJson = (JSONObject) headers.get(i);
+			if (type.equals("INT")) {
+				long key = (Long) currJson.get(att);
+				this.insert(key, headers.get(i));
+			} else if (type.equals("FLOAT")) {
+				float key = (float) currJson.get(att);
+				this.insert(key, headers.get(i));
+			} else {
+				String key = (String) currJson.get(att);
+				this.insert(key, headers.get(i));
+			}
+		}
 	}
 
 	public BTree GetBPlusTreeIndexing(JSONArray headers, String table_name, String att) {

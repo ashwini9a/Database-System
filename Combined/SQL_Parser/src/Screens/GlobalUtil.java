@@ -73,6 +73,99 @@ public class GlobalUtil {
 		return jobj_new;
 	}
 
+	public static JSONArray intersection2jsa(JSONArray jsa1, JSONArray jsa2, String tablename) {
+		String pk = GlobalData.tablePrimaryKeyMap.get(tablename.toLowerCase());
+		JSONArray jsa_new = new JSONArray();
+		String type = GlobalUtil.GetAttType(pk);
+
+		if (jsa1.size() <= jsa2.size()) {
+			BPlusTreeIndexing tree = new BPlusTreeIndexing(type, pk, jsa2);
+			for (int i = 0; i < jsa1.size(); i++) {
+				JSONObject temp = (JSONObject) jsa1.get(i);
+				if (type.equals("INT")) {
+					long key = (Long) temp.get(pk);
+					if (tree.search(key) != null)
+						jsa_new.add(tree.search(key));
+				} else if (type.equals("FLOAT")) {
+					float key = (float) temp.get(pk);
+					if (tree.search(key) != null)
+						jsa_new.add(tree.search(key));
+				} else {
+					String key = (String) temp.get(pk);
+					if (tree.search(key) != null)
+						jsa_new.add(tree.search(key));
+				}
+			}
+		} else {
+			BPlusTreeIndexing tree = new BPlusTreeIndexing(type, pk, jsa1);
+			for (int i = 0; i < jsa2.size(); i++) {
+				JSONObject temp = (JSONObject) jsa2.get(i);
+				if (type.equals("INT")) {
+					long key = (Long) temp.get(pk);
+					if (tree.search(key) != null)
+						jsa_new.add(tree.search(key));
+
+				} else if (type.equals("FLOAT")) {
+					float key = (float) temp.get(pk);
+					if (tree.search(key) != null)
+						jsa_new.add(tree.search(key));
+				} else {
+					String key = (String) temp.get(pk);
+					if (tree.search(key) != null)
+						jsa_new.add(tree.search(key));
+				}
+			}
+		}
+		return jsa_new;
+	}
+
+	
+	public static JSONArray union2jsa(JSONArray jsa1, JSONArray jsa2, String tablename) {
+		String pk = GlobalData.tablePrimaryKeyMap.get(tablename.toLowerCase());
+		JSONArray jsa_new = new JSONArray();
+		String type = GlobalUtil.GetAttType(pk);
+
+		if (jsa1.size() <= jsa2.size()) {
+			BPlusTreeIndexing tree = new BPlusTreeIndexing(type, pk, jsa2);
+			for (int i = 0; i < jsa1.size(); i++) {
+				JSONObject temp = (JSONObject) jsa1.get(i);
+				if (type.equals("INT")) {
+					long key = (Long) temp.get(pk);
+					if (tree.search(key) != null)
+						jsa_new.add(tree.search(key));
+				} else if (type.equals("FLOAT")) {
+					float key = (float) temp.get(pk);
+					if (tree.search(key) != null)
+						jsa_new.add(tree.search(key));
+				} else {
+					String key = (String) temp.get(pk);
+					if (tree.search(key) != null)
+						jsa_new.add(tree.search(key));
+				}
+			}
+		} else {
+			BPlusTreeIndexing tree = new BPlusTreeIndexing(type, pk, jsa1);
+			for (int i = 0; i < jsa2.size(); i++) {
+				JSONObject temp = (JSONObject) jsa2.get(i);
+				if (type.equals("INT")) {
+					long key = (Long) temp.get(pk);
+					if (tree.search(key) != null)
+						jsa_new.add(tree.search(key));
+
+				} else if (type.equals("FLOAT")) {
+					float key = (float) temp.get(pk);
+					if (tree.search(key) != null)
+						jsa_new.add(tree.search(key));
+				} else {
+					String key = (String) temp.get(pk);
+					if (tree.search(key) != null)
+						jsa_new.add(tree.search(key));
+				}
+			}
+		}
+		return jsa_new;
+	}
+	
 	public static boolean validateColumnNames(List<String> columnNamesList, String tableName) {
 
 		FileReader f1;
