@@ -77,7 +77,7 @@ public class BTree<TKey extends Comparable<TKey>, TValue> {
 
 		while (true) {
 			for (int i = 0; i < node.getKeyCount(); i++)
-				System.out.println(node.getKey(i));
+				  System.out.println(node.getKey(i));
 			if (node.rightSibling == null)
 				break;
 			node = node.rightSibling;

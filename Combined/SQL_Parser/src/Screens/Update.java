@@ -12,13 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.swing.JOptionPane;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import bptree.BTree;
 
 public class Update {
@@ -32,12 +29,13 @@ public class Update {
 	boolean tablePrimaryKeyInWhere = false;
 
 
-	public boolean parse(String[] tokens, String sql) {
+	public boolean parse(String sql) {
+
+		String[] tokens = sql.split("\\s+");
 
 		int setIndex = (sql.indexOf("SET") != -1) ? sql.indexOf("SET") : sql.indexOf("set");	
 
 		boolean whereClausePresent = false;
-
 
 		int whereIndex = (sql.indexOf("WHERE") != -1) ? sql.indexOf("WHERE") : sql.indexOf("where");
 
@@ -46,16 +44,8 @@ public class Update {
 			return false;
 		}
 
-
-		if(tokens.length > 3 && !"SET".equalsIgnoreCase(tokens[2])){			
-			JOptionPane.showMessageDialog(null, "Invalid Syntax,position of SET Clause is incorrect", "Error", JOptionPane.ERROR_MESSAGE);
-			return false;
-
-		}
-
 		/// check if tableName exists		
 		String tableName  =  sql.substring(0, setIndex).trim().substring(6).trim();
-
 
 		if("".equalsIgnoreCase(tableName)){
 			JOptionPane.showMessageDialog(null, "Invalid Syntax,Table Name is missing", "Error", JOptionPane.ERROR_MESSAGE);
@@ -70,6 +60,11 @@ public class Update {
 			return false;	
 		}
 
+		if(tokens.length > 3 && !"SET".equalsIgnoreCase(tokens[2])){			
+			JOptionPane.showMessageDialog(null, "Invalid Syntax,position of SET Clause is incorrect", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+
+		}
 
 		// between tableName and SET clause
 
@@ -127,7 +122,7 @@ public class Update {
 		Set<String> colNames = this.columnDataMap.keySet();
 
 		if(!GlobalUtil.validateColumnNames(new ArrayList<String>(colNames),this.tableName)){
-			JOptionPane.showMessageDialog(null, "Invalid Statement,column name does not exists in table", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Invalid Statement,column name to set does not exists in table", "Error", JOptionPane.ERROR_MESSAGE);
 			return false;
 		}	
 
@@ -154,25 +149,31 @@ public class Update {
 				return false;	
 			}
 
+		}else{
+			
+			///check if where is present between columndata to set and conditions			
+			if(tokens.length>4 && !"where".equals(tokens[4])){				
+				JOptionPane.showMessageDialog(null, "Invalid syntax, Missing where clause", "Error", JOptionPane.ERROR_MESSAGE);
+				return false;	
+			}
+				
 		}
 
 		/*// if syntax is fine, check for semantics
-
-		if(!GlobalUtil.validateTableName(this.tableName)){
-			JOptionPane.showMessageDialog(null, "Invalid Syntax: No such table exists", "Error", JOptionPane.ERROR_MESSAGE);
-			return false;
-
-		}*/
 
 		/* 
 		 * validate whereClause colName exists or not
 		 */
 
-		boolean validColNames = validateWhereClauseColNames();
+		if(this.whereConditions != null && this.whereConditions.size() > 0){
+			
+		    boolean validColNames = validateWhereClauseColNames();
 
-		if(!validColNames){
-			JOptionPane.showMessageDialog(null, "Invalid Column Name", "Error", JOptionPane.ERROR_MESSAGE);
-			return false;			
+			if(!validColNames){
+				JOptionPane.showMessageDialog(null, "Invalid Column Name In Where Clause", "Error", JOptionPane.ERROR_MESSAGE);
+				return false;			
+			}
+		
 		}
 
 		// initialize the table column map
@@ -246,10 +247,10 @@ public class Update {
 
 			// validate that colVal is inside quotes
 
-			if(!validateColVal(colVal))
+			if(!validateColVal(colVal.trim()))
 				return false;
 
-			this.columnDataMap.put(colName, colVal);
+			this.columnDataMap.put(colName, colVal.trim());
 
 		}
 
@@ -373,141 +374,50 @@ public class Update {
 
 
 	public boolean updateRecordInDb(){
+		
+		String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase());
 
-		if(tablePrimaryKeyInWhere){
+		BPlusTreeIndexing  bplusTree = GlobalData.AttBTreeIndex.get(primaryKey);
+		
+		if(tablePrimaryKeyInWhere && bplusTree != null){
 
 			// use b-tree to fetch Json objects
 			// if only single where clause then fetch records using B-tree
 			if(conditionOp == null){
 
-				
-				
 				// get the json objects from  B-tree
 				WhereClause whereClause = this.whereConditions.get(0);			    
-				
+
 				System.out.println("Before btree");
 				System.out.println("att:"+whereClause.attribute1);
 
-				BPlusTreeIndexing  bplusTree = GlobalData.AttBTreeIndex.get(whereClause.attribute1);	
+				//BPlusTreeIndexing  bplusTree = GlobalData.AttBTreeIndex.get(whereClause.attribute1);	
 				String operation = whereClause.operation + "";
 				JSONArray jsonArray = bplusTree.qBptree(whereClause.attribute1,operation, Long.valueOf(whereClause.attribute2));
 
 				System.out.println("After btree"+Long.valueOf(whereClause.attribute2)+"att:"+whereClause.attribute1);
-				
+
 				System.out.println(jsonArray.toJSONString());
-				
-				updateJSONArray(jsonArray);
-				
-			}
 
+				if(jsonArray.size() != 0)
+					updateJSONArray(jsonArray);
 
-		}
+			}else if(this.conditionsPresent && "And".equalsIgnoreCase(conditionOp)){
 
-	else{
+				// get the json array based on primary key and filter them based on other conditions
+				JSONArray jsonArray = getJSONObjectsBasedOnPrimaryKey();
 
-		JSONParser parser = new JSONParser();
+				if(jsonArray.size() != 0){
 
-		try {
+					// filter further based on other conditions					
+					for(int i = 0; i < jsonArray.size(); i++){
 
-			FileReader f1 = new FileReader("Data/Records/" + this.tableName + ".json");
-			Object obj = parser.parse(f1);
-			JSONObject json1 = (JSONObject) obj;
-			///System.out.println(json1.toJSONString());
+						// check if other conditions match
+						JSONObject jsonObject = (JSONObject)jsonArray.get(i);
+						boolean match = allConditionsExceptPrimaryKey(jsonObject);
 
-			try {
-
-				JSONArray headers = (JSONArray) json1.get("Records");
-
-				//int rindex=-1;
-
-				int size = headers.size();
-
-				for(int i=0; i <size;i++)
-				{
-
-					JSONObject temp = (JSONObject) headers.get(i);
-					//boolean allConditionsMatch = true;
-
-					if(this.conditionsPresent){
-
-						if(this.conditionsPresent && conditionOp == null){
-
-							System.out.println("no and/or: single where condition");
-
-							boolean result = checkIfConditionMatch(temp);
-
-							if(result){
-
-								for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
-
-									String columnName = entryMap.getKey();
-									String columnValue = entryMap.getValue();
-
-									String tableColumnName = tableColumnMap.get(columnName);
-
-									// remove single quotes
-									columnValue = columnValue.substring(1, columnValue.length()-1);
-
-									temp.remove(tableColumnName);
-									temp.put(tableColumnName, columnValue);
-
-								}	
-
-							}
-
-
-						}else if(this.conditionsPresent && "And".equalsIgnoreCase(conditionOp)){
-
-							System.out.println("conditionOp: "+this.conditionOp);			    	
-							boolean result = allConditionsMatch(temp);
-
-							if(result){
-								// change here
-								for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
-
-									String columnName = entryMap.getKey();
-									String columnValue = entryMap.getValue();
-
-									String tableColumnName = tableColumnMap.get(columnName);
-
-									// remove single quotes
-									columnValue = columnValue.substring(1, columnValue.length()-1);
-
-									temp.remove(tableColumnName);
-									temp.put(tableColumnName, columnValue);
-
-								}
-							}	
-
-						}else if(this.conditionsPresent && "Or".equalsIgnoreCase(conditionOp)){
-
-							System.out.println("conditionOp: "+this.conditionOp);			    	
-							boolean result = eitherConditionsMatch(temp);
-
-							if(result){		
-								// change here
-
-								for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
-
-									String columnName = entryMap.getKey();
-									String columnValue = entryMap.getValue();
-
-									String tableColumnName = tableColumnMap.get(columnName);
-
-									// remove single quotes
-									columnValue = columnValue.substring(1, columnValue.length()-1);
-
-									temp.remove(tableColumnName);
-									temp.put(tableColumnName, columnValue);
-
-								}
-
-							}
-
-						}else{						
-							// no where clause present						
-							System.out.println("no where clause present");
-
+						if(match){							
+							// update the object
 							for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
 
 								String columnName = entryMap.getKey();
@@ -518,57 +428,215 @@ public class Update {
 								// remove single quotes
 								columnValue = columnValue.substring(1, columnValue.length()-1);
 
-								temp.remove(tableColumnName);
-								temp.put(tableColumnName, columnValue);
+								jsonObject.remove(tableColumnName);
+								jsonObject.put(tableColumnName, columnValue);
 
-							}
-						}				
+							}								
+						}
 					}
+
 				}
 
-				json1.put("Records", headers);
+			}else if(this.conditionsPresent && "Or".equalsIgnoreCase(conditionOp)){
 
-			} catch (ClassCastException e) {
+				JSONArray jsonArray = getJSONObjectsBasedOnPrimaryKey();
 
-				e.printStackTrace();
+				/*if(jsonArray.size() != 0){
 
+					// filter further based on other conditions					
+					for(int i = 0; i < jsonArray.size(); i++){
+
+						 // check if other conditions match
+						JSONObject jsonObject = (JSONObject)jsonArray.get(i);
+						boolean match = either(jsonObject);
+
+						if(match){							
+							// update the object
+							for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
+
+								String columnName = entryMap.getKey();
+								String columnValue = entryMap.getValue();
+
+								String tableColumnName = tableColumnMap.get(columnName);
+
+								// remove single quotes
+								columnValue = columnValue.substring(1, columnValue.length()-1);
+
+								jsonObject.remove(tableColumnName);
+								jsonObject.put(tableColumnName, columnValue);
+
+							}								
+						}
+					}
+
+				}
+				 */
 			}
+		}else{
 
-			f1.close();
+			JSONParser parser = new JSONParser();
 
-			System.out.println(json1.toJSONString());
+			try {
 
-			File file = new File("Data/Records/" + this.tableName + ".json");
-			FileWriter fw = null;
-			BufferedWriter bw = null;
+				FileReader f1 = new FileReader("Data/Records/" + this.tableName + ".json");
+				Object obj = parser.parse(f1);
+				JSONObject json1 = (JSONObject) obj;
+				///System.out.println(json1.toJSONString());
 
-			fw = new FileWriter(file.getAbsoluteFile());
-			bw = new BufferedWriter(fw);
+				try {
 
-			bw.write(json1.toJSONString());
-			bw.flush();
-			bw.close();
+					JSONArray headers = (JSONArray) json1.get("Records");
 
-		} catch (Exception e) {
-			e.printStackTrace();
+					//int rindex=-1;
+
+					int size = headers.size();
+
+					for(int i=0; i <size;i++)
+					{
+
+						JSONObject temp = (JSONObject) headers.get(i);
+						//boolean allConditionsMatch = true;
+
+						if(this.conditionsPresent){
+
+							if(this.conditionsPresent && conditionOp == null){
+
+								System.out.println("no and/or: single where condition");
+
+								boolean result = checkIfConditionMatch(temp);
+
+								if(result){
+
+									for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
+
+										String columnName = entryMap.getKey();
+										String columnValue = entryMap.getValue();
+
+										String tableColumnName = tableColumnMap.get(columnName);
+
+										// remove single quotes
+										columnValue = columnValue.substring(1, columnValue.length()-1);
+
+										temp.remove(tableColumnName);
+										temp.put(tableColumnName, columnValue);
+
+									}	
+
+								}
+
+
+							}else if(this.conditionsPresent && "And".equalsIgnoreCase(conditionOp)){
+
+								System.out.println("conditionOp: "+this.conditionOp);			    	
+								boolean result = allConditionsMatch(temp);
+
+								if(result){
+									// change here
+									for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
+
+										String columnName = entryMap.getKey();
+										String columnValue = entryMap.getValue();
+
+										String tableColumnName = tableColumnMap.get(columnName);
+
+										// remove single quotes
+										columnValue = columnValue.substring(1, columnValue.length()-1);
+
+										temp.remove(tableColumnName);
+										temp.put(tableColumnName, columnValue);
+
+									}
+								}	
+
+							}else if(this.conditionsPresent && "Or".equalsIgnoreCase(conditionOp)){
+
+								System.out.println("conditionOp: "+this.conditionOp);			    	
+								boolean result = eitherConditionsMatch(temp);
+
+								if(result){		
+									// change here
+
+									for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
+
+										String columnName = entryMap.getKey();
+										String columnValue = entryMap.getValue();
+
+										String tableColumnName = tableColumnMap.get(columnName);
+
+										// remove single quotes
+										columnValue = columnValue.substring(1, columnValue.length()-1);
+
+										temp.remove(tableColumnName);
+										temp.put(tableColumnName, columnValue);
+
+									}
+
+								}
+
+							}else{						
+								// no where clause present						
+								System.out.println("no where clause present");
+
+								for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
+
+									String columnName = entryMap.getKey();
+									String columnValue = entryMap.getValue();
+
+									String tableColumnName = tableColumnMap.get(columnName);
+
+									// remove single quotes
+									columnValue = columnValue.substring(1, columnValue.length()-1);
+
+									temp.remove(tableColumnName);
+									temp.put(tableColumnName, columnValue);
+
+								}
+							}				
+						}
+					}
+
+					json1.put("Records", headers);
+
+				} catch (ClassCastException e) {
+
+					e.printStackTrace();
+
+				}
+
+				f1.close();
+
+				//System.out.println(json1.toJSONString());
+
+				File file = new File("Data/Records/" + this.tableName + ".json");
+				FileWriter fw = null;
+				BufferedWriter bw = null;
+
+				fw = new FileWriter(file.getAbsoluteFile());
+				bw = new BufferedWriter(fw);
+
+				bw.write(json1.toJSONString());
+				bw.flush();
+				bw.close();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
+
+
+		return true;
 	}
-		
-
-	return true;
-}
 
 
-     private void updateJSONArray(JSONArray jsonArray){
-    	 
-    	 
+	private void updateJSONArray(JSONArray jsonArray){
+
 		// TODO Auto-generated method stub
 		int size = jsonArray.size();
-		
+
 		for(int i=0; i < size; i++){
-			
+
 			JSONObject temp = (JSONObject) jsonArray.get(i);
-			
+
 			for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
 
 				String columnName = entryMap.getKey();
@@ -585,32 +653,32 @@ public class Update {
 			}
 
 		}
-			
+
 		// update records in file
 		///JSONParser parser = new JSONParser();
-		
+
 		System.out.println("saving data to file");
 
 		//FileReader f1;
-		
+
 		try {
-			
+
 			//f1 = new FileReader("Data/Records/" + this.tableName + ".json");
 			//Object obj = parser.parse(f1);
-			
-			
+
+
 			JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
-			
-			
+
+
 			JSONObject newJson = new JSONObject();
 			newJson.put("Records", maintable);
-			
+
 			File file = new File("Data/Records/" + this.tableName + ".json");
-			
+
 			if(file.exists()){
 				file.delete();
 			}
-			
+
 			FileWriter fw = null;
 			BufferedWriter bw = null;
 
@@ -621,10 +689,10 @@ public class Update {
 			bw.flush();
 			bw.close();
 			fw.close();
-			
+
 			System.out.println("data saved");
-			
-			
+
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -632,259 +700,381 @@ public class Update {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 	
-    	 
+
 	}
 
 
-public boolean eitherConditionsMatch(JSONObject temp){
+	public boolean eitherConditionsMatch(JSONObject temp){
 
-	//iterate through each condition and check
-	boolean match = false;
+		//iterate through each condition and check
+		boolean match = false;
 
-	for(WhereClause whereClause: this.whereConditions){
+		for(WhereClause whereClause: this.whereConditions){
 
-		String colName = whereClause.attribute1;
-		String colVal = whereClause.attribute2;
+			String colName = whereClause.attribute1;
+			String colVal = whereClause.attribute2;
 
-		// get table columnName
-		String tableColName = tableColumnMap.get(colName);					 
+			// get table columnName
+			String tableColName = tableColumnMap.get(colName);					 
 
-		Object value = temp.get(tableColName);			 
-		char operator = whereClause.operation;
+			Object value = temp.get(tableColName);			 
+			char operator = whereClause.operation;
 
-		if(value != null && !(value instanceof String)){
+			if(value != null && !(value instanceof String)){
 
-			if(operator == '>'){
+				if(operator == '>'){
 
-				System.out.println("Inside > ");     							 
-				// System.out.println("Table value: "+value.toString());
+					System.out.println("Inside > ");     							 
+					// System.out.println("Table value: "+value.toString());
 
-				BigDecimal searchVal = new BigDecimal(colVal);
-				BigDecimal actualVal = new BigDecimal(value.toString());
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
 
-				if(actualVal.compareTo(searchVal) > 0){
-					match = true;
-					break;
-				}	
+					if(actualVal.compareTo(searchVal) > 0){
+						match = true;
+						break;
+					}	
 
-			}else if(operator == '<'){
+				}else if(operator == '<'){
 
-				System.out.println("Inside < ");
+					System.out.println("Inside < ");
 
-				BigDecimal searchVal = new BigDecimal(colVal);
-				BigDecimal actualVal = new BigDecimal(value.toString());
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
 
-				if(actualVal.compareTo(searchVal) < 0){
-					match = true;
-					break;
+					if(actualVal.compareTo(searchVal) < 0){
+						match = true;
+						break;
+					}
+				}else if(operator == '=') {
+
+					System.out.println("Inside ="); 
+
+					System.out.println("col val: "+colVal);
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString()); 
+
+					if(searchVal.compareTo(actualVal) == 0){
+						match = true;
+						break;								
+					}		
 				}
-			}else if(operator == '=') {
+			}else{							 
 
-				System.out.println("Inside ="); 
+				if(value != null && colVal != null){
 
-				System.out.println("col val: "+colVal);
+					colVal = colVal.substring(1, colVal.length()-1);
 
-				BigDecimal searchVal = new BigDecimal(colVal);
-				BigDecimal actualVal = new BigDecimal(value.toString()); 
+					System.out.println("after substring: "+colVal);
 
-				if(searchVal.compareTo(actualVal) == 0){
-					match = true;
-					break;								
-				}		
-			}
-		}else{							 
+					if(colVal.equals(value.toString())){
 
-			if(value != null && colVal != null){
+						System.out.println(colVal+" matches "+value);
+						match = true;
+						break;
 
-				colVal = colVal.substring(1, colVal.length()-1);
+					}						 
+				}									 
+			}				
+		}
 
-				System.out.println("after substring: "+colVal);
-
-				if(colVal.equals(value.toString())){
-
-					System.out.println(colVal+" matches "+value);
-					match = true;
-					break;
-
-				}						 
-			}									 
-		}				
+		return match;
 	}
 
-	return match;
-}
 
+	public boolean allConditionsMatch(JSONObject temp){
 
-public boolean allConditionsMatch(JSONObject temp){
+		boolean allConditionsMatch = true;
 
-	boolean allConditionsMatch = true;
+		System.out.println("inside allConditionsMatch");
 
-	System.out.println("inside allConditionsMatch");
+		for(WhereClause whereClause: this.whereConditions){
 
-	for(WhereClause whereClause: this.whereConditions){
+			String colName = whereClause.attribute1;
+			String colVal = whereClause.attribute2;
 
-		String colName = whereClause.attribute1;
-		String colVal = whereClause.attribute2;
+			System.out.println("colName:" + colName);
 
-		System.out.println("colName:" + colName);
+			System.out.println("colVal:" + colVal);
 
-		System.out.println("colVal:" + colVal);
+			// get table columnName
+			String tableColName = tableColumnMap.get(colName);					 
 
-		// get table columnName
-		String tableColName = tableColumnMap.get(colName);					 
+			Object value = temp.get(tableColName);			 
+			char operator = whereClause.operation;
 
-		Object value = temp.get(tableColName);			 
-		char operator = whereClause.operation;
+			if(value != null && !(value instanceof String)){
 
-		if(value != null && !(value instanceof String)){
+				if(operator == '>'){
 
-			if(operator == '>'){
+					System.out.println("Inside > ");     							 
+					System.out.println("Table value: "+value.toString());
 
-				System.out.println("Inside > ");     							 
-				System.out.println("Table value: "+value.toString());
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
 
-				BigDecimal searchVal = new BigDecimal(colVal);
-				BigDecimal actualVal = new BigDecimal(value.toString());
+					if(actualVal.compareTo(searchVal) <= 0){
+						allConditionsMatch = false;
+						break;
+					}	
 
-				if(actualVal.compareTo(searchVal) <= 0){
-					allConditionsMatch = false;
-					break;
-				}	
+				}else if(operator == '<'){
 
-			}else if(operator == '<'){
+					System.out.println("Inside < ");
 
-				System.out.println("Inside < ");
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
 
-				BigDecimal searchVal = new BigDecimal(colVal);
-				BigDecimal actualVal = new BigDecimal(value.toString());
+					if(actualVal.compareTo(searchVal) >= 0){
+						allConditionsMatch = false;
+						break;
+					}
 
-				if(actualVal.compareTo(searchVal) >= 0){
-					allConditionsMatch = false;
-					break;
+				}else if(operator == '=') {
+
+					System.out.println("Inside ="); 
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString()); 
+
+					if(searchVal.compareTo(actualVal) != 0){
+						allConditionsMatch = false;
+						break;								
+					}		
 				}
+			}else{		
 
-			}else if(operator == '=') {
+				if(value != null && colVal != null){	
 
-				System.out.println("Inside ="); 
+					colVal = colVal.substring(1, colVal.length()-1);						 
+					System.out.println("after substring: "+colVal);
 
-				BigDecimal searchVal = new BigDecimal(colVal);
-				BigDecimal actualVal = new BigDecimal(value.toString()); 
+					if(colVal.equals(value.toString())){
+						System.out.println(colVal+" matches "+value);
+						continue;
+					}else{
 
-				if(searchVal.compareTo(actualVal) != 0){
-					allConditionsMatch = false;
-					break;								
-				}		
-			}
-		}else{		
+						allConditionsMatch = false;
+						break;
+					}
 
-			if(value != null && colVal != null){	
-
-				colVal = colVal.substring(1, colVal.length()-1);						 
-				System.out.println("after substring: "+colVal);
-
-				if(colVal.equals(value.toString())){
-					System.out.println(colVal+" matches "+value);
-					continue;
 				}else{
-
 					allConditionsMatch = false;
 					break;
-				}
+				}												 
+			}				
+		}
 
-			}else{
-				allConditionsMatch = false;
+		return allConditionsMatch;
+
+	}
+
+
+	public boolean checkIfConditionMatch(JSONObject temp){
+
+		boolean match = true;
+
+		System.out.println("inside checkIfConditionMatch");
+
+		for(WhereClause whereClause: this.whereConditions){
+
+			String colName = whereClause.attribute1;
+			String colVal = whereClause.attribute2;
+
+			//get table columnName
+			String tableColName = tableColumnMap.get(colName);					 
+
+			Object value = temp.get(tableColName);			 
+			char operator = whereClause.operation;
+
+			if(value != null && !(value instanceof String)){
+
+				if(operator == '>'){
+
+					System.out.println("Inside > ");     							 
+					System.out.println("Table value: "+value.toString());
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
+
+					if(actualVal.compareTo(searchVal) <= 0){
+						match = false;
+						break;
+					}	
+
+				}else if(operator == '<'){
+
+					System.out.println("Inside < ");
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
+
+					if(actualVal.compareTo(searchVal) >= 0){
+						match = false;
+						break;
+					}
+				}else if(operator == '=') {
+
+					System.out.println("Inside ="); 
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString()); 
+
+					if(searchVal.compareTo(actualVal) != 0){
+						match = false;
+						break;								
+					}else{
+						System.out.println("match = true for "+searchVal+","+actualVal);						 
+					}
+				}
+			}else{		
+
+				if(value != null && colVal != null){
+
+					colVal = colVal.substring(1, colVal.length()-1);							 
+					System.out.println("after substring: "+colVal);
+
+					if(colVal.equals(value.toString())){							 
+						match = true;
+						break;
+					}else{
+
+						match = false;
+						break;
+					}
+
+				}else{
+					match = false;
+					break;
+				}												 
+			}				
+		}		
+
+		return match;
+
+	}
+
+
+	public JSONArray getJSONObjectsBasedOnPrimaryKey(){
+
+		// get the WhereClause which has primaryKey
+		String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName);
+		WhereClause whereClause = null;
+
+		for(WhereClause where:this.whereConditions){
+
+			if(where.attribute1.equalsIgnoreCase(primaryKey)){
+
+				whereClause = where;
 				break;
-			}												 
-		}				
+			}
+		}
+
+		// get the json objects based on this primary key
+
+		BPlusTreeIndexing  bplusTree = GlobalData.AttBTreeIndex.get(whereClause.attribute1);	
+		String operation = whereClause.operation + "";
+		JSONArray jsonArray = bplusTree.qBptree(whereClause.attribute1,operation, Long.valueOf(whereClause.attribute2));
+
+		return jsonArray;   
+
 	}
 
-	return allConditionsMatch;
 
-}
+	public boolean allConditionsExceptPrimaryKey(JSONObject temp){
 
+		boolean allConditionsMatch = true;
 
-public boolean checkIfConditionMatch(JSONObject temp){
+		String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName);
 
-	boolean match = true;
+		System.out.println("inside allConditionsMatch");
 
-	System.out.println("inside checkIfConditionMatch");
+		for(WhereClause whereClause: this.whereConditions){
 
-	for(WhereClause whereClause: this.whereConditions){
+			String colName = whereClause.attribute1;
 
-		String colName = whereClause.attribute1;
-		String colVal = whereClause.attribute2;
+			if(colName.equalsIgnoreCase(primaryKey))
+				continue;
 
-		//get table columnName
-		String tableColName = tableColumnMap.get(colName);					 
+			String colVal = whereClause.attribute2;
 
-		Object value = temp.get(tableColName);			 
-		char operator = whereClause.operation;
+			System.out.println("colName:" + colName);
 
-		if(value != null && !(value instanceof String)){
+			System.out.println("colVal:" + colVal);
 
-			if(operator == '>'){
+			// get table columnName
+			String tableColName = tableColumnMap.get(colName);					 
 
-				System.out.println("Inside > ");     							 
-				System.out.println("Table value: "+value.toString());
+			Object value = temp.get(tableColName);			 
+			char operator = whereClause.operation;
 
-				BigDecimal searchVal = new BigDecimal(colVal);
-				BigDecimal actualVal = new BigDecimal(value.toString());
+			if(value != null && !(value instanceof String)){
 
-				if(actualVal.compareTo(searchVal) <= 0){
-					match = false;
-					break;
-				}	
+				if(operator == '>'){
 
-			}else if(operator == '<'){
+					System.out.println("Inside > ");     							 
+					System.out.println("Table value: "+value.toString());
 
-				System.out.println("Inside < ");
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
 
-				BigDecimal searchVal = new BigDecimal(colVal);
-				BigDecimal actualVal = new BigDecimal(value.toString());
+					if(actualVal.compareTo(searchVal) <= 0){
+						allConditionsMatch = false;
+						break;
+					}	
 
-				if(actualVal.compareTo(searchVal) >= 0){
-					match = false;
-					break;
+				}else if(operator == '<'){
+
+					System.out.println("Inside < ");
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
+
+					if(actualVal.compareTo(searchVal) >= 0){
+						allConditionsMatch = false;
+						break;
+					}
+
+				}else if(operator == '=') {
+
+					System.out.println("Inside ="); 
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString()); 
+
+					if(searchVal.compareTo(actualVal) != 0){
+						allConditionsMatch = false;
+						break;								
+					}		
 				}
-			}else if(operator == '=') {
+			}else{		
 
-				System.out.println("Inside ="); 
+				if(value != null && colVal != null){	
 
-				BigDecimal searchVal = new BigDecimal(colVal);
-				BigDecimal actualVal = new BigDecimal(value.toString()); 
+					colVal = colVal.substring(1, colVal.length()-1);						 
+					System.out.println("after substring: "+colVal);
 
-				if(searchVal.compareTo(actualVal) != 0){
-					match = false;
-					break;								
+					if(colVal.equals(value.toString())){
+						System.out.println(colVal+" matches "+value);
+						continue;
+					}else{
+
+						allConditionsMatch = false;
+						break;
+					}
+
 				}else{
-					System.out.println("match = true for "+searchVal+","+actualVal);						 
-				}
-			}
-		}else{		
-
-			if(value != null && colVal != null){
-
-				colVal = colVal.substring(1, colVal.length()-1);							 
-				System.out.println("after substring: "+colVal);
-
-				if(colVal.equals(value.toString())){							 
-					match = true;
+					allConditionsMatch = false;
 					break;
-				}else{
+				}												 
+			}				
+		}
 
-					match = false;
-					break;
-				}
+		return allConditionsMatch;	   
 
-			}else{
-				match = false;
-				break;
-			}												 
-		}				
-	}		
+	}
 
-	return match;
 
-}
 
 }
