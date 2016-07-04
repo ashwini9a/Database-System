@@ -370,13 +370,11 @@ public class Update {
 
 	public boolean updateRecordInDb(){
 
-/*		if(tablePrimaryKeyInWhere){
+		if(tablePrimaryKeyInWhere){
 
 			// use b-tree to fetch Json objects
 			// if only single where clause then fetch records using B-tree
 			if(conditionOp == null){
-
-				
 				
 				// get the json objects from  B-tree
 				WhereClause whereClause = this.whereConditions.get(0);			    
@@ -392,14 +390,80 @@ public class Update {
 				
 				System.out.println(jsonArray.toJSONString());
 				
-				updateJSONArray(jsonArray);
+				if(jsonArray.size() != 0)
+				     updateJSONArray(jsonArray);
 				
+			}else if(this.conditionsPresent && "And".equalsIgnoreCase(conditionOp)){
+				
+				// get the json array based on primary key and filter them based on other conditions
+				JSONArray jsonArray = getJSONObjectsBasedOnPrimaryKey();
+			
+				if(jsonArray.size() != 0){
+					
+					// filter further based on other conditions					
+					for(int i = 0; i < jsonArray.size(); i++){
+						
+						 // check if other conditions match
+						JSONObject jsonObject = (JSONObject)jsonArray.get(i);
+						boolean match = allConditionsExceptPrimaryKey(jsonObject);
+						
+						if(match){							
+							// update the object
+							for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
+
+								String columnName = entryMap.getKey();
+								String columnValue = entryMap.getValue();
+
+								String tableColumnName = tableColumnMap.get(columnName);
+
+								// remove single quotes
+								columnValue = columnValue.substring(1, columnValue.length()-1);
+
+								jsonObject.remove(tableColumnName);
+								jsonObject.put(tableColumnName, columnValue);
+
+							}								
+						}
+					}
+					
+				}
+				
+			}else if(this.conditionsPresent && "Or".equalsIgnoreCase(conditionOp)){
+			
+				JSONArray jsonArray = getJSONObjectsBasedOnPrimaryKey();
+		
+				/*if(jsonArray.size() != 0){
+					
+					// filter further based on other conditions					
+					for(int i = 0; i < jsonArray.size(); i++){
+						
+						 // check if other conditions match
+						JSONObject jsonObject = (JSONObject)jsonArray.get(i);
+						boolean match = either(jsonObject);
+						
+						if(match){							
+							// update the object
+							for(Map.Entry<String, String> entryMap : columnDataMap.entrySet()){
+
+								String columnName = entryMap.getKey();
+								String columnValue = entryMap.getValue();
+
+								String tableColumnName = tableColumnMap.get(columnName);
+
+								// remove single quotes
+								columnValue = columnValue.substring(1, columnValue.length()-1);
+
+								jsonObject.remove(tableColumnName);
+								jsonObject.put(tableColumnName, columnValue);
+
+							}								
+						}
+					}
+					
+				}
+		*/
 			}
-
-
-		}
-
-	else{*/
+	}else{
 
 		JSONParser parser = new JSONParser();
 
@@ -548,7 +612,7 @@ public class Update {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	//}
+	}
 		
 
 	return true;
@@ -880,6 +944,128 @@ public boolean checkIfConditionMatch(JSONObject temp){
 
 	return match;
 
-}
+ }
+
+
+   public JSONArray getJSONObjectsBasedOnPrimaryKey(){
+	   
+	   // get the WhereClause which has primaryKey
+	   String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName);
+	   WhereClause whereClause = null;
+	   
+	   for(WhereClause where:this.whereConditions){
+		   
+		    if(where.attribute1.equalsIgnoreCase(primaryKey)){
+		    	
+		    	whereClause = where;
+		    	break;
+		    }
+	   }
+	   
+	   // get the json objects based on this primary key
+	   
+	    BPlusTreeIndexing  bplusTree = GlobalData.AttBTreeIndex.get(whereClause.attribute1);	
+		String operation = whereClause.operation + "";
+		JSONArray jsonArray = bplusTree.qBptree(whereClause.attribute1,operation, Long.valueOf(whereClause.attribute2));
+
+	    return jsonArray;   
+	
+   }
+
+   
+   public boolean allConditionsExceptPrimaryKey(JSONObject temp){
+	   
+		boolean allConditionsMatch = true;
+		
+		String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName);
+		  
+		System.out.println("inside allConditionsMatch");
+
+		for(WhereClause whereClause: this.whereConditions){
+
+			String colName = whereClause.attribute1;
+			
+			if(colName.equalsIgnoreCase(primaryKey))
+				 continue;
+			
+			String colVal = whereClause.attribute2;
+
+			System.out.println("colName:" + colName);
+
+			System.out.println("colVal:" + colVal);
+
+			// get table columnName
+			String tableColName = tableColumnMap.get(colName);					 
+
+			Object value = temp.get(tableColName);			 
+			char operator = whereClause.operation;
+
+			if(value != null && !(value instanceof String)){
+
+				if(operator == '>'){
+
+					System.out.println("Inside > ");     							 
+					System.out.println("Table value: "+value.toString());
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
+
+					if(actualVal.compareTo(searchVal) <= 0){
+						allConditionsMatch = false;
+						break;
+					}	
+
+				}else if(operator == '<'){
+
+					System.out.println("Inside < ");
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
+
+					if(actualVal.compareTo(searchVal) >= 0){
+						allConditionsMatch = false;
+						break;
+					}
+
+				}else if(operator == '=') {
+
+					System.out.println("Inside ="); 
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString()); 
+
+					if(searchVal.compareTo(actualVal) != 0){
+						allConditionsMatch = false;
+						break;								
+					}		
+				}
+			}else{		
+
+				if(value != null && colVal != null){	
+
+					colVal = colVal.substring(1, colVal.length()-1);						 
+					System.out.println("after substring: "+colVal);
+
+					if(colVal.equals(value.toString())){
+						System.out.println(colVal+" matches "+value);
+						continue;
+					}else{
+
+						allConditionsMatch = false;
+						break;
+					}
+
+				}else{
+					allConditionsMatch = false;
+					break;
+				}												 
+			}				
+		}
+
+		return allConditionsMatch;	   
+	 
+   }
+   
+   
 
 }
