@@ -92,20 +92,12 @@ public class ProjectionRecords {
 		}
 	}
 	
-	private void oderMainJson(ArrayList tables, ArrayList alias, OrderBy OB) {
+	private void oderMainJson(ArrayList tables, ArrayList alias, OrderBy oB) {
 		String tb;
 		if(tables.size()==2)
 		{
-			String att = OB.Ordercols.get(0);
-			if(GlobalUtil.validateColumnNames(att, (String)tables.get(0)))
-			{
-				tb = (String)tables.get(0);
-			}
-			else
-			{
-				tb = (String)tables.get(1);
-			}
-			oderMainJson(tb, OB);
+			String att = OB.OrderCols.
+			if(GlobalUtil.validateColumnNames(, tableName))
 		}
 		
 	}

@@ -92,21 +92,8 @@ public class ProjectionRecords {
 		}
 	}
 	
-	private void oderMainJson(ArrayList tables, ArrayList alias, OrderBy OB) {
-		String tb;
-		if(tables.size()==2)
-		{
-			String att = OB.Ordercols.get(0);
-			if(GlobalUtil.validateColumnNames(att, (String)tables.get(0)))
-			{
-				tb = (String)tables.get(0);
-			}
-			else
-			{
-				tb = (String)tables.get(1);
-			}
-			oderMainJson(tb, OB);
-		}
+	private void oderMainJson(ArrayList tables, ArrayList alias, OrderBy oB) {
+		
 		
 	}
 	public void projectRecords(String tableName, ArrayList<String> SelectedAttributes, boolean cond) 
@@ -392,7 +379,7 @@ public class ProjectionRecords {
 				type = GlobalUtil.getDataType(tbnm2, att1);
 				tb=tbnm2;
 			}
-			if(GlobalData.tablePrimaryKeyMap.get(tb.toLowerCase()).equalsIgnoreCase(att1))
+			if(GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase()).equalsIgnoreCase(att1) || GlobalData.tablePrimaryKeyMap.get(tbnm2.toLowerCase()).equalsIgnoreCase(att1))
 			{
 				// btree code //*************timer************
 				String op =""+w.operation;

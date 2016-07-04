@@ -92,21 +92,8 @@ public class ProjectionRecords {
 		}
 	}
 	
-	private void oderMainJson(ArrayList tables, ArrayList alias, OrderBy OB) {
-		String tb;
-		if(tables.size()==2)
-		{
-			String att = OB.Ordercols.get(0);
-			if(GlobalUtil.validateColumnNames(att, (String)tables.get(0)))
-			{
-				tb = (String)tables.get(0);
-			}
-			else
-			{
-				tb = (String)tables.get(1);
-			}
-			oderMainJson(tb, OB);
-		}
+	private void oderMainJson(ArrayList tables, ArrayList alias, OrderBy oB) {
+		
 		
 	}
 	public void projectRecords(String tableName, ArrayList<String> SelectedAttributes, boolean cond) 
@@ -392,7 +379,7 @@ public class ProjectionRecords {
 				type = GlobalUtil.getDataType(tbnm2, att1);
 				tb=tbnm2;
 			}
-			if(GlobalData.tablePrimaryKeyMap.get(tb.toLowerCase()).equalsIgnoreCase(att1))
+			if(GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase()).equalsIgnoreCase(att1) || GlobalData.tablePrimaryKeyMap.get(tbnm2.toLowerCase()).equalsIgnoreCase(att1))
 			{
 				// btree code //*************timer************
 				String op =""+w.operation;
@@ -551,141 +538,6 @@ public class ProjectionRecords {
 						headers = BPlusTreeIndexing.qBptree(tbnm1,att1,op,tbnm2,att2o);
 					}
 				}
-				else
-				{
-					if(GlobalData.tablePrimaryKeyMap.get(tbnm2.toLowerCase()).equalsIgnoreCase(att2o))
-					{
-						//btree
-						String op=""+w.operation;
-						headers = BPlusTreeIndexing.qBptree(tbnm1,att1,op,tbnm2,att2o);
-					}
-					else
-					{
-						String type = GlobalUtil.getDataType(tbnm2, att2o);
-						JSONParser parser = new JSONParser();
-						JSONArray tempArray1 =new JSONArray();
-						try {
-							FileReader f1= new FileReader("Data/Records/" + tbnm1 + ".json");
-							Object obj = parser.parse(f1);
-							JSONObject json = (JSONObject) obj;
-							tempArray1 = (JSONArray) json.get("Records");
-							System.out.println(headers.toString());
-							f1.close();
-						}
-						catch(Exception E)
-						{
-						
-						}
-						JSONArray tempArray2 =new JSONArray();
-						try {
-							FileReader f1= new FileReader("Data/Records/" + tbnm2 + ".json");
-							Object obj = parser.parse(f1);
-							JSONObject json = (JSONObject) obj;
-							tempArray2 = (JSONArray) json.get("Records");
-							System.out.println(headers.toString());
-							f1.close();
-						}
-						catch(Exception E)
-						{
-						
-						}
-						JSONArray tempArray = crossProduct(tempArray1, tempArray2);
-						switch(type)
-						{
-						case "INT":
-							int att2 = Integer.parseInt(w.attribute2);
-							Iterator<JSONObject> itr = tempArray.iterator();
-							while(itr.hasNext())
-							{
-								JSONObject json1 = (JSONObject) itr.next();
-								switch(w.operation)
-								{
-									case '=':
-									if(Integer.parseInt((String)json1.get(att2)) == Integer.parseInt((String)json1.get(att1)))
-									{
-										headers.add(json1);
-									}
-									break;
-									case '>':
-									if(Integer.parseInt((String)json1.get(att2)) < Integer.parseInt((String)json1.get(att1)))
-									{
-										headers.add(json1);
-									}
-									break;
-									case '<':
-										if(Integer.parseInt((String)json1.get(att2)) > Integer.parseInt((String)json1.get(att1)))
-										{
-											headers.add(json1);
-										}
-									break;
-								}
-							}
-							break;
-						case "FLOAT":
-							float att21 = Float.parseFloat(w.attribute2);
-							
-							Iterator<JSONObject> itr1 = tempArray.iterator();
-							while(itr1.hasNext())
-							{
-								JSONObject json1 = (JSONObject) itr1.next();
-								switch(w.operation)
-								{
-								case '=':
-								if(Float.parseFloat((String)json1.get(att21)) == Float.parseFloat((String)json1.get(att1)))
-								{
-									headers.add(json1);
-								}
-								break;
-								case '>':
-									if(Float.parseFloat((String)json1.get(att21)) < Float.parseFloat((String)json1.get(att1)))
-									{
-										headers.add(json1);
-									}
-									break;
-								case '<':
-									if(Float.parseFloat((String)json1.get(att21)) > Float.parseFloat((String)json1.get(att1)))
-									{
-										headers.add(json1);
-									}
-									break;
-								}
-							}
-							break;
-						case "VARCHAR":
-							String att22 = w.attribute2;
-							
-							Iterator<JSONObject> itr11 = tempArray.iterator();
-							while(itr11.hasNext())
-							{
-								JSONObject json1 = (JSONObject) itr11.next();
-								switch(w.operation)
-								{
-								case '=':
-								if(((String)json1.get(att22)).equalsIgnoreCase((String)json1.get(att1)))
-								{
-									headers.add(json1);
-								}
-								break;
-								case '<':
-									if(((String)json1.get(att22)).compareTo((String)json1.get(att1))==1)
-									{
-										headers.add(json1);
-									}
-									break;
-								case '>':
-									if(((String)json1.get(att22)).compareTo((String)json1.get(att1))==-1)
-									{
-										headers.add(json1);
-									}
-									break;
-								}
-							}
-							break;
-						}
-					
-					
-					}
-				}
 				
 			}
 			else
@@ -702,144 +554,6 @@ public class ProjectionRecords {
 						//btree
 						String op=""+w.operation;
 						headers = BPlusTreeIndexing.qBptree(tbnm2,att1,op,tbnm1,att2o);
-					}
-				}
-				else
-				{
-					if(GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase()).equalsIgnoreCase(att2o))
-					{
-						String op=""+w.operation;
-						headers = BPlusTreeIndexing.qBptree(tbnm2,att1,op,tbnm1,att2o);
-					}
-					else
-					{
-
-
-						String type = GlobalUtil.getDataType(tbnm1, att2o);
-						JSONParser parser = new JSONParser();
-						JSONArray tempArray1 =new JSONArray();
-						try {
-							FileReader f1= new FileReader("Data/Records/" + tbnm1 + ".json");
-							Object obj = parser.parse(f1);
-							JSONObject json = (JSONObject) obj;
-							tempArray1 = (JSONArray) json.get("Records");
-							System.out.println(headers.toString());
-							f1.close();
-						}
-						catch(Exception E)
-						{
-						
-						}
-						JSONArray tempArray2 =new JSONArray();
-						try {
-							FileReader f1= new FileReader("Data/Records/" + tbnm2 + ".json");
-							Object obj = parser.parse(f1);
-							JSONObject json = (JSONObject) obj;
-							tempArray2 = (JSONArray) json.get("Records");
-							System.out.println(headers.toString());
-							f1.close();
-						}
-						catch(Exception E)
-						{
-						
-						}
-						JSONArray tempArray = crossProduct(tempArray1, tempArray2);
-						switch(type)
-						{
-						case "INT":
-							int att2 = Integer.parseInt(w.attribute2);
-							Iterator<JSONObject> itr = tempArray.iterator();
-							while(itr.hasNext())
-							{
-								JSONObject json1 = (JSONObject) itr.next();
-								switch(w.operation)
-								{
-									case '=':
-									if(Integer.parseInt((String)json1.get(att2)) == Integer.parseInt((String)json1.get(att1)))
-									{
-										headers.add(json1);
-									}
-									break;
-									case '>':
-									if(Integer.parseInt((String)json1.get(att2)) < Integer.parseInt((String)json1.get(att1)))
-									{
-										headers.add(json1);
-									}
-									break;
-									case '<':
-										if(Integer.parseInt((String)json1.get(att2)) > Integer.parseInt((String)json1.get(att1)))
-										{
-											headers.add(json1);
-										}
-									break;
-								}
-							}
-							break;
-						case "FLOAT":
-							float att21 = Float.parseFloat(w.attribute2);
-							
-							Iterator<JSONObject> itr1 = tempArray.iterator();
-							while(itr1.hasNext())
-							{
-								JSONObject json1 = (JSONObject) itr1.next();
-								switch(w.operation)
-								{
-								case '=':
-								if(Float.parseFloat((String)json1.get(att21)) == Float.parseFloat((String)json1.get(att1)))
-								{
-									headers.add(json1);
-								}
-								break;
-								case '>':
-									if(Float.parseFloat((String)json1.get(att21)) < Float.parseFloat((String)json1.get(att1)))
-									{
-										headers.add(json1);
-									}
-									break;
-								case '<':
-									if(Float.parseFloat((String)json1.get(att21)) > Float.parseFloat((String)json1.get(att1)))
-									{
-										headers.add(json1);
-									}
-									break;
-								}
-							}
-							break;
-						case "VARCHAR":
-							String att22 = w.attribute2;
-							
-							Iterator<JSONObject> itr11 = tempArray.iterator();
-							while(itr11.hasNext())
-							{
-								JSONObject json1 = (JSONObject) itr11.next();
-								switch(w.operation)
-								{
-								case '=':
-								if(((String)json1.get(att22)).equalsIgnoreCase((String)json1.get(att1)))
-								{
-									headers.add(json1);
-								}
-								break;
-								case '<':
-									if(((String)json1.get(att22)).compareTo((String)json1.get(att1))==1)
-									{
-										headers.add(json1);
-									}
-									break;
-								case '>':
-									if(((String)json1.get(att22)).compareTo((String)json1.get(att1))==-1)
-									{
-										headers.add(json1);
-									}
-									break;
-								}
-							}
-							break;
-						}
-					
-					
-					
-						
 					}
 				}
 			}
@@ -1042,7 +756,7 @@ public class ProjectionRecords {
 					else
 					{
 
-						String type = GlobalUtil.getDataType(tbnm2, att2o);
+						
 						JSONParser parser = new JSONParser();
 						JSONArray tempArray1 =new JSONArray();
 						try {
@@ -1175,13 +889,13 @@ public class ProjectionRecords {
 					if(GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase()).equalsIgnoreCase(att2o))
 					{
 						String op=""+w.operation;
-						condJ = BPlusTreeIndexing.qBptree(tbnm2,att1,op,tbnm1,att2o);
+						condJ = BPlusTreeIndexing.qBptree(tbnm2,att1,op,tbnm2,att2o);
 					}
 					else
 					{
 						//btree
 						String op=""+w.operation;
-						condJ = BPlusTreeIndexing.qBptree(tbnm2,att1,op,tbnm1,att2o);
+						condJ = BPlusTreeIndexing.qBptree(tbnm2,att1,op,tbnm2,att2o);
 					}
 				}
 				else
@@ -1189,134 +903,10 @@ public class ProjectionRecords {
 					if(GlobalData.tablePrimaryKeyMap.get(tbnm1.toLowerCase()).equalsIgnoreCase(att2o))
 					{
 						String op=""+w.operation;
-						condJ = BPlusTreeIndexing.qBptree(tbnm2,att1,op,tbnm1,att2o);
+						condJ = BPlusTreeIndexing.qBptree(tbnm2,att1,op,tbnm2,att2o);
 					}
 					else
 					{
-
-
-						String type = GlobalUtil.getDataType(tbnm1, att2o);
-						JSONParser parser = new JSONParser();
-						JSONArray tempArray1 =new JSONArray();
-						try {
-							FileReader f1= new FileReader("Data/Records/" + tbnm1 + ".json");
-							Object obj = parser.parse(f1);
-							JSONObject json = (JSONObject) obj;
-							tempArray1 = (JSONArray) json.get("Records");
-							System.out.println(headers.toString());
-							f1.close();
-						}
-						catch(Exception E)
-						{
-						
-						}
-						JSONArray tempArray2 =new JSONArray();
-						try {
-							FileReader f1= new FileReader("Data/Records/" + tbnm2 + ".json");
-							Object obj = parser.parse(f1);
-							JSONObject json = (JSONObject) obj;
-							tempArray2 = (JSONArray) json.get("Records");
-							System.out.println(headers.toString());
-							f1.close();
-						}
-						catch(Exception E)
-						{
-						
-						}
-						JSONArray tempArray = crossProduct(tempArray1, tempArray2);
-						switch(type)
-						{
-						case "INT":
-							int att2 = Integer.parseInt(w.attribute2);
-							Iterator<JSONObject> itr = tempArray.iterator();
-							while(itr.hasNext())
-							{
-								JSONObject json1 = (JSONObject) itr.next();
-								switch(w.operation)
-								{
-									case '=':
-									if(Integer.parseInt((String)json1.get(att2)) == Integer.parseInt((String)json1.get(att1)))
-									{
-										condJ.add(json1);
-									}
-									break;
-									case '>':
-									if(Integer.parseInt((String)json1.get(att2)) < Integer.parseInt((String)json1.get(att1)))
-									{
-										condJ.add(json1);
-									}
-									break;
-									case '<':
-										if(Integer.parseInt((String)json1.get(att2)) > Integer.parseInt((String)json1.get(att1)))
-										{
-											condJ.add(json1);
-										}
-									break;
-								}
-							}
-							break;
-						case "FLOAT":
-							float att21 = Float.parseFloat(w.attribute2);
-							
-							Iterator<JSONObject> itr1 = tempArray.iterator();
-							while(itr1.hasNext())
-							{
-								JSONObject json1 = (JSONObject) itr1.next();
-								switch(w.operation)
-								{
-								case '=':
-								if(Float.parseFloat((String)json1.get(att21)) == Float.parseFloat((String)json1.get(att1)))
-								{
-									condJ.add(json1);
-								}
-								break;
-								case '>':
-									if(Float.parseFloat((String)json1.get(att21)) < Float.parseFloat((String)json1.get(att1)))
-									{
-										condJ.add(json1);
-									}
-									break;
-								case '<':
-									if(Float.parseFloat((String)json1.get(att21)) > Float.parseFloat((String)json1.get(att1)))
-									{
-										condJ.add(json1);
-									}
-									break;
-								}
-							}
-							break;
-						case "VARCHAR":
-							String att22 = w.attribute2;
-							
-							Iterator<JSONObject> itr11 = tempArray.iterator();
-							while(itr11.hasNext())
-							{
-								JSONObject json1 = (JSONObject) itr11.next();
-								switch(w.operation)
-								{
-								case '=':
-								if(((String)json1.get(att22)).equalsIgnoreCase((String)json1.get(att1)))
-								{
-									condJ.add(json1);
-								}
-								break;
-								case '<':
-									if(((String)json1.get(att22)).compareTo((String)json1.get(att1))==1)
-									{
-										condJ.add(json1);
-									}
-									break;
-								case '>':
-									if(((String)json1.get(att22)).compareTo((String)json1.get(att1))==-1)
-									{
-										condJ.add(json1);
-									}
-									break;
-								}
-							}
-							break;
-						}
-					
 					
 					}
 				}
