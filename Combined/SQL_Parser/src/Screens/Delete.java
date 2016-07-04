@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import javax.swing.JOptionPane;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -268,16 +270,19 @@ public class Delete {
 		
 		System.out.println("inside delete record");
 		
+		String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase());
 
-		if(tablePrimaryKeyInWhere){
+		BPlusTreeIndexing  bplusTree = GlobalData.AttBTreeIndex.get(primaryKey);
 
+		if(tablePrimaryKeyInWhere && bplusTree != null){
+ 
 			// use b-tree to fetch Json objects
 			// if only single where clause then fetch records using B-tree
 			if(conditionOp == null){
 
 				// get the json objects from  B-tree
 				WhereClause whereClause = this.whereConditions.get(0);			    
-				BPlusTreeIndexing  bplusTree = GlobalData.AttBTreeIndex.get(whereClause.attribute1);	
+				//BPlusTreeIndexing  bplusTree = GlobalData.AttBTreeIndex.get(whereClause.attribute1);	
 				String operation = whereClause.operation + "";
 				JSONArray jsonArray = bplusTree.qBptree(whereClause.attribute1,operation,Long.valueOf(whereClause.attribute2));
 				
@@ -285,12 +290,11 @@ public class Delete {
 
 				if(jsonArray.size() != 0){
 					
-					
 					int size = jsonArray.size();
 
 					JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
 
-					String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase());
+					//String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase());
 
 					for(int i=0; i < size; i++){		
 
@@ -308,11 +312,9 @@ public class Delete {
 						System.out.println("Id:"+keyValue+": removed from btree: "+bplusTree.search(keyValue));
 						System.out.println("Id:"+(keyValue +1)+":  " + bplusTree.search(keyValue+1)==null);
 
-
 					}
-
+					
 					// delete records in file
-
 					try {
 
 						JSONObject newJson = new JSONObject();
@@ -336,19 +338,43 @@ public class Delete {
 						fw.close();
 
 
-					} catch (FileNotFoundException e) {
+					}catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} catch (IOException e) {
+					}catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} 	
-
-					//boolean result = deleteInJson(jsonArray);
-					//JOptionPane.showMessageDialog(null, "Records deleted Successfully", "Message", JOptionPane.INFORMATION_MESSAGE);
+					} 
 				}
-			}
-			
+			}else if(this.conditionFlag && "And".equalsIgnoreCase(conditionOp)){
+				// get the json array based on primary key and filter them based on other conditions
+				JSONArray jsonArray = getJSONObjectsBasedOnPrimaryKey(primaryKey);
+				
+				if(jsonArray.size() != 0){
+
+					JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);	
+					// filter further based on other conditions					
+					for(int i = 0; i < jsonArray.size(); i++){						
+						// check if other conditions match
+						JSONObject jsonObject = (JSONObject)jsonArray.get(i);
+						boolean match = allConditionsExceptPrimaryKey(jsonObject,primaryKey);
+
+						if(match){								
+							//delete the object							
+							JSONObject temp = (JSONObject) jsonArray.get(i);
+							int index =  maintable.indexOf(temp);
+							//System.out.println("index in MAIN JSON:"+index);
+							long keyValue = (Long)temp.get(primaryKey);
+
+							maintable.remove(index);							
+							// remove from btree
+							bplusTree.delete(keyValue);
+						}
+					}
+					// delete from file
+					deleteRecordsFromFile(maintable);
+				}				
+			}			
 		}else{
 		  
 			JSONParser parser = new JSONParser();
@@ -688,18 +714,12 @@ public class Delete {
 			long keyValue = (Long) temp.get(primaryKey);
 
 			maintable.remove(index);
-
-			// jsonArray.remove(i);
-
 		}
 
 		// delete records in file
 
 		try {
-
-			// f1 = new FileReader("Data/Records/" + this.tableName + ".json");
-			// Object obj = parser.parse(f1);
-
+			
 			JSONObject newJson = new JSONObject();
 			newJson.put("Records", maintable);
 
@@ -726,4 +746,157 @@ public class Delete {
 		return true;
 	}
 
+	 public JSONArray getJSONObjectsBasedOnPrimaryKey(String primaryKey){
+
+		WhereClause whereClause = null;
+
+		for(WhereClause where:this.whereConditions){
+
+			if(where.attribute1.equalsIgnoreCase(primaryKey)){
+
+				whereClause = where;
+				break;
+			}
+		}
+
+		// get the json objects based on this primary key
+		BPlusTreeIndexing  bplusTree = GlobalData.AttBTreeIndex.get(whereClause.attribute1);	
+		String operation = whereClause.operation + "";
+		JSONArray jsonArray = bplusTree.qBptree(whereClause.attribute1,operation, Long.valueOf(whereClause.attribute2));
+
+		return jsonArray;   
+
+	}
+	
+	 
+	 public boolean allConditionsExceptPrimaryKey(JSONObject temp,String primaryKey){
+
+			boolean allConditionsMatch = true;
+
+			//String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName);
+
+			System.out.println("inside allConditionsMatch");
+
+			for(WhereClause whereClause: this.whereConditions){
+
+				String colName = whereClause.attribute1;
+
+				if(colName.equalsIgnoreCase(primaryKey))
+					continue;
+
+				String colVal = whereClause.attribute2;
+
+				System.out.println("colName:" + colName);
+
+				System.out.println("colVal:" + colVal);
+
+				// get table columnName
+				String tableColName = tableColumnMap.get(colName);					 
+
+				Object value = temp.get(tableColName);			 
+				char operator = whereClause.operation;
+
+				if(value != null && !(value instanceof String)){
+
+					if(operator == '>'){
+
+						System.out.println("Inside > ");     							 
+						System.out.println("Table value: "+value.toString());
+
+						BigDecimal searchVal = new BigDecimal(colVal);
+						BigDecimal actualVal = new BigDecimal(value.toString());
+
+						if(actualVal.compareTo(searchVal) <= 0){
+							allConditionsMatch = false;
+							break;
+						}	
+
+					}else if(operator == '<'){
+
+						System.out.println("Inside < ");
+
+						BigDecimal searchVal = new BigDecimal(colVal);
+						BigDecimal actualVal = new BigDecimal(value.toString());
+
+						if(actualVal.compareTo(searchVal) >= 0){
+							allConditionsMatch = false;
+							break;
+						}
+
+					}else if(operator == '=') {
+
+						System.out.println("Inside ="); 
+
+						BigDecimal searchVal = new BigDecimal(colVal);
+						BigDecimal actualVal = new BigDecimal(value.toString()); 
+
+						if(searchVal.compareTo(actualVal) != 0){
+							allConditionsMatch = false;
+							break;								
+						}		
+					}
+				}else{		
+
+					if(value != null && colVal != null){	
+
+						colVal = colVal.substring(1, colVal.length()-1);						 
+						System.out.println("after substring: "+colVal);
+
+						if(colVal.equals(value.toString())){
+							System.out.println(colVal+" matches "+value);
+							continue;
+						}else{
+
+							allConditionsMatch = false;
+							break;
+						}
+
+					}else{
+						allConditionsMatch = false;
+						break;
+					}												 
+				}				
+			}
+
+			return allConditionsMatch;	   
+
+		} 
+
+	 
+	 public void deleteRecordsFromFile(JSONArray maintable){
+		 
+		 try {
+
+				JSONObject newJson = new JSONObject();
+				newJson.put("Records", maintable);
+
+				File file = new File("Data/Records/" + this.tableName + ".json");
+				
+				if(file.exists()){
+					file.delete();
+				}
+				
+				FileWriter fw = null;
+				BufferedWriter bw = null;
+
+				fw = new FileWriter(file.getAbsoluteFile());
+				bw = new BufferedWriter(fw);
+
+				bw.write(newJson.toJSONString());
+				bw.flush();
+				bw.close();
+				fw.close();
+
+
+			}catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+	 
+	 }
+	 
+	 
 }
