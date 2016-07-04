@@ -36,7 +36,7 @@ public class QValidation {
 			insertValidation(query);
 			break;
 		case "delete":
-			deleteValidation(query.toLowerCase());
+			deleteValidation(query);
 			break;
 		default:
 			JOptionPane.showMessageDialog(null, "Invalid database operation", "Error", JOptionPane.ERROR_MESSAGE);
