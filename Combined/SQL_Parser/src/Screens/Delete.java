@@ -18,25 +18,25 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class Delete {	
+public class Delete {
 
 	String tableName;
 	List<WhereClause> whereConditions = new ArrayList<WhereClause>();
 	boolean conditionFlag = false;
-	HashMap<String,String> conditions = new HashMap<String,String>();
+	HashMap<String, String> conditions = new HashMap<String, String>();
 	String conditionOp;
 	boolean tablePrimaryKeyInWhere = false;
-    HashMap<String,String> tableColumnMap;
+	HashMap<String, String> tableColumnMap;
 
 	public boolean parse(String sql) {
-
 
 		// from clause exists
 		int fromIndex = (sql.indexOf("FROM") != -1) ? sql.indexOf("FROM") : sql.indexOf("from");
 
-		if(fromIndex == -1){			
-			JOptionPane.showMessageDialog(null, "Invalid Syntax,Missing FROM clause", "Error", JOptionPane.ERROR_MESSAGE);
-			return false;	
+		if (fromIndex == -1) {
+			JOptionPane.showMessageDialog(null, "Invalid Syntax,Missing FROM clause", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return false;
 		}
 
 		// where clause exists
@@ -44,18 +44,20 @@ public class Delete {
 		int whereIndex = (sql.indexOf("WHERE") != -1) ? sql.indexOf("WHERE") : sql.indexOf("where");
 
 		// check if from is at position 2
-		String [] tokens = sql.split("\\s+");
+		String[] tokens = sql.split("\\s+");
 
 		// is * present
 
-		if(tokens.length > 2 && !tokens[1].equals("*") && !tokens[1].equalsIgnoreCase("from")){
+		if (tokens.length > 2 && !tokens[1].equals("*") && !tokens[1].equalsIgnoreCase("from")) {
 
-			JOptionPane.showMessageDialog(null, "Invalid Syntax, position of from clause is wrong", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Invalid Syntax, position of from clause is wrong", "Error",
+					JOptionPane.ERROR_MESSAGE);
 			return false;
 
-		}else if(tokens.length > 2 && tokens[2].equals("*") && !tokens[3].equalsIgnoreCase("from")){
+		} else if (tokens.length > 2 && tokens[2].equals("*") && !tokens[3].equalsIgnoreCase("from")) {
 
-			JOptionPane.showMessageDialog(null, "Invalid Syntax, position of from clause is wrong", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Invalid Syntax, position of from clause is wrong", "Error",
+					JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 
@@ -65,209 +67,208 @@ public class Delete {
 
 		String tableName = "";
 
-		if(whereIndex != -1){			
-			tableName = sql.substring(fromIndex, whereIndex).trim().substring(4).trim();				
-		}else if(tokens.length > 2){
+		if (whereIndex != -1) {
+			tableName = sql.substring(fromIndex, whereIndex).trim().substring(4).trim();
+		} else if (tokens.length > 2) {
 
 			tableName = tokens[2];
 
-		}else{		
-			JOptionPane.showMessageDialog(null, "Invalid Syntax,table name missing", "Error", JOptionPane.ERROR_MESSAGE);
+		} else {
+			JOptionPane.showMessageDialog(null, "Invalid Syntax,table name missing", "Error",
+					JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 
+		if ("".equals(tableName.trim())) {
 
-		if("".equals(tableName.trim())){	
-
-			JOptionPane.showMessageDialog(null, "Invalid Syntax,table name missing", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Invalid Syntax,table name missing", "Error",
+					JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 
 		this.tableName = tableName;
 
-		//delete from table correct
+		// delete from table correct
 
-		//check the where clause
+		// check the where clause
 
-		if(tokens.length > 3 && !"where".equalsIgnoreCase(tokens[3])){	
+		if (tokens.length > 3 && !"where".equalsIgnoreCase(tokens[3])) {
 
-			JOptionPane.showMessageDialog(null, "Invalid Syntax,Missing WHERE clause", "Error", JOptionPane.ERROR_MESSAGE);
-			return false;	
+			JOptionPane.showMessageDialog(null, "Invalid Syntax,Missing WHERE clause", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return false;
 
-		}else{
+		} else {
 
-			//get the string after where clause
-			String condition = sql.substring(whereIndex,sql.length()).trim().substring(5).trim();
-			
-			System.out.println("conditions: "+condition);
+			// get the string after where clause
+			String condition = sql.substring(whereIndex, sql.length()).trim().substring(5).trim();
 
-			if("".equals(condition)){
+			System.out.println("conditions: " + condition);
 
-				JOptionPane.showMessageDialog(null, "Invalid Syntax, Missing conditions after WHERE clause", "Error", JOptionPane.ERROR_MESSAGE);
-				return false;	
+			if ("".equals(condition)) {
 
-			}else if(condition.startsWith("and") || condition.startsWith("or") || condition.endsWith("and") || condition.endsWith("or")){		    	  
-				
-				JOptionPane.showMessageDialog(null, "Invalid Syntax, Missing conditions before/after AND or OR", "Error", JOptionPane.ERROR_MESSAGE);
-				return false;	
+				JOptionPane.showMessageDialog(null, "Invalid Syntax, Missing conditions after WHERE clause", "Error",
+						JOptionPane.ERROR_MESSAGE);
+				return false;
 
-			}else{
+			} else if (condition.startsWith("and") || condition.startsWith("or") || condition.endsWith("and")
+					|| condition.endsWith("or")) {
+
+				JOptionPane.showMessageDialog(null, "Invalid Syntax, Missing conditions before/after AND or OR",
+						"Error", JOptionPane.ERROR_MESSAGE);
+				return false;
+
+			} else {
 
 				boolean isValid = fetchWhereClause(condition);
-				
-				if(!isValid){
-					JOptionPane.showMessageDialog(null, "Invalid syntax, format of where clause is incorrect", "Error", JOptionPane.ERROR_MESSAGE);
-					return false;	
+
+				if (!isValid) {
+					JOptionPane.showMessageDialog(null, "Invalid syntax, format of where clause is incorrect", "Error",
+							JOptionPane.ERROR_MESSAGE);
+					return false;
 				}
 
-			}			
+			}
 		}
 
-
-		//if syntax is correct, check if tableName and columnName exists
-		if(!GlobalUtil.validateTableName(this.tableName)){
-			JOptionPane.showMessageDialog(null, "Invalid Syntax: No such table exists", "Error", JOptionPane.ERROR_MESSAGE);
+		// if syntax is correct, check if tableName and columnName exists
+		if (!GlobalUtil.validateTableName(this.tableName)) {
+			JOptionPane.showMessageDialog(null, "Invalid Syntax: No such table exists", "Error",
+					JOptionPane.ERROR_MESSAGE);
 			return false;
 
 		}
-	
-		/* 
+
+		/*
 		 * validate if colName exists or not
 		 */
 		boolean validColNames = validateColNames();
-		
-		if(!validColNames){
+
+		if (!validColNames) {
 			JOptionPane.showMessageDialog(null, "Invalid Column Name", "Error", JOptionPane.ERROR_MESSAGE);
-			return false;			
-		}
-		
-		///if everything is good, delete records
-		tableColumnMap = GlobalUtil.getTableColumnMap(this.whereConditions, tableName);
-		
-		
-		deleteRecords();
-		
-		return true;
-
-	}
-
-	
-	
-	public boolean validateColNames(){
-		
-	    List<String> colNames =  new ArrayList<String>();
-		
-		for(WhereClause clause : this.whereConditions){			
-			  colNames.add(clause.attribute1);
-		}
-		
-		if(!GlobalUtil.validateColumnNames(colNames, this.tableName))
-			 return false;
-		
-		return true;
-		
-	}
-	
-
-	
-	public boolean fetchWhereClause(String sql){
-
-		if(sql.indexOf("=",0) == -1 && sql.indexOf("<",0) == -1 && sql.indexOf(">",0) == -1){			 
 			return false;
 		}
-		
+
+		/// if everything is good, delete records
+		tableColumnMap = GlobalUtil.getTableColumnMap(this.whereConditions, tableName);
+
+		deleteRecords();
+
+		return true;
+
+	}
+
+	public boolean validateColNames() {
+
+		List<String> colNames = new ArrayList<String>();
+
+		for (WhereClause clause : this.whereConditions) {
+			colNames.add(clause.attribute1);
+		}
+
+		if (!GlobalUtil.validateColumnNames(colNames, this.tableName))
+			return false;
+
+		return true;
+
+	}
+
+	public boolean fetchWhereClause(String sql) {
+
+		if (sql.indexOf("=", 0) == -1 && sql.indexOf("<", 0) == -1 && sql.indexOf(">", 0) == -1) {
+			return false;
+		}
+
 		System.out.println("inside fetchWhereClause");
-				
-		String [] firstConditionArr = sql.split("\\s+");
-		
+
+		String[] firstConditionArr = sql.split("\\s+");
+
 		boolean conditionFlag = true;
 		boolean andOrFlag = false;
-		
-		for(String condition : firstConditionArr){
-			
-			 System.out.println(condition);
-			
-			 if(conditionFlag){	
-			      char operator;	
-			      String opt;
-			      
-				  if(condition.indexOf("=") != -1){			  
-					  operator = '=';
-					  opt = "=";
-				  }else if(condition.indexOf(">") != -1){
-					  operator = '>';	
-					  opt = ">";
-				  }else if(condition.indexOf("<") != -1){
-					  operator = '<'; 	
-					  opt = "<";
-				  }else{
-					  return false;
-				  }
-				  
-				  System.out.println("i am here");
-				  // split based on operator
-				  String [] columData = condition.split(opt);
-				  
-				  if(columData.length < 2)
-					  return false;
-				  
-				  String colName = columData[0];
-				  String colVal = columData[1];
-				  
-				  if("".equals(colName.trim()) || "".equals(colVal.trim()))
-					   return false;
-				  
-				  System.out.println("colName:"+colName);
-				  System.out.println("colVal:"+colVal);
-				  
-				  if(colName.equalsIgnoreCase(GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase())))
-					   this.tablePrimaryKeyInWhere = true;
-				  
-				  //conditions.put(colName.trim(), colVal.trim());
-				  WhereClause where = new WhereClause();
-				  where.attribute1 = colName;
-				  where.attribute2 = colVal;
-				  where.operation = operator;
-				  
-				  this.whereConditions.add(where);
-				 				  
-				  conditionFlag = false;
-				  andOrFlag = true;
-				  
-			  }else if(andOrFlag){
-				  
-				  if(condition.equals("and"))
-					   this.conditionOp = "and";
-				  else if(condition.equals("or"))
-					   this.conditionOp = "or";		
-				  else{
-					  return false;
-				  }
-				  
-				  andOrFlag = false;
-				  conditionFlag = true;
-						  
-			  }
-			
+
+		for (String condition : firstConditionArr) {
+
+			System.out.println(condition);
+
+			if (conditionFlag) {
+				char operator;
+				String opt;
+
+				if (condition.indexOf("=") != -1) {
+					operator = '=';
+					opt = "=";
+				} else if (condition.indexOf(">") != -1) {
+					operator = '>';
+					opt = ">";
+				} else if (condition.indexOf("<") != -1) {
+					operator = '<';
+					opt = "<";
+				} else {
+					return false;
+				}
+
+				System.out.println("i am here");
+				// split based on operator
+				String[] columData = condition.split(opt);
+
+				if (columData.length < 2)
+					return false;
+
+				String colName = columData[0];
+				String colVal = columData[1];
+
+				if ("".equals(colName.trim()) || "".equals(colVal.trim()))
+					return false;
+
+				System.out.println("colName:" + colName);
+				System.out.println("colVal:" + colVal);
+
+				if (colName.equalsIgnoreCase(GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase())))
+					this.tablePrimaryKeyInWhere = true;
+
+				// conditions.put(colName.trim(), colVal.trim());
+				WhereClause where = new WhereClause();
+				where.attribute1 = colName;
+				where.attribute2 = colVal;
+				where.operation = operator;
+
+				this.whereConditions.add(where);
+
+				conditionFlag = false;
+				andOrFlag = true;
+
+			} else if (andOrFlag) {
+
+				if (condition.equals("and"))
+					this.conditionOp = "and";
+				else if (condition.equals("or"))
+					this.conditionOp = "or";
+				else {
+					return false;
+				}
+
+				andOrFlag = false;
+				conditionFlag = true;
+
+			}
+
 		}
-		
+
 		return true;
 	}
 
+	private boolean validateColVal(String val) {
 
-	private boolean validateColVal(String val){
-
-		if(!val.startsWith("'") || !val.endsWith("'"))
+		if (!val.startsWith("'") || !val.endsWith("'"))
 			return false;
 
 		return true;
 
 	}
-
 
 	public void deleteRecords(){
 		
-		//System.out.println("inside delete record");
+		System.out.println("inside delete record");
 		
 
 		if(tablePrimaryKeyInWhere){
@@ -280,11 +281,72 @@ public class Delete {
 				WhereClause whereClause = this.whereConditions.get(0);			    
 				BPlusTreeIndexing  bplusTree = GlobalData.AttBTreeIndex.get(whereClause.attribute1);	
 				String operation = whereClause.operation + "";
-				JSONArray jsonArray = bplusTree.qBptree(whereClause.attribute1,operation, whereClause.attribute2);
+				JSONArray jsonArray = bplusTree.qBptree(whereClause.attribute1,operation,Long.valueOf(whereClause.attribute2));
+				
+				System.out.println(jsonArray);
 
-				if(jsonArray.size() != 0){			
-			  		boolean result = deleteInJson(jsonArray);
-			  		JOptionPane.showMessageDialog(null, "Records deleted Successfully", "Message", JOptionPane.INFORMATION_MESSAGE);
+				if(jsonArray.size() != 0){
+					
+					
+					int size = jsonArray.size();
+
+					JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
+
+					String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase());
+
+					for(int i=0; i < size; i++){		
+
+						JSONObject temp = (JSONObject) jsonArray.get(i);
+						int index =  maintable.indexOf(temp);
+						System.out.println("index in MAIN JSON:"+index);
+						long keyValue = (Long)temp.get(primaryKey);
+
+						maintable.remove(index);
+						
+						// remove from btree
+						bplusTree.delete(keyValue);
+						
+						System.out.println("Id:"+keyValue+": removed from btree: "+bplusTree.search(keyValue)==null);
+						System.out.println("Id:"+(keyValue +1)+":  " + bplusTree.search(keyValue+1)==null);
+
+
+					}
+
+					// delete records in file
+
+					try {
+
+						JSONObject newJson = new JSONObject();
+						newJson.put("Records", maintable);
+
+						File file = new File("Data/Records/" + this.tableName + ".json");
+						
+						if(file.exists()){
+							file.delete();
+						}
+						
+						FileWriter fw = null;
+						BufferedWriter bw = null;
+
+						fw = new FileWriter(file.getAbsoluteFile());
+						bw = new BufferedWriter(fw);
+
+						bw.write(newJson.toJSONString());
+						bw.flush();
+						bw.close();
+						fw.close();
+
+
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} 	
+
+					//boolean result = deleteInJson(jsonArray);
+					JOptionPane.showMessageDialog(null, "Records deleted Successfully", "Message", JOptionPane.INFORMATION_MESSAGE);
 				}	
 				
 			}
@@ -362,280 +424,287 @@ public class Delete {
 
 	}
 
+	public boolean eitherConditionsMatch(JSONObject temp) {
 
-	public boolean eitherConditionsMatch(JSONObject temp){
-
-		//iterate through each condition and check
+		// iterate through each condition and check
 		boolean match = false;
-		
-		for(WhereClause whereClause: this.whereConditions){
-			
-			 String colName = whereClause.attribute1;
-			 String colVal = whereClause.attribute2;
-			 
-			 // get table columnName
-			 String tableColName = tableColumnMap.get(colName);					 
-			 
-			 Object value = temp.get(tableColName);			 
-			 char operator = whereClause.operation;
-			 
-			 if(value != null && !(value instanceof String)){
-				 
-				 if(operator == '>'){
-					 
-					 System.out.println("Inside > ");     							 
-				    // System.out.println("Table value: "+value.toString());
 
-					 BigDecimal searchVal = new BigDecimal(colVal);
-					 BigDecimal actualVal = new BigDecimal(value.toString());
+		for (WhereClause whereClause : this.whereConditions) {
 
-					 if(actualVal.compareTo(searchVal) > 0){
-						 match = true;
-						 break;
-					 }	
+			String colName = whereClause.attribute1;
+			String colVal = whereClause.attribute2;
 
-				 }else if(operator == '<'){
-					 
-					 System.out.println("Inside < ");
+			// get table columnName
+			String tableColName = tableColumnMap.get(colName);
 
-					 BigDecimal searchVal = new BigDecimal(colVal);
-					 BigDecimal actualVal = new BigDecimal(value.toString());
+			Object value = temp.get(tableColName);
+			char operator = whereClause.operation;
 
-					 if(actualVal.compareTo(searchVal) < 0){
-						 match = true;
-						 break;
-					 }
-				 }else if(operator == '=') {
+			if (value != null && !(value instanceof String)) {
 
-					 System.out.println("Inside ="); 
+				if (operator == '>') {
 
-					 System.out.println("col val: "+colVal);
-					 
-					 BigDecimal searchVal = new BigDecimal(colVal);
-					 BigDecimal actualVal = new BigDecimal(value.toString()); 
-					 
-					 if(searchVal.compareTo(actualVal) == 0){
-						 match = true;
-						 break;								
-					 }		
-				   }
-				 }else{							 
-					 
-					 if(value != null && colVal != null){
-						 
-						 colVal = colVal.substring(1, colVal.length()-1);
-						 
-						 System.out.println("after substring: "+colVal);
-						 
-						 if(colVal.equalsIgnoreCase(value.toString())){
-							 
-							  System.out.println(colVal+" matches "+value);
-						      match = true;
-						      break;
-						      
-						 }						 
-					}									 
-			 }				
+					System.out.println("Inside > ");
+					// System.out.println("Table value: "+value.toString());
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
+
+					if (actualVal.compareTo(searchVal) > 0) {
+						match = true;
+						break;
+					}
+
+				} else if (operator == '<') {
+
+					System.out.println("Inside < ");
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
+
+					if (actualVal.compareTo(searchVal) < 0) {
+						match = true;
+						break;
+					}
+				} else if (operator == '=') {
+
+					System.out.println("Inside =");
+
+					System.out.println("col val: " + colVal);
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
+
+					if (searchVal.compareTo(actualVal) == 0) {
+						match = true;
+						break;
+					}
+				}
+			} else {
+
+				if (value != null && colVal != null) {
+
+					colVal = colVal.substring(1, colVal.length() - 1);
+
+					System.out.println("after substring: " + colVal);
+
+					if (colVal.equalsIgnoreCase(value.toString())) {
+
+						System.out.println(colVal + " matches " + value);
+						match = true;
+						break;
+
+					}
+				}
+			}
 		}
-	
+
 		return match;
 	}
-	
-	
-	public boolean allConditionsMatch(JSONObject temp){
-		
+
+	public boolean allConditionsMatch(JSONObject temp) {
+
 		boolean allConditionsMatch = true;
-		
+
 		System.out.println("inside allConditionsMatch");
-		
-		for(WhereClause whereClause: this.whereConditions){
-			
-			 String colName = whereClause.attribute1;
-			 String colVal = whereClause.attribute2;
-			 
-			 System.out.println("colName:" + colName);
-			 
-			 System.out.println("colVal:" + colVal);
-			 
-			 // get table columnName
-			 String tableColName = tableColumnMap.get(colName);					 
-			 
-			 Object value = temp.get(tableColName);			 
-			 char operator = whereClause.operation;
-			 
-			 if(value != null && !(value instanceof String)){
-				 
-				 if(operator == '>'){
-					 
-					 System.out.println("Inside > ");     							 
-				     System.out.println("Table value: "+value.toString());
 
-					 BigDecimal searchVal = new BigDecimal(colVal);
-					 BigDecimal actualVal = new BigDecimal(value.toString());
+		for (WhereClause whereClause : this.whereConditions) {
 
-					 if(actualVal.compareTo(searchVal) <= 0){
-						 allConditionsMatch = false;
-						 break;
-					 }	
+			String colName = whereClause.attribute1;
+			String colVal = whereClause.attribute2;
 
-				 }else if(operator == '<'){
-					 
-					 System.out.println("Inside < ");
+			System.out.println("colName:" + colName);
 
-					 BigDecimal searchVal = new BigDecimal(colVal);
-					 BigDecimal actualVal = new BigDecimal(value.toString());
+			System.out.println("colVal:" + colVal);
 
-					 if(actualVal.compareTo(searchVal) >= 0){
-						 allConditionsMatch = false;
-						 break;
-					 }
-					 
-				 }else if(operator == '=') {
+			// get table columnName
+			String tableColName = tableColumnMap.get(colName);
 
-					 System.out.println("Inside ="); 
+			Object value = temp.get(tableColName);
+			char operator = whereClause.operation;
 
-					 BigDecimal searchVal = new BigDecimal(colVal);
-					 BigDecimal actualVal = new BigDecimal(value.toString()); 
+			if (value != null && !(value instanceof String)) {
 
-					 if(searchVal.compareTo(actualVal) != 0){
-						 allConditionsMatch = false;
-						 break;								
-					 }		
-				   }
-				 }else{		
-									 
-					 if(value != null && colVal != null){	
-						 
-						 colVal = colVal.substring(1, colVal.length()-1);						 
-						 System.out.println("after substring: "+colVal);
-						 
-						 if(colVal.equalsIgnoreCase(value.toString())){
-							  System.out.println(colVal+" matches "+value);
-						      continue;
-						 }else{
-							 
-							 allConditionsMatch = false;
-							 break;
-						 }
-						 
-					 }else{
-						 allConditionsMatch = false;
-						 break;
-					 }												 
-			 }				
+				if (operator == '>') {
+
+					System.out.println("Inside > ");
+					System.out.println("Table value: " + value.toString());
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
+
+					if (actualVal.compareTo(searchVal) <= 0) {
+						allConditionsMatch = false;
+						break;
+					}
+
+				} else if (operator == '<') {
+
+					System.out.println("Inside < ");
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
+
+					if (actualVal.compareTo(searchVal) >= 0) {
+						allConditionsMatch = false;
+						break;
+					}
+
+				} else if (operator == '=') {
+
+					System.out.println("Inside =");
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
+
+					if (searchVal.compareTo(actualVal) != 0) {
+						allConditionsMatch = false;
+						break;
+					}
+				}
+			} else {
+
+				if (value != null && colVal != null) {
+
+					colVal = colVal.substring(1, colVal.length() - 1);
+					System.out.println("after substring: " + colVal);
+
+					if (colVal.equalsIgnoreCase(value.toString())) {
+						System.out.println(colVal + " matches " + value);
+						continue;
+					} else {
+
+						allConditionsMatch = false;
+						break;
+					}
+
+				} else {
+					allConditionsMatch = false;
+					break;
+				}
+			}
 		}
-		
+
 		return allConditionsMatch;
-			
+
 	}
-	
-	
-	public boolean checkIfConditionMatch(JSONObject temp){
-		
+
+	public boolean checkIfConditionMatch(JSONObject temp) {
+
 		boolean match = true;
-		
+
 		System.out.println("inside checkIfConditionMatch");
-		
-		for(WhereClause whereClause: this.whereConditions){
-			
-			 String colName = whereClause.attribute1;
-			 String colVal = whereClause.attribute2;
-			 
-			 //get table columnName
-			 String tableColName = tableColumnMap.get(colName);					 
-			 
-			 Object value = temp.get(tableColName);			 
-			 char operator = whereClause.operation;
-			 
-			 if(value != null && !(value instanceof String)){
-				 
-				 if(operator == '>'){
-					 
-					 System.out.println("Inside > ");     							 
-				     System.out.println("Table value: "+value.toString());
 
-					 BigDecimal searchVal = new BigDecimal(colVal);
-					 BigDecimal actualVal = new BigDecimal(value.toString());
+		for (WhereClause whereClause : this.whereConditions) {
 
-					 if(actualVal.compareTo(searchVal) <= 0){
-						 match = false;
-						 break;
-					 }	
+			String colName = whereClause.attribute1;
+			String colVal = whereClause.attribute2;
 
-				 }else if(operator == '<'){
-					 
-					 System.out.println("Inside < ");
+			// get table columnName
+			String tableColName = tableColumnMap.get(colName);
 
-					 BigDecimal searchVal = new BigDecimal(colVal);
-					 BigDecimal actualVal = new BigDecimal(value.toString());
+			Object value = temp.get(tableColName);
+			char operator = whereClause.operation;
 
-					 if(actualVal.compareTo(searchVal) >= 0){
-						 match = false;
-						 break;
-					 }
-				 }else if(operator == '=') {
+			if (value != null && !(value instanceof String)) {
 
-					 System.out.println("Inside ="); 
+				if (operator == '>') {
 
-					 BigDecimal searchVal = new BigDecimal(colVal);
-					 BigDecimal actualVal = new BigDecimal(value.toString()); 
+					System.out.println("Inside > ");
+					System.out.println("Table value: " + value.toString());
 
-					 if(searchVal.compareTo(actualVal) != 0){
-						 match = false;
-						 break;								
-					 }else{
-						 System.out.println("match = true for "+searchVal+","+actualVal);						 
-					 }
-				   }
-				 }else{		
-									 
-					 if(value != null && colVal != null){
-						 
-						 colVal = colVal.substring(1, colVal.length()-1);	
-						 
-						 System.out.println("after substring: "+colVal);
-						 
-						 if(colVal.equalsIgnoreCase(value.toString())){							 
-							 match = true;
-							 break;
-						 }else{
-							  
-							 match = false;
-							 break;
-						 }
-						 
-					 }else{
-						 match = false;
-						 break;
-					 }												 
-			 }				
-		}		
-		
-		return match;
-			
-	}
-	
-	
-	public boolean deleteInJson(JSONArray jsonArray){
-		
-		int size = jsonArray.size();
-		
-		for(int i=0; i < size; i++){			
-			JSONObject temp = (JSONObject) jsonArray.get(i);			
-			jsonArray.remove(i);
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
+
+					if (actualVal.compareTo(searchVal) <= 0) {
+						match = false;
+						break;
+					}
+
+				} else if (operator == '<') {
+
+					System.out.println("Inside < ");
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
+
+					if (actualVal.compareTo(searchVal) >= 0) {
+						match = false;
+						break;
+					}
+				} else if (operator == '=') {
+
+					System.out.println("Inside =");
+
+					BigDecimal searchVal = new BigDecimal(colVal);
+					BigDecimal actualVal = new BigDecimal(value.toString());
+
+					if (searchVal.compareTo(actualVal) != 0) {
+						match = false;
+						break;
+					} else {
+						System.out.println("match = true for " + searchVal + "," + actualVal);
+					}
+				}
+			} else {
+
+				if (value != null && colVal != null) {
+
+					colVal = colVal.substring(1, colVal.length() - 1);
+
+					System.out.println("after substring: " + colVal);
+
+					if (colVal.equalsIgnoreCase(value.toString())) {
+						match = true;
+						break;
+					} else {
+
+						match = false;
+						break;
+					}
+
+				} else {
+					match = false;
+					break;
+				}
+			}
 		}
-			
+
+		return match;
+
+	}
+
+	public boolean deleteInJson(JSONArray jsonArray) {
+
+		int size = jsonArray.size();
+
+		JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
+
+		String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase());
+
+		for (int i = 0; i < size; i++) {
+
+			JSONObject temp = (JSONObject) jsonArray.get(i);
+			int index = maintable.indexOf(temp);
+			System.out.println("index in MAIN JSON:" + index);
+			long keyValue = (Long) temp.get(primaryKey);
+
+			maintable.remove(index);
+
+			// jsonArray.remove(i);
+
+		}
+
 		// delete records in file
-		
+
 		try {
-			
-			//f1 = new FileReader("Data/Records/" + this.tableName + ".json");
-			//Object obj = parser.parse(f1);
-			JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
-			
+
+			// f1 = new FileReader("Data/Records/" + this.tableName + ".json");
+			// Object obj = parser.parse(f1);
+
 			JSONObject newJson = new JSONObject();
 			newJson.put("Records", maintable);
-			
+
 			File file = new File("Data/Records/" + this.tableName + ".json");
 			FileWriter fw = null;
 			BufferedWriter bw = null;
@@ -647,17 +716,16 @@ public class Delete {
 			bw.flush();
 			bw.close();
 			fw.close();
-			
-			
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 	
-			
+		}
+
 		return true;
 	}
-		
+
 }
