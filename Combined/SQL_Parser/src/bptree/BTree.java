@@ -19,6 +19,10 @@ public class BTree<TKey extends Comparable<TKey>, TValue> {
 		this.root = new BTreeLeafNode<TKey, TValue>();
 	}
 
+	public BTreeNode<TKey> getRoot(){
+		return this.root;
+	}
+	
 	/**
 	 * Insert a new key and its associated value into the B+ tree.
 	 */

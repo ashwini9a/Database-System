@@ -13,6 +13,9 @@ abstract class BTreeNode<TKey extends Comparable<TKey>> {
 	protected BTreeNode<TKey> leftSibling;
 	protected BTreeNode<TKey> rightSibling;
 	
+	public Object[] getKeys(){
+		return this.keys;
+	}
 
 	protected BTreeNode() {
 		this.keyCount = 0;
