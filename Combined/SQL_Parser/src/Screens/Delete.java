@@ -10,8 +10,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import javax.swing.JOptionPane;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -348,12 +346,7 @@ public class Delete {
 
 					//boolean result = deleteInJson(jsonArray);
 					//JOptionPane.showMessageDialog(null, "Records deleted Successfully", "Message", JOptionPane.INFORMATION_MESSAGE);
-				}else{
-					
-					JOptionPane.showMessageDialog(null, "No Records to Delete", "Message", JOptionPane.INFORMATION_MESSAGE);
-					
 				}
-				
 			}
 			
 		}else{
