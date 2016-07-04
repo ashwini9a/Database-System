@@ -239,9 +239,9 @@ public class Delete {
 
 			} else if (andOrFlag) {
 
-				if (condition.equals("and"))
+				if (condition.equalsIgnoreCase("and"))
 					this.conditionOp = "and";
-				else if (condition.equals("or"))
+				else if (condition.equalsIgnoreCase("or"))
 					this.conditionOp = "or";
 				else {
 					return false;
@@ -346,9 +346,13 @@ public class Delete {
 						e.printStackTrace();
 					} 
 				}
-			}else if(this.conditionFlag && "And".equalsIgnoreCase(conditionOp)){
+			}else if("And".equalsIgnoreCase(conditionOp)){
 				// get the json array based on primary key and filter them based on other conditions
+				
+				System.out.println("inside and");
 				JSONArray jsonArray = getJSONObjectsBasedOnPrimaryKey(primaryKey);
+				
+				System.out.println(jsonArray.toJSONString());
 				
 				if(jsonArray.size() != 0){
 
@@ -895,6 +899,9 @@ public class Delete {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
+		 
+		 
+		 System.out.println("Records deleted");
 	 
 	 }
 	 
