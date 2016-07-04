@@ -1,3 +1,4 @@
+
 package Screens;
 
 import java.awt.Dimension;
@@ -15,7 +16,7 @@ import java.util.Set;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.simple.JSONObject;//done
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import javax.swing.JScrollPane;
@@ -1364,7 +1365,7 @@ public class ProjectionRecords {
 						while(hitr.hasNext())
 						{
 							JSONObject temp2 = (JSONObject)hitr.next();
-							if(((String)temp2.get(key)).equalsIgnoreCase((String)temp1.get(key)))
+							if(((long)temp2.get(key))==((long)temp1.get(key)))
 							{
 								andArray.add(temp2);							
 							}
@@ -1388,7 +1389,7 @@ public class ProjectionRecords {
 						while(hitr.hasNext())
 						{
 							JSONObject temp2 = (JSONObject)hitr.next();
-							if(((String)temp2.get(key)).equalsIgnoreCase((String)temp1.get(key)))
+							if(((long)temp2.get(key))==((long)temp1.get(key)))
 							{
 								pre=true;
 								break;
@@ -1912,7 +1913,7 @@ public class ProjectionRecords {
 				table.setFillsViewportHeight(true);
 				table.setAutoCreateRowSorter(true);
 				JScrollPane scrollPane = new JScrollPane(table);
-				scrollPane.setBounds(37, 5, 468, 100);
+				scrollPane.setBounds(50, 50, 1500, 600);
 				scrollPane.setViewportView(table);
 				scrollPane.setPreferredSize(new Dimension(468, 100));
 				frame.getContentPane().add(scrollPane);
@@ -2016,7 +2017,7 @@ public class ProjectionRecords {
 				table.setFillsViewportHeight(true);
 				table.setAutoCreateRowSorter(true);
 				JScrollPane scrollPane = new JScrollPane(table);
-				scrollPane.setBounds(37, 5, 468, 100);
+				scrollPane.setBounds(50, 50, 1500, 600);
 				scrollPane.setViewportView(table);
 				scrollPane.setPreferredSize(new Dimension(468, 100));
 				frame.getContentPane().add(scrollPane);
@@ -2043,7 +2044,7 @@ public class ProjectionRecords {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 738, 300);
+		frame.setBounds(100, 100, 1600, 700);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 	}

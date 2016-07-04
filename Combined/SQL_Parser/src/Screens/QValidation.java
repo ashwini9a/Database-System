@@ -445,8 +445,54 @@ public class QValidation {
 			}
 		
 		}
+		updateProjectionAtt(projection,tables);
+		updateOrderAtt(OB,tables);
 		System.out.println("Valid");
 		return true;
+	}
+	public static void updateProjectionAtt(ArrayList<String> projection,ArrayList<String> tables)
+	{
+		if(projection.size()==1 && projection.get(0).equals("*"))
+		{
+			return;
+		}
+		int ind = projection.size();
+		for(int i=0;i<ind;i++)
+		{
+			String tb = null;
+			Iterator<String> itr = tables.iterator();
+			while(itr.hasNext())
+			{
+				String tnm=itr.next();
+				if(GlobalUtil.validateColumnNames(projection.get(i), tnm))
+				{
+					tb = tnm;
+					break;
+				}
+			}
+			String att = GlobalUtil.getTableColumnName(tb, projection.get(i));
+			projection.set(i, att);
+		}
+	}
+	public static void updateOrderAtt(OrderBy OB,ArrayList<String> tables)
+	{
+		int ind = OB.Ordercols.size();
+		for(int i=0;i<ind;i++)
+		{
+			String tb = null;
+			Iterator<String> itr = tables.iterator();
+			while(itr.hasNext())
+			{
+				String tnm=itr.next();
+				if(GlobalUtil.validateColumnNames(OB.Ordercols.get(i), tnm))
+				{
+					tb = tnm;
+					break;
+				}
+			}
+			String att = GlobalUtil.getTableColumnName(tb, OB.Ordercols.get(i));
+			OB.Ordercols.set(i, att);
+		}
 	}
 	private static boolean columnValidation(ArrayList<String> projection,ArrayList<String> tables,ArrayList<String> alias,boolean cond)
 	{
@@ -688,6 +734,7 @@ public class QValidation {
 				}
 			}
 		}
+		updateProjectionAtt(projection,tables);
 		System.out.println("Valid");
 		return true;
 	}
