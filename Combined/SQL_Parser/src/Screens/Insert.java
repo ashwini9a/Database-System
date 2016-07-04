@@ -245,16 +245,14 @@ public class Insert {
 			String [] columnValues = val.split(",");
 
 			boolean flag = true;
-
-			for(String value : columnValues){
-				
+			
+			/*for(String value : columnValues){
 				//System.out.println("value: "+value);				
 				if(!validateColVal(value.trim())){
 					flag = false;
 					break;
-				}
-				
-			}
+				}				
+			}*/
 
 			if(!flag){	    				
 				JOptionPane.showMessageDialog(null, "Invalid Syntax: Missing single quotes in column values", "Error", JOptionPane.ERROR_MESSAGE);
@@ -341,8 +339,7 @@ public class Insert {
 				maintable.add(newJson);
 				btree.insert(lastKeyId+1, maintable.size()-1);
 			}
-			
-			
+						
 		}else{
 
 			int i = 0;
