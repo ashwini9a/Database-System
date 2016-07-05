@@ -165,7 +165,7 @@ public class Delete {
 			colNames.add(clause.attribute1);
 		}
 
-		if (!GlobalUtil.validateColumnNames(colNames, this.tableName))
+		if(!GlobalUtil.validateColumnNames(colNames, this.tableName))
 			return false;
 
 		return true;
@@ -255,6 +255,7 @@ public class Delete {
 
 		return true;
 	}
+	
 
 	private boolean validateColVal(String val) {
 
@@ -314,7 +315,7 @@ public class Delete {
 
 					}
 					
-					// delete records in file
+				/*	// delete records in file
 					try {
 
 						JSONObject newJson = new JSONObject();
@@ -344,7 +345,7 @@ public class Delete {
 					}catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} 
+					} */
 				}
 			}else if("And".equalsIgnoreCase(conditionOp)){
 				// get the json array based on primary key and filter them based on other conditions
@@ -352,7 +353,7 @@ public class Delete {
 				System.out.println("inside and");
 				JSONArray jsonArray = getJSONObjectsBasedOnPrimaryKey(primaryKey);
 				
-				System.out.println(jsonArray.toJSONString());
+				//System.out.println(jsonArray.toJSONString());
 				
 				if(jsonArray.size() != 0){
 
@@ -378,7 +379,7 @@ public class Delete {
 						}
 					}
 					// delete from file
-					deleteRecordsFromFile(maintable);
+					//deleteRecordsFromFile(maintable);
 				}				
 			}else if("OR".equalsIgnoreCase(this.conditionOp)){
 				
@@ -418,28 +419,29 @@ public class Delete {
 				
 				}
 				
-				// delete from file
-				
-				deleteRecordsFromFile(maintable);
+				// delete from file				
+			  //deleteRecordsFromFile(maintable);
 							
 			}
 		}else{
 		  
-			JSONParser parser = new JSONParser();
+		//	JSONParser parser = new JSONParser();
 		
 			
-			try {
+			//try {
 
-				FileReader f1 = new FileReader("Data/Records/" + this.tableName + ".json");
+				/*FileReader f1 = new FileReader("Data/Records/" + this.tableName + ".json");
 				Object obj = parser.parse(f1);
 				JSONObject json = (JSONObject) obj;
 				JSONArray headers = (JSONArray) json.get("Records");
-				f1.close();
+				f1.close();*/
 
+				String actualTableName = GlobalData.getTableName(this.tableName);
+				JSONArray headers = GlobalData.tableJSonArray.get(actualTableName);
 				
 				for (int i = 0; i < headers.size(); i++) {
 
-					JSONObject temp = (JSONObject) parser.parse(headers.get(i).toString());
+					JSONObject temp = (JSONObject)headers.get(i);
 
 					if("And".equalsIgnoreCase(conditionOp)){
 
@@ -491,7 +493,7 @@ public class Delete {
 				}
 
 				// write the file back to disk
-				json.put("Records", headers);
+				/*json.put("Records", headers);
 				//System.out.println(json.toJSONString());
 
 				File file = new File("Data/Records/" + tableName + ".json");
@@ -513,7 +515,7 @@ public class Delete {
 				e.printStackTrace();
 			} catch (ParseException e) {
 				e.printStackTrace();
-			}		
+			}*/		
 		}
 	}
 
