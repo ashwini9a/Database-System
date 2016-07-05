@@ -291,7 +291,8 @@ public class Delete {
 					
 					int size = jsonArray.size();
 
-					JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
+					String actualTableName = GlobalData.getTableName(this.tableName);
+					JSONArray maintable = GlobalData.tableJSonArray.get(actualTableName);
 
 					//String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase());
 
@@ -355,7 +356,9 @@ public class Delete {
 				
 				if(jsonArray.size() != 0){
 
-					JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);	
+					String actualTableName = GlobalData.getTableName(this.tableName);
+					JSONArray maintable = GlobalData.tableJSonArray.get(actualTableName);
+	
 					// filter further based on other conditions					
 					for(int i = 0; i < jsonArray.size(); i++){						
 						// check if other conditions match
@@ -383,7 +386,8 @@ public class Delete {
                  				
 				JSONArray jsonArray = getJSONObjectsBasedOnPrimaryKey(primaryKey);
 
-				JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
+				String actualTableName = GlobalData.getTableName(this.tableName);
+				JSONArray maintable = GlobalData.tableJSonArray.get(actualTableName);
 				
 			    JSONArray jsonforOR = new JSONArray();
 				
@@ -429,7 +433,9 @@ public class Delete {
 				Object obj = parser.parse(f1);
 				JSONObject json = (JSONObject) obj;
 				JSONArray headers = (JSONArray) json.get("Records");
+				f1.close();
 
+				
 				for (int i = 0; i < headers.size(); i++) {
 
 					JSONObject temp = (JSONObject) parser.parse(headers.get(i).toString());
@@ -459,6 +465,7 @@ public class Delete {
 						boolean result = checkIfConditionMatch(temp);
 						if(result){
 							// change here
+							System.out.println("matched");
 							headers.remove(i);
 						}
 					}	
@@ -478,8 +485,9 @@ public class Delete {
 				bw.flush();
 				fw.close();
 				bw.close();			
-				f1.close();
 
+				System.out.println("data deleted");
+				
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -659,7 +667,7 @@ public class Delete {
 
 		boolean match = true;
 
-		System.out.println("inside checkIfConditionMatch");
+		//System.out.println("inside checkIfConditionMatch");
 
 		for (WhereClause whereClause : this.whereConditions) {
 
@@ -718,10 +726,11 @@ public class Delete {
 
 					colVal = colVal.substring(1, colVal.length() - 1);
 
-					System.out.println("after substring: " + colVal);
+					//System.out.println("after substring: " + colVal);
 
-					if (colVal.equalsIgnoreCase(value.toString())) {
+					if (colVal.equals(value.toString())) {
 						match = true;
+						System.out.println(colVal + " matches "+ value);
 						break;
 					} else {
 
@@ -1012,7 +1021,7 @@ public class Delete {
 
 						System.out.println("after substring: " + colVal);
 
-						if (colVal.equalsIgnoreCase(value.toString())) {
+						if (colVal.equals(value.toString())) {
 
 							System.out.println(colVal + " matches " + value);
 							match = true;
