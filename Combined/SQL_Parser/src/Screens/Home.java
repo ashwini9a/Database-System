@@ -18,6 +18,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Iterator;
 
 public class Home extends JFrame {
 
@@ -42,74 +50,99 @@ public class Home extends JFrame {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				// test();
+				
 			}
 		});
 	}
 
-	protected static void test() {
-		JSONArray table_a = GlobalData.tableJSonArray.get("A");
-		for (int i = 0; i < table_a.size(); i++) {
-			System.out.println(table_a.get(i).toString());
+		/**
+	 * Create the frame.
+	 * 
+	 */
+	public static <E> void saveAllBtrees()
+	{
+		Iterator<String> itr = GlobalData.allTables.iterator();
+		while(itr.hasNext())
+		{
+			String tableName= itr.next();
+			String att = GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase());
+			if(!tableName.equalsIgnoreCase("complaints"))
+			{
+				SaveBtree B = new SaveBtree(att, tableName);
+			}
+			
 		}
+	}
+	
 
-		JSONArray table_b = GlobalData.tableJSonArray.get("B");
-		for (int i = 0; i < table_b.size(); i++) {
-			System.out.println(table_b.get(i).toString());
-		}
+	
 
-		try {
-			// GlobalData.addAttBTreeIndex("A", "m");
-			// GlobalData.addAttBTreeIndex("B", "x");
+	private void saveMainTable() {
+		
+		// TODO Auto-generated method stub
 
-		} catch (Exception e) {
+		try{
+
+			Iterator<String> itr = GlobalData.allTables.iterator();
+
+			while(itr.hasNext()){
+
+				String tableName= itr.next();
+
+				//String actualTableName = GlobalData.getTableName(tableName);
+				JSONArray maintable = GlobalData.tableJSonArray.get(tableName);
+
+				JSONObject newJson = new JSONObject();
+				newJson.put("Records", maintable);
+
+				File file = new File("Data/Records/" + tableName + ".json");
+
+				if(file.exists()){
+					file.delete();
+				}
+
+				FileWriter fw = null;
+				BufferedWriter bw = null;
+
+				fw = new FileWriter(file.getAbsoluteFile());
+				bw = new BufferedWriter(fw);
+
+				bw.write(newJson.toJSONString());
+				bw.flush();
+				bw.close();
+				fw.close();
+
+				System.out.println("data saved back to disk on close");
+
+			}
+
+		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		JSONParser parser = new JSONParser();
-		BPlusTreeIndexing t1 = (BPlusTreeIndexing) GlobalData.AttBTreeIndex.get("m");
-		BPlusTreeIndexing t2 = (BPlusTreeIndexing) GlobalData.AttBTreeIndex.get("x");
-
-		t1.printbtree();
-		JSONObject currJson = (JSONObject) t1.search((long) 1);
-		System.out.println("Test tree retrival: " + currJson.get("o"));
-
-		System.out.println("Range test:");
-		JSONArray range = t1.qBptree("m", ">=", (long) 1);
-		for (int i = 0; i < range.size(); i++) {
-			System.out.println(range.get(i).toString());
-		}
-		System.out.println("key number:" + t1.getTotalKeyNumbers());
-		System.out.println("tuple number:" + table_a.size());
-
-		range = t1.qBptree("m", ">", (long) 5);
-		for (int i = 0; i < range.size(); i++) {
-			System.out.println(range.get(i).toString());
-		}
-
-		JSONObject testjobj = GlobalUtil.concat2jobj((JSONObject) GlobalData.tableJSonArray.get("A").get(2),
-				(JSONObject) GlobalData.tableJSonArray.get("B").get(2));
-		System.out.println("concat test:" + GlobalData.tableJSonArray.get("A").get(2));
-		System.out.println("concat test:" + testjobj.toString());
-
-		JSONArray jointest = BPlusTreeIndexing.qBptree("A", "m", "=", "B", "x");
-		for (int i = 0; i < jointest.size(); i++) {
-			System.out.println(jointest.get(i).toString());
-		}
-		System.out.println("concat test:" + GlobalData.AttTableMap.get("x"));
-
-		System.out.println("concat test:" + GlobalData.AttTableMap.get("m"));
-		System.out.println("type test:" + GlobalUtil.GetAttType("m"));
-
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
 	}
-
-	/**
-	 * Create the frame.
-	 */
+	
+	
 	public Home() {
 		setTitle("SQL");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 792, 342);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+		        @Override
+		        public void windowClosing(WindowEvent event) {
+		        	saveMainTable();
+		        	saveAllBtrees();
+		            System.exit(0);
+		        }
+
+		});
+		setBounds(100, 100, 900, 500);
 		getContentPane().setLayout(null);
 
 		JLabel lblSqlQuery = new JLabel("SQL Query : ");
@@ -118,14 +151,14 @@ public class Home extends JFrame {
 		getContentPane().add(lblSqlQuery);
 
 		JTextArea textArea = new JTextArea();
-		textArea.setBounds(135, 30, 631, 174);
+		textArea.setBounds(135, 30, 700, 274);
 
-		textArea.setFont(new Font("Times New Roman", Font.PLAIN, 15));
+		textArea.setFont(new Font("Times New Roman", Font.PLAIN, 20));
 
 		getContentPane().add(textArea);
 		JButton btnCreate = new JButton("Create Table");
-		btnCreate.setBounds(449, 232, 138, 31);
-		btnCreate.setFont(new Font("Times New Roman", Font.BOLD, 11));
+		btnCreate.setBounds(449, 400, 138, 31);
+		btnCreate.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		btnCreate.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -143,7 +176,7 @@ public class Home extends JFrame {
 		});
 		getContentPane().add(btnCreate);
 		JButton btnOk = new JButton("OK");
-		btnOk.setBounds(597, 232, 75, 31);
+		btnOk.setBounds(597, 400, 75, 31);
 		btnOk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -155,21 +188,21 @@ public class Home extends JFrame {
 				}
 			}
 		});
-		btnOk.setFont(new Font("Times New Roman", Font.BOLD, 12));
+		btnOk.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		getContentPane().add(btnOk);
 
 		JButton btnClear = new JButton("Clear");
-		btnClear.setBounds(682, 232, 84, 31);
+		btnClear.setBounds(682, 400, 84, 31);
 		btnClear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				textArea.setText("");
 			}
 		});
-		btnClear.setFont(new Font("Times New Roman", Font.BOLD, 12));
+		btnClear.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		getContentPane().add(btnClear);
 
 		JButton btnLoadComplaintdb = new JButton("Load complaint.db");
-		btnLoadComplaintdb.setFont(new Font("Times New Roman", Font.BOLD, 12));
+		btnLoadComplaintdb.setFont(new Font("Times New Roman", Font.BOLD, 15));
 
 		btnLoadComplaintdb.addMouseListener(new MouseAdapter() {
 			@Override
@@ -190,10 +223,11 @@ public class Home extends JFrame {
 			}
 		});
 
-		btnLoadComplaintdb.setBounds(289, 233, 150, 29);
+		btnLoadComplaintdb.setBounds(289, 400, 150, 29);
 		getContentPane().add(btnLoadComplaintdb);
 		
 		JButton btnNewButton = new JButton("List Index");
+		btnNewButton.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -204,7 +238,7 @@ public class Home extends JFrame {
 				}
 			}
 		});
-		btnNewButton.setBounds(97, 234, 117, 29);
+		btnNewButton.setBounds(97, 400, 117, 29);
 		getContentPane().add(btnNewButton);
 		contentPane = new JPanel(new GridLayout(5, 5));
 
