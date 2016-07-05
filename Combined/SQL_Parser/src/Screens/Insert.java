@@ -451,7 +451,7 @@ public class Insert {
 		}
 
 		// save the json in the table.json file.
-		saveRecordInFile(newJson);
+		//saveRecordInFile(newJson);
 		return true;
 
 	}
