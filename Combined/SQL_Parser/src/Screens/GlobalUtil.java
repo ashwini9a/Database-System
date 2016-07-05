@@ -45,7 +45,7 @@ public class GlobalUtil {
 			for (int i = 0; i < headers.size(); i++) {
 				JSONObject curr = (JSONObject) headers.get(i);
 				String temp = (String) curr.get("Column Name");
-				if (temp.equals(name)) {
+				if (temp.equalsIgnoreCase(name)) {
 					return ((String) curr.get("Data Type"));
 				}
 			}
