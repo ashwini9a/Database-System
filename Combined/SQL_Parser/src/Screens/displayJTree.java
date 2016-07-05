@@ -59,38 +59,7 @@ public class displayJTree extends JFrame {
 		BTreeNode node = btree.getRoot();
 		innernode = new DefaultMutableTreeNode(node.printRange());
 		addAllChildNode(innernode, node);
-		// while (node.getKeyCount() > 0) {
-		// if (!node.IsLeaf()) {
-		// for (int i = 0; i < node.getKeyCount(); i++) {
-		// temp1 = new DefaultMutableTreeNode(node.getChild(i).printRange());
-		// inndernode.add(temp1);
-		// }
-		// } else {
-		// for (int i = 0; i < node.getKeyCount(); i++) {
-		// temp1 = new DefaultMutableTreeNode(node.getNodeKey(i));
-		// temp2 = new DefaultMutableTreeNode(node.getLeafValue(i));
-		// temp1.add(temp2);
-		// inndernode.add(temp1);
-		// }
-		// break;
-		// }
-		// }
 
 		top.add(innernode);
-
-		// // original Tutorial
-		// book = new DefaultMutableTreeNode(
-		// new BookInfo("The Java Tutorial: A Short Course on the Basics",
-		// "tutorial.html"));
-		// category.add(book);
-		//
-		// category = new DefaultMutableTreeNode("Books for Java Implementers");
-		// top.add(category);
-		//
-		// // VM
-		// book = new DefaultMutableTreeNode(new BookInfo("The Java Virtual
-		// Machine Specification", "vm.html"));
-		// category.add(book);
-
 	}
 }

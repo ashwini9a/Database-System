@@ -28,7 +28,8 @@ public abstract class BTreeNode<TKey extends Comparable<TKey>> {
 		for (int i = 0; i < keyCount; i++) {
 			result = result + keys[i] + ",";
 		}
-		result = result.substring(0, result.length() - 1);
+		if (result.length() > 1)
+			result = result.substring(0, result.length() - 1);
 		return result;
 	}
 
