@@ -426,6 +426,7 @@ public class Delete {
 		}else{
 		  
 			JSONParser parser = new JSONParser();
+		
 			
 			try {
 
@@ -448,6 +449,13 @@ public class Delete {
 						if(result){
 							// change here
 							headers.remove(i);
+							if(bplusTree != null){
+								 long keyValue = (Long)temp.get(primaryKey);
+								 bplusTree.delete(keyValue);
+							}
+							
+						
+							
 						}	
 
 					}else if("Or".equalsIgnoreCase(conditionOp)){
@@ -458,6 +466,12 @@ public class Delete {
 						if(result){		
 							// change here
 							headers.remove(i);
+							
+							if(bplusTree != null){
+								 long keyValue = (Long)temp.get(primaryKey);
+								 bplusTree.delete(keyValue);
+							}	
+							
 						}
 
 					}else{			    	
@@ -466,7 +480,14 @@ public class Delete {
 						if(result){
 							// change here
 							System.out.println("matched");
+							
 							headers.remove(i);
+							
+							if(bplusTree != null){
+								 long keyValue = (Long)temp.get(primaryKey);
+								 bplusTree.delete(keyValue);
+							}
+							
 						}
 					}	
 				}
