@@ -453,9 +453,7 @@ public class Delete {
 								 long keyValue = (Long)temp.get(primaryKey);
 								 bplusTree.delete(keyValue);
 							}
-							
-						
-							
+												
 						}	
 
 					}else if("Or".equalsIgnoreCase(conditionOp)){
@@ -774,7 +772,9 @@ public class Delete {
 
 		int size = jsonArray.size();
 
-		JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
+		
+		String actualTableName = GlobalData.getTableName(this.tableName);
+		JSONArray maintable = GlobalData.tableJSonArray.get(actualTableName);
 
 		String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase());
 

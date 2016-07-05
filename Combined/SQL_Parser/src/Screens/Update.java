@@ -441,7 +441,8 @@ public class Update {
 
 					try {
 
-						JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
+						String actualTableName = GlobalData.getTableName(this.tableName);
+						JSONArray maintable = GlobalData.tableJSonArray.get(actualTableName);
 
 						JSONObject newJson = new JSONObject();
 						newJson.put("Records", maintable);
@@ -481,7 +482,8 @@ public class Update {
 
 				JSONArray jsonArray = getJSONObjectsBasedOnPrimaryKey(primaryKey);
 
-				JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
+				String actualTableName = GlobalData.getTableName(this.tableName);
+				JSONArray maintable = GlobalData.tableJSonArray.get(actualTableName);
 				// update the jsonArray
 				//int jsonArraySize = 0;
 
@@ -731,7 +733,9 @@ public class Update {
 
 		try {
 
-			JSONArray maintable = GlobalData.tableJSonArray.get(this.tableName);
+			
+			String actualTableName = GlobalData.getTableName(this.tableName);
+			JSONArray maintable = GlobalData.tableJSonArray.get(actualTableName);
 
 			JSONObject newJson = new JSONObject();
 			newJson.put("Records", maintable);
