@@ -397,7 +397,7 @@ public class Update {
 
 				System.out.println("After btree"+Long.valueOf(whereClause.attribute2)+"att:"+whereClause.attribute1);
 
-				System.out.println(jsonArray.toJSONString());
+				//System.out.println(jsonArray.toJSONString());
 
 				if(jsonArray.size() != 0)
 					updateJSONArray(jsonArray);
@@ -439,7 +439,7 @@ public class Update {
 						}
 					}
 
-					try {
+					/*try {
 
 						String actualTableName = GlobalData.getTableName(this.tableName);
 						JSONArray maintable = GlobalData.tableJSonArray.get(actualTableName);
@@ -473,7 +473,7 @@ public class Update {
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} 	
+					}*/ 	
 
 				}
 			}else if(this.conditionsPresent && "Or".equalsIgnoreCase(conditionOp)){
@@ -516,7 +516,7 @@ public class Update {
 
 				//update the file
 
-				try{
+				/*try{
 
 					JSONObject newJson = new JSONObject();
 					newJson.put("Records", maintable);
@@ -546,22 +546,24 @@ public class Update {
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} 	
+				}*/ 	
 			}
 		}else{
 
-			JSONParser parser = new JSONParser();
+			//JSONParser parser = new JSONParser();
 			try {
 
-				FileReader f1 = new FileReader("Data/Records/" + this.tableName + ".json");
-				Object obj = parser.parse(f1);
-				JSONObject json1 = (JSONObject) obj;
+				//FileReader f1 = new FileReader("Data/Records/" + this.tableName + ".json");
+				//Object obj = parser.parse(f1);
+				//JSONObject json1 = (JSONObject) obj;
 				///System.out.println(json1.toJSONString());
 
+				String actualTableName = GlobalData.getTableName(this.tableName);
+				JSONArray headers = GlobalData.tableJSonArray.get(actualTableName);
+				
 				try {
 
-					JSONArray headers = (JSONArray) json1.get("Records");
-
+//					JSONArray headers = (JSONArray) json1.get("Records");
 					//int rindex=-1;
 
 					int size = headers.size();
@@ -670,7 +672,7 @@ public class Update {
 						}
 					}
 
-					json1.put("Records", headers);
+					//json1.put("Records", headers);
 
 				} catch (ClassCastException e) {
 
@@ -678,11 +680,11 @@ public class Update {
 
 				}
 
-				f1.close();
+				//f1.close();
 
 				//System.out.println(json1.toJSONString());
 
-				File file = new File("Data/Records/" + this.tableName + ".json");
+				/*File file = new File("Data/Records/" + this.tableName + ".json");
 				FileWriter fw = null;
 				BufferedWriter bw = null;
 
@@ -691,7 +693,7 @@ public class Update {
 
 				bw.write(json1.toJSONString());
 				bw.flush();
-				bw.close();
+				bw.close();*/
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -729,7 +731,7 @@ public class Update {
 
 		}
 
-		System.out.println("saving data to file");
+		/*System.out.println("saving data to file");
 
 		try {
 
@@ -766,7 +768,7 @@ public class Update {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 	
+		} */	
 
 	}
 
@@ -833,7 +835,7 @@ public class Update {
 
 					colVal = colVal.substring(1, colVal.length()-1);
 
-					System.out.println("after substring: "+colVal);
+					//System.out.println("after substring: "+colVal);
 
 					if(colVal.equals(value.toString())){
 
