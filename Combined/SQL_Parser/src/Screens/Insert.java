@@ -318,7 +318,15 @@ public class Insert {
 					JOptionPane.showMessageDialog(null, "Invalid Syntax: Mismatch between dataType and Value", "Error", JOptionPane.ERROR_MESSAGE);
 					return false;
 				}else{		
-					newJson.put(name, val.substring(1, val.length()-1));
+					
+					String dataType = GlobalUtil.getDataType(this.tableName, name);
+					
+					if("VARCHAR".equals(dataType))
+						newJson.put(name, val.substring(1, val.length()-1));
+					else if("INT".equals(dataType)){
+						newJson.put(name, Long.valueOf(val));
+					}
+					
 				}	
 				i++;
 			}
@@ -327,7 +335,7 @@ public class Insert {
 
 			// get last primaryKey value from json record
 			long lastKeyId = getLastPrimaryKey(this.tableName);	
-			String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName);
+			String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase());
 			newJson.put(primaryKey, lastKeyId+1);
 			
 			//update the b-tree:
@@ -363,8 +371,13 @@ public class Insert {
 				}else{	
 					//remove single quotes from string	
 					
-					String colName = tableColumnMap.get(name);
-					newJson.put(colName, val.substring(1, val.length()-1));
+					String dataType = GlobalUtil.getDataType(this.tableName, name);
+					
+					if("VARCHAR".equals(dataType))
+						newJson.put(name, val.substring(1, val.length()-1));
+					else if("INT".equals(dataType)){
+						newJson.put(name, Long.valueOf(val));
+					}
 				}		 
 
 				i++;
@@ -373,7 +386,7 @@ public class Insert {
 			// add data for primary key
 			// get last primaryKey value from json record
 			long lastKeyId = getLastPrimaryKey(this.tableName);	
-			String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName);
+			String primaryKey = GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase());
 			newJson.put(primaryKey, lastKeyId+1);
 			
 			//update the b-tree:
