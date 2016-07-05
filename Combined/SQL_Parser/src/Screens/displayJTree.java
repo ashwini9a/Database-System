@@ -9,8 +9,6 @@ import javax.swing.tree.DefaultTreeModel;
 import bptree.*;
 
 public class displayJTree extends JFrame {
-	protected final static int BTREEORDER = 5;
-
 	public displayJTree(String att) {
 		this.setBounds(100, 100, 600, 800);
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

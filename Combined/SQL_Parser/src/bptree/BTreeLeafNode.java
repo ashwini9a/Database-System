@@ -2,7 +2,7 @@ package bptree;
 
 
 class BTreeLeafNode<TKey extends Comparable<TKey>, TValue> extends BTreeNode<TKey> {
-	protected final static int LEAFORDER = 4;
+	protected final static int LEAFORDER = 10;
 	private Object[] values;
 	
 	public BTreeLeafNode() {
