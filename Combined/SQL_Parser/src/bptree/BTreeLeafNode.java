@@ -24,6 +24,22 @@ class BTreeLeafNode<TKey extends Comparable<TKey>, TValue> extends BTreeNode<TKe
 		return TreeNodeType.LeafNode;
 	}
 	
+	public boolean IsLeaf(){
+		return true;
+	}
+	
+	public Object getLeafValue(int i){
+		return values[i];
+	}
+	
+	public Object getNodeKey(int i){
+		return keys[i];
+	}
+	
+	public BTreeNode<TKey> getChild(int i){
+		return null;
+	}
+	
 	@Override
 	public int search(TKey key) {
 		for (int i = 0; i < this.getKeyCount(); ++i) {

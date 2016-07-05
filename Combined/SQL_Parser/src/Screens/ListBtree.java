@@ -9,6 +9,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.text.html.HTMLDocument.Iterator;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTree;
 import javax.swing.event.TableModelEvent;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -70,46 +71,17 @@ public class ListBtree extends JFrame {
 				DefaultTableModel dm = (DefaultTableModel) table.getModel();
 				int rowIndex = table.getSelectedRow();
 				if (rowIndex == -1) {
-					JOptionPane.showMessageDialog(null, "Please select a table to display", "Error",
+					JOptionPane.showMessageDialog(null, "Please select a btree to display", "Error",
 							JOptionPane.ERROR_MESSAGE);
 				} else {
 					String tableName = GlobalData.allTables.get(rowIndex);
-					System.out.println("Table to display:" + tableName);
-//					DisplayRecords display = new DisplayRecords(tableName, false);
-//					display.displayRecords(tableName);
+
+					displayJTree display = new displayJTree((String) table.getValueAt(rowIndex, 0));
 				}
 			}
 		});
 
 		contentPane.add(btnDisplayRecords);
-
-		JButton btnNewButton = new JButton("Delete Table");
-		btnNewButton.setFont(new Font("Times New Roman", Font.PLAIN, 13));
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// delete table
-				DefaultTableModel dm = (DefaultTableModel) table.getModel();
-				int rowIndex = table.getSelectedRow();
-				if (rowIndex == -1) {
-					
-					JOptionPane.showMessageDialog(null,"Please select a table to delete", "Error",JOptionPane.ERROR_MESSAGE);
-					
-				} 
-				else {
-					//String tableName = (String) table.getValueAt(rowIndex, 0);
-
-					try {
-						GlobalData.deleteTableFile((String) table.getValueAt(rowIndex, 0));
-					} catch (Exception e1) {
-						System.out.println(e1);
-						e1.printStackTrace();
-					}
-					dm.removeRow(rowIndex);
-					// GlobalData.allTables.remove(rowIndex);
-				}
-			}
-		});
-
 	}
 
 }

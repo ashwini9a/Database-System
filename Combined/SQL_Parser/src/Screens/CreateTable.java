@@ -253,6 +253,7 @@ public class CreateTable extends JFrame {
 						try {
 							GlobalData.addAttTableMap(tableName);
 							GlobalData.addTableJSonArray(tableName);
+							System.out.println("test!!!"+GlobalData.tableJSonArray.get(tableName).toString());
 							GlobalData.addAttBTreeIndex(tableName, GlobalData.tablePrimaryKeyMap.get(tableName.toLowerCase()));
 						} catch (Exception e2) {
 							// TODO Auto-generated catch block
