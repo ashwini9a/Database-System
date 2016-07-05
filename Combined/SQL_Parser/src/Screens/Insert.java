@@ -177,6 +177,18 @@ public class Insert {
 			}
 
 			System.out.println("SQL col names: " + this.columns);
+			
+			// check if trying to insert in primary key
+			String tableKey = GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase());
+			
+			for(String name: this.columns){
+				
+				  if(tableKey.equalsIgnoreCase(name)){
+					  JOptionPane.showMessageDialog(null, "Cannot insert dtaa in primary key", "Error", JOptionPane.ERROR_MESSAGE);
+					  return;
+				  }				
+			}
+			
 
 			// check if values is present in correct location:
 
@@ -202,15 +214,6 @@ public class Insert {
 
 		System.out.println("ColValues: " + colValues);
 
-		/*
-		 * if(columnsPresent){ if(tokens.length <= 5){
-		 * JOptionPane.showMessageDialog(null,
-		 * "Invalid Syntax: Column Values Missing", "Error",
-		 * JOptionPane.ERROR_MESSAGE); return; }else colValues = tokens[5];
-		 * }else{ if(tokens.length <= 4){ JOptionPane.showMessageDialog(null,
-		 * "Invalid Syntax: Column Values Missing", "Error",
-		 * JOptionPane.ERROR_MESSAGE); return; }else colValues = tokens[4]; }
-		 */
 
 		if (!colValues.startsWith("(") || !colValues.endsWith(")")) {
 			JOptionPane.showMessageDialog(null, "Invalid Syntax: Invalid Format of Column Values", "Error",
@@ -303,6 +306,26 @@ public class Insert {
 						JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
+			
+			// check if all the varchar columns have single quotes
+			int j = 0;
+			for(String val : this.values){
+				
+				String name = columnNames.get(j);
+				
+				String dataType = GlobalUtil.getDataType(this.tableName, name);
+				
+				if("VARCHAR".equals(dataType)){
+					
+					 if(!val.startsWith("'") || !val.endsWith("'")){
+						 JOptionPane.showMessageDialog(null, "Invalid Syntax: Missing single quote for column : "+(j+1), "Error",JOptionPane.ERROR_MESSAGE);
+							return false; 
+					 }
+				}
+				
+				j++;
+			}
+			
 
 			// ArrayList<String> colName = new ArrayList<String>(columnNames);
 			int i = 0;
@@ -316,7 +339,7 @@ public class Insert {
 					JOptionPane.showMessageDialog(null, "Invalid Syntax: Mismatch between dataType and Value", "Error",
 							JOptionPane.ERROR_MESSAGE);
 					return false;
-				} else {
+				}else {
 
 					String dataType = GlobalUtil.getDataType(this.tableName, name);
 
@@ -324,6 +347,8 @@ public class Insert {
 						newJson.put(name, val.substring(1, val.length() - 1));
 					else if ("INT".equals(dataType)) {
 						newJson.put(name, Long.valueOf(val));
+					}else if("FLOAT".equals(dataType)){
+						newJson.put(name, Float.valueOf(val));	
 					}
 
 				}
@@ -342,7 +367,7 @@ public class Insert {
 			BPlusTreeIndexing btree = GlobalData.AttBTreeIndex.get(primaryKey);
 
 			if (btree != null) {
-				System.out.println(this.tableName);
+				//System.out.println(this.tableName);
 				String tnm = GlobalData.getTableName(this.tableName);
 				JSONArray maintable = GlobalData.tableJSonArray.get(tnm);
 				System.out.println(maintable.size());
@@ -356,6 +381,26 @@ public class Insert {
 
 			HashMap<String, String> columnMap = GlobalUtil.fetchColumnDataType(this.tableName);
 
+			// check if all the varchar columns have single quotes
+			int j = 0;
+			for(String val : this.values){
+
+				String name = this.columns.get(j);
+
+				String dataType = GlobalUtil.getDataType(this.tableName, name);
+
+				if("VARCHAR".equals(dataType)){
+
+					if(!val.startsWith("'") || !val.endsWith("'")){
+						JOptionPane.showMessageDialog(null, "Invalid Syntax: Missing single quote for column : "+(j+1), "Error",
+								JOptionPane.ERROR_MESSAGE);
+						return false; 
+					}
+				}
+
+				j++;
+			}
+
 			// get the tablecolumnMap
 			HashMap<String, String> tableColumnMap = GlobalUtil.getTableColumnNameMap(this.columns, tableName);
 
@@ -363,6 +408,8 @@ public class Insert {
 
 				String val = this.values.get(i);
 				// check if dataType matches
+
+				String tableName = tableColumnMap.get(name);
 
 				if (!GlobalUtil.validateDataType(columnMap.get(name.toLowerCase()), val)) {
 					JOptionPane.showMessageDialog(null, "Invalid DataType: Mismatch between dataType and Value",
@@ -374,9 +421,11 @@ public class Insert {
 					String dataType = GlobalUtil.getDataType(this.tableName, name);
 
 					if ("VARCHAR".equals(dataType))
-						newJson.put(name, val.substring(1, val.length() - 1));
+						newJson.put(tableName, val.substring(1, val.length() - 1));
 					else if ("INT".equals(dataType)) {
-						newJson.put(name, Long.valueOf(val));
+						newJson.put(tableName, Long.valueOf(val));
+					}else if("FLOAT".equals(dataType)){
+						newJson.put(tableName, Float.valueOf(val));	
 					}
 				}
 
@@ -426,7 +475,7 @@ public class Insert {
 
 			// get the last record from json
 
-			System.out.println("Json size:" + size);
+			//System.out.println("Json size:" + size);
 
 			if (size != 0) {
 
@@ -434,7 +483,7 @@ public class Insert {
 
 					JSONObject temp = (JSONObject) headers.get(i);
 					// get the last primary key value
-					System.out.println();
+					//System.out.println();
 					long keyValue = (Long) temp.get(GlobalData.tablePrimaryKeyMap.get(this.tableName.toLowerCase()));
 					// lastKeyId = size;
 					keyData.add(keyValue);
@@ -446,8 +495,6 @@ public class Insert {
 						return o2.compareTo(o1);
 					}
 				});
-
-				// System.out.println("KeyData: "+keyData);
 
 				// fetch the max value
 
